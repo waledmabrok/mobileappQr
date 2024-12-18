@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:url_launcher/url_launcher.dart';  // استيراد مكتبة url_launcher
 
 class ScanPage extends StatefulWidget {
   final Function(String) onBarcodeScan;
@@ -15,8 +16,10 @@ class _ScanPageState extends State<ScanPage> {
 
   // التحقق من الأذونات
   Future<void> _checkPermissions() async {
-    PermissionStatus status = await Permission.camera.request();
-    if (status.isGranted) {
+    PermissionStatus cameraStatus = await Permission.camera.request();
+
+    // تحقق من أن الكاميرا تم منحها
+    if (cameraStatus.isGranted) {
       print("Permission granted.");
     } else {
       print("Permission denied.");
@@ -44,7 +47,16 @@ class _ScanPageState extends State<ScanPage> {
   @override
   void initState() {
     super.initState();
-    _checkPermissions();
+    _checkPermissions(); // تحقق من الأذونات عند تحميل الصفحة
+  }
+
+  // دالة لفتح الرابط في المتصفح
+  Future<void> _launchURL(String url) async {
+    if (await canLaunch(url)) {
+      await launch(url);  // افتح الرابط في المتصفح
+    } else {
+      throw 'Could not launch $url';
+    }
   }
 
   @override
@@ -74,10 +86,11 @@ class _ScanPageState extends State<ScanPage> {
                     });
                   }
 
-                  // إغلاق صفحة المسح بعد مسح الباركود
-                  Navigator.pop(context); // إغلاق الصفحة بعد مسح الباركود
+                  // فتح الرابط في المتصفح بدلاً من إغلاق الصفحة
+                  _launchURL(url);
                 }
               },
+
             ),
           ),
           SizedBox(height: 20),

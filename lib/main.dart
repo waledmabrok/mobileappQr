@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'Login/login.dart';
 import 'onboarding/navgate.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
@@ -11,7 +12,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: HomeScreen(),
+      home: LoginPage(),
       locale: Locale('ar', 'AE'),
       localizationsDelegates: [
         GlobalMaterialLocalizations.delegate,

@@ -1,5 +1,7 @@
 import 'dart:async';
-
+import 'dart:io';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:geolocator/geolocator.dart';
@@ -8,6 +10,7 @@ import 'package:intl/intl.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:network_info_plus/network_info_plus.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AttendanceScreen extends StatefulWidget {
   @override
@@ -20,13 +23,19 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
   DateTime? startTime;
   DateTime? endTime;
   bool isCheckedIn = true;
-
+  Duration elapsedTime = Duration.zero;
   /// Variables for location and Wi-Fi checking
   static const targetLatitude = 30.580996;
   static const double targetLongitude = 31.4904367;
   static const double allowedDistance = 15;
   static const requiredWifiName = '"ElBoshy"';
   Timer? _timer;
+  String formatDuration(Duration duration) {
+    int hours = duration.inHours;
+    int minutes = duration.inMinutes % 60;
+    int seconds = duration.inSeconds % 60;
+    return "${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}";
+  }
 
   StreamController<bool> _wifiController = StreamController<bool>();
   StreamController<bool> _locationController = StreamController<bool>();
@@ -34,6 +43,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
   bool isLocationPermissionGranted = false;
   bool isWifiConnected = false;
 
+ // الوقت المنقضي
   @override
   void initState() {
     super.initState();
@@ -64,7 +74,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
   // Start background tasks for checking location and wifi
   void _startBackgroundTasks() {
     // Check location and Wi-Fi every minute
-    _timer = Timer.periodic(Duration(minutes: 1), (timer) {
+    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
       if (isLocationPermissionGranted) {
         _checkLocationInBackground();
       }
@@ -114,7 +124,9 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
       print('Error checking Wi-Fi: $e');
     }
   }
-  void _openQRCodeScanner() {
+
+
+/*  void _openQRCodeScanner() {
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -133,6 +145,17 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                   final scannedCode = barcode.rawValue!;
                   print('Scanned QR Code: $scannedCode');
                   Navigator.pop(context); // Close the scanner dialog
+                  setState(() {
+                    isCheckedIn = !isCheckedIn;
+                    if (!isAttendanceStarted) {
+                      startTime = DateTime.now();
+                      buttonText = 'تسجيل انصراف';
+                    } else {
+                      endTime = DateTime.now();
+                      buttonText = 'تسجيل حضور';
+                    }
+                    isAttendanceStarted = !isAttendanceStarted;
+                  });
                 }
               },
             ),
@@ -141,13 +164,104 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
       },
     );
 
+  }*/
+
+
+
+  void _openQRCodeScanner() async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? userId = prefs.getString('user_id');  // قراءة الـ user_id
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Scan QR Code', style: GoogleFonts.cairo(fontWeight: FontWeight.bold)),
+        content: Container(
+        height: 400,
+          width: double.maxFinite,
+          child: MobileScanner(
+            onDetect: (BarcodeCapture barcodeCapture) async {
+              final barcode = barcodeCapture.barcodes.isNotEmpty
+                  ? barcodeCapture.barcodes.first
+                  : null;
+              if (barcode != null && barcode.rawValue != null) {
+                final scannedCode = barcode.rawValue!;
+                print('Scanned QR Code: $scannedCode');
+
+                // Close the scanner dialog
+                Navigator.pop(context);
+
+                // Get the current timestamp
+                String timestamp = DateTime.now().toIso8601String();
+
+                // قراءة user_id من SharedPreferences
+                SharedPreferences prefs = await SharedPreferences.getInstance();
+                String? userId = prefs.getString('user_id'); // قراءة user_id
+
+                // تحقق من أن user_id موجود
+                if (userId == null) {
+                  print('لم يتم العثور على user_id في SharedPreferences');
+                  return;
+                }
+
+                // إنشاء كائن JSON يتضمن البيانات
+                Map<String, dynamic> requestData = {
+                  "user_id": userId,
+                  "qr_code": scannedCode,
+                  "timestamp": timestamp,
+                };
+
+                // تحويل الكائن إلى JSON
+                String jsonBody = jsonEncode(requestData);
+
+                // إرسال الطلب
+                _sendCheckInRequest(jsonBody);
+
+                setState(() {
+                  isCheckedIn = !isCheckedIn;
+                  if (!isAttendanceStarted) {
+                    startTime = DateTime.now();
+                    buttonText = 'تسجيل انصراف';
+                  } else {
+                    endTime = DateTime.now();
+                    buttonText = 'تسجيل حضور';
+                  }
+                  isAttendanceStarted = !isAttendanceStarted;
+                });
+              }
+            },
+          ),
+        ),
+
+        );
+      },
+    );
   }
+
+  Future<void> _sendCheckInRequest(String url) async {
+    try {
+      final response = await http.post(Uri.parse(url));
+      if (response.statusCode == 200) {
+        print('Successfully sent check-in request');
+        print(response.body);
+        // Handle success if needed (e.g., show a success message)
+      } else {
+        print('Failed to send check-in request: ${response.statusCode}');
+        // Handle error if needed (e.g., show an error message)
+      }
+    } catch (e) {
+      print('Error sending check-in request: $e');
+      // Handle network error if needed
+    }
+  }
+
 
   // Handle the attendance button
   void _handleAttendance() async {
-    // تحقق من اتصال Wi-Fi والموقع قبل متابعة العملية
+    // تحقق من اتصال Wi-Fi
     if (!isWifiConnected) {
-      // عرض Dialog إذا لم يكن متصلًا بالشبكة المطلوبة
       showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -168,7 +282,11 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                 ),
                 onPressed: () {
                   Navigator.of(context).pop(); // إغلاق الـ Dialog
-                  _openQRCodeScanner(); // فتح نافذة الماسح الضوئي
+                  if (!isAttendanceStarted) {
+                    _openQRCodeScanner(); // فتح نافذة الماسح الضوئي فقط لتسجيل الحضور
+                  } else {
+                    _processAttendance(); // تسجيل الانصراف مباشرة
+                  }
                 },
               ),
             ],
@@ -178,9 +296,8 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
       return;
     }
 
-    // إذا كان الاتصال بالواي فاي صحيحًا، تحقق من إذن الموقع
+    // تحقق من إذن الموقع
     if (isLocationPermissionGranted) {
-      // تحقق من الموقع
       Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high).then((position) {
         double distance = Geolocator.distanceBetween(
           targetLatitude,
@@ -190,7 +307,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
         );
 
         if (distance > allowedDistance) {
-          // عرض رسالة إذا كانت المسافة أكبر من المسافة المسموح بها
+          // عرض رسالة تحذير
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(
@@ -200,36 +317,20 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
               backgroundColor: Colors.red,
             ),
           );
+
+          if (!isAttendanceStarted) {
+            _openQRCodeScanner(); // فتح نافذة الماسح الضوئي فقط عند تسجيل الحضور
+          } else {
+            _processAttendance(); // تسجيل الانصراف مباشرة
+          }
           return;
         }
 
-        // إذا كانت كل الشروط صحيحة، افتح نافذة الماسح الضوئي
-        setState(() {
-          isCheckedIn = !isCheckedIn;
-          if (!isAttendanceStarted) {
-            startTime = DateTime.now();
-            buttonText = 'تسجيل انصراف';
-          } else {
-            endTime = DateTime.now();
-            buttonText = 'تسجيل حضور';
-          }
-          isAttendanceStarted = !isAttendanceStarted;
-        });
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              isAttendanceStarted ? 'تم تسجيل حضور بنجاح' : 'تم تسجيل انصراف',
-              style: GoogleFonts.cairo(color: Colors.white),
-            ),
-            backgroundColor: isAttendanceStarted ? Colors.green : Colors.red,
-          ),
-        );
-
-        if (isAttendanceStarted) {
-          // هنا يمكنك إضافة الإجراءات التي تريد أن تحدث بعد فتح نافذة الماسح الضوئي
-          // مثال: إضافة سجلات إضافية أو التحقق من قاعدة بيانات مثلاً
-          _openQRCodeScanner(); // فتح نافذة الماسح الضوئي عند تسجيل الحضور
+        // إذا كانت الشروط صحيحة (داخل النطاق)
+        if (!isAttendanceStarted) {
+          _openQRCodeScanner(); // فتح نافذة الماسح الضوئي فقط عند تسجيل الحضور
+        } else {
+          _processAttendance(); // تسجيل الانصراف مباشرة
         }
       });
     } else {
@@ -244,6 +345,108 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
       );
     }
   }
+  void _startTimer() {
+    _timer?.cancel(); // Cancel any existing timer
+    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+      setState(() {
+        if (startTime != null) {
+          elapsedTime = DateTime.now().difference(startTime!);
+        }
+      });
+    });
+  }
+
+  void _stopTimer() {
+    _timer?.cancel(); // إلغاء الـ Timer
+  }
+
+  void _processAttendance() async {
+    // التحقق من اتصال الإنترنت
+    final bool isConnected = await _checkInternetConnection();
+    if (!isConnected) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'لا يوجد اتصال بالإنترنت. يرجى التحقق من الاتصال وإعادة المحاولة.',
+            style: GoogleFonts.cairo(color: Colors.white),
+          ),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return; // إنهاء الوظيفة إذا لم يكن هناك اتصال
+    }
+
+    // إذا كان الإنترنت متصلاً، قم بتحديث الحالة
+    setState(() {
+      isCheckedIn = !isCheckedIn;
+      if (!isAttendanceStarted) {
+        // تسجيل حضور
+        startTime = DateTime.now();
+        isCheckedIn = true;
+        elapsedTime = Duration.zero;
+        buttonText = 'تسجيل انصراف';
+      } else {
+        // تسجيل انصراف
+        endTime = DateTime.now();
+        isCheckedIn = false;
+        _sendCheckOutRequest(); // استدعاء الدالة الخاصة بتسجيل الانصراف
+        buttonText = 'تسجيل حضور';
+      }
+      isAttendanceStarted = !isAttendanceStarted;
+    });
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          isAttendanceStarted ? 'تم تسجيل حضور بنجاح' : 'تم تسجيل انصراف',
+          style: GoogleFonts.cairo(color: Colors.white),
+        ),
+        backgroundColor: isAttendanceStarted ? Colors.green : Colors.red,
+      ),
+    );
+  }
+
+  Future<void> _sendCheckOutRequest() async {
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? userId = prefs.getString('user_id');  // قراءة الـ user_id
+
+    // تحقق من أن user_id موجود
+    if (userId == null) {
+      print('لم يتم العثور على user_id في SharedPreferences');
+      return;
+    }
+    // رابط الانصراف
+    String url = 'https://demos.elboshy.com/attendance/wp-json/attendance/v1/check-out?user_id=$userId';
+
+    try {
+      final response = await http.post(Uri.parse(url));
+
+      if (response.statusCode == 200) {
+        print('تم تسجيل الانصراف بنجاح');
+        print(response.body);
+        // التعامل مع الاستجابة الناجحة إذا لزم الأمر
+      } else {
+        print('فشل تسجيل الانصراف: ${response.statusCode}');
+        // التعامل مع الخطأ في حال فشل الطلب
+      }
+    } catch (e) {
+      print('حدث خطأ أثناء إرسال طلب الانصراف: $e');
+      // التعامل مع الخطأ الشبكي إذا لزم الأمر
+    }
+  }
+
+
+// وظيفة للتحقق من الاتصال بالإنترنت
+  Future<bool> _checkInternetConnection() async {
+    try {
+      final result = await InternetAddress.lookup('example.com');
+      return result.isNotEmpty && result[0].rawAddress.isNotEmpty;
+    } catch (e) {
+      return false;
+    }
+  }
+
 
 
 
@@ -418,10 +621,13 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                       _buildInfoCard(
                         icon: Icons.check_circle,
                         label: 'المدة الكلية',
-                        time: startTime != null && endTime != null
-                            ? "${endTime!.difference(startTime!).inMinutes} دقائق"
+                        time: isCheckedIn
+                            ? "${elapsedTime.inHours.toString().padLeft(2, '0')}:${(elapsedTime.inMinutes % 60).toString().padLeft(2, '0')}:${(elapsedTime.inSeconds % 60).toString().padLeft(2, '0')}"
+                            : startTime != null && endTime != null
+                            ? "${endTime!.difference(startTime!).inHours.toString().padLeft(2, '0')}:${(endTime!.difference(startTime!).inMinutes % 60).toString().padLeft(2, '0')}:${(endTime!.difference(startTime!).inSeconds % 60).toString().padLeft(2, '0')}"
                             : "--:--",
                       ),
+
                     ],
                   ),
                 ],

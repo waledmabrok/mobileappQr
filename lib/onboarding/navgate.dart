@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:wfi_details/onboarding/profile.dart';
+import 'calender.dart';
 import 'home1.dart';
 import 'notification.dart';
 
@@ -16,6 +17,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final List<Widget> _screens = [
     AttendanceScreen(),
     TasksScreen(),
+    AttendancePage(),
     ProfileScreen(),
   ];
 
@@ -35,7 +37,7 @@ class _HomeScreenState extends State<HomeScreen> {
           color: Colors.white,
           border: Border(
             top: BorderSide(
-              color: Colors.grey.shade300, // خط خفيف فوق الـ BottomNavigationBar
+              color: Colors.grey.shade300,
               width: 0.5,
             ),
           ),
@@ -59,6 +61,10 @@ class _HomeScreenState extends State<HomeScreen> {
             BottomNavigationBarItem(
               icon: FaIcon(FontAwesomeIcons.bell), // أيقونة FontAwesome
               label: 'الإشعارات',
+            ),
+            BottomNavigationBarItem(
+              icon: FaIcon(FontAwesomeIcons.calendar), // أيقونة FontAwesome
+              label: 'التواريخ',
             ),
             BottomNavigationBarItem(
               icon: FaIcon(FontAwesomeIcons.user), // أيقونة FontAwesome

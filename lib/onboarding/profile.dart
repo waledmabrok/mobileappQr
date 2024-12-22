@@ -1,6 +1,9 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class ProfileScreen extends StatefulWidget {
   @override
@@ -14,6 +17,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   String email = "waled.ahmed@example.com";
   String phone = "+201234567890";
   String id = "12345";
+  String postion = "Flutter Developer";
 
   // الصورة الشخصية
   File? profileImage;
@@ -23,8 +27,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
   late TextEditingController addressController;
   late TextEditingController emailController;
   late TextEditingController phoneController;
-
-  @override
+  late TextEditingController idController;
+  late TextEditingController positionController;
+  /*@override
   void initState() {
     super.initState();
     // تعيين القيم الأولية للـ TextEditingControllers
@@ -32,6 +37,98 @@ class _ProfileScreenState extends State<ProfileScreen> {
     addressController = TextEditingController(text: address);
     emailController = TextEditingController(text: email);
     phoneController = TextEditingController(text: phone);
+  }*/
+  @override
+  void initState() {
+    super.initState();
+    nameController = TextEditingController(text: name);
+    addressController = TextEditingController(text: address);
+    emailController = TextEditingController(text: email);
+    phoneController = TextEditingController(text: phone);
+    idController = TextEditingController(text: id);
+    positionController = TextEditingController(text: postion);
+    _fetchEmployeeData();
+  }
+
+// دالة لجلب البيانات
+  Future<void> _fetchEmployeeData() async {
+    String url = 'https://demos.elboshy.com/attendance/wp-json/attendance/v1/employee/1';
+
+    try {
+      final response = await http.get(Uri.parse(url));
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        setState(() {
+          name = data['name'] ?? "";
+          id = data['id']?.toString() ?? "";
+          email = data['email'] ?? "";
+          phone = data['phone'] ?? "";
+          postion = data['position'] ?? "";
+          nameController.text = name;
+          emailController.text = email;
+          phoneController.text = phone;
+          idController.text = id;
+          addressController.text = "الزقازيق";
+        });
+      } else {
+        print("خطأ في جلب البيانات: ${response.statusCode}");
+      }
+    } catch (e) {
+      print("حدث خطأ أثناء جلب البيانات: $e");
+    }
+  }
+  void _saveChanges() async {
+    String url = 'https://demos.elboshy.com/attendance/wp-json/attendance/v1/employee/1';
+
+    Map<String, dynamic> updatedData = {
+      "name": nameController.text,
+
+      "email": emailController.text,
+      "phone": phoneController.text,
+      "position": postion,
+    };
+
+    try {
+      final response = await http.post(
+        Uri.parse(url),
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: jsonEncode(updatedData),
+      );
+
+      if (response.statusCode == 200) {
+        print("تم تحديث البيانات بنجاح");
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                Icon(Icons.check, color: Colors.white),
+                SizedBox(width: 10),
+                Expanded(child: Text("تم التغيير بنجاح")),
+              ],
+            ),
+            backgroundColor: Colors.green,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      } else {
+        print("خطأ في تحديث البيانات: ${response.statusCode}");
+      }
+    } catch (e) {
+      print("حدث خطأ أثناء تحديث البيانات: $e");
+    }
+
+    setState(() {
+      name = nameController.text;
+      address = addressController.text;
+      email = emailController.text;
+      phone = phoneController.text;
+    });
   }
 
   @override
@@ -40,13 +137,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
-        title: Text('الملف الشخصي'),
-        actions: [
+        title: Text('الملف الشخصي',style: GoogleFonts.cairo(),),
+      /*  actions: [
           IconButton(
             icon: Icon(Icons.save),
             onPressed: _saveChanges,
           ),
-        ],
+        ],*/
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -93,10 +190,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 icon: Icons.phone,
                 keyboardType: TextInputType.phone,
               ),
-              _buildReadOnlyField(
+          _buildEditableField(
                 label: 'الرقم التعريفي',
-                value: id,
+                //value: id,
+                controller:idController,
                 icon: Icons.badge,
+              ),
+              _buildEditableField(
+                label: 'الوظيفه',
+                controller:positionController,
+                icon: Icons.computer,
               ),
               SizedBox(height: 20),
               ElevatedButton(
@@ -104,9 +207,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blue,
                   padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(25), // زوايا مستديرة
+                  ),
+                  shadowColor: Colors.black.withOpacity(0.5), // تأثير الظل
+                  elevation: 5, // ارتفاع الظل
                 ),
-                child: Text('حفظ التغييرات', style: TextStyle(fontSize: 18)),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.save, color: Colors.white), // إضافة أيقونة
+                    SizedBox(width: 8), // مسافة صغيرة بين الأيقونة والنص
+                    Text(
+                      'حفظ التغييرات',
+                      style: GoogleFonts.cairo(fontSize: 18, color: Colors.white, fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                ),
               ),
+
             ],
           ),
         ),
@@ -120,6 +239,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     required TextEditingController controller,
     required IconData icon,
     TextInputType keyboardType = TextInputType.text,
+
   }) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -127,7 +247,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
         controller: controller,
         keyboardType: keyboardType,
         decoration: InputDecoration(
-          labelText: label,
+          labelText: label,labelStyle: GoogleFonts.cairo(),
+
           prefixIcon: Icon(icon),
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
         ),
@@ -167,7 +288,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
 
-  void _saveChanges() {
+  /*void _saveChanges() {
     setState(() {
       name = nameController.text;
       address = addressController.text;
@@ -193,7 +314,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         behavior: SnackBarBehavior.floating, // جعل SnackBar يطفو فوق المحتوى
       ),
     );
-  }
+  }*/
 
   @override
   void dispose() {

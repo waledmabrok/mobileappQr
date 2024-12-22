@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../ FieldsMachine/FieldsContext/Password.dart';
+import '../ FieldsMachine/FieldsContext/Text.dart';
 import '../CustomApi/ApiLogin/LoginService.dart';
 import '../onboarding/navgate.dart';
-
+import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 class LoginPage extends StatefulWidget {
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -27,9 +30,11 @@ class _LoginPageState extends State<LoginPage> {
       create: (_) => LoginController(),
       child: Consumer<LoginController>(
         builder: (context, controller, _) {
-          return Scaffold(
+          return Scaffold(backgroundColor: Colors.white,
+            resizeToAvoidBottomInset: false,
             body: Center(
               child: SingleChildScrollView(
+
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Form(
@@ -37,72 +42,43 @@ class _LoginPageState extends State<LoginPage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        SizedBox(height: 10),
+
+                        SvgPicture.asset(
+                          'assets/Logo.svg',
+                          height: 100,
+                          width: 100,
+                        ),
+
+                        SizedBox(height: 50),
                         Center(
                           child: Text(
                             "من فضلك ادخل البيانات",
-                            style: TextStyle(
+                            style: GoogleFonts.cairo(
                               fontSize: 15,
                               fontWeight: FontWeight.w400,
-                              fontFamily: 'BalooBhaijaan2',
+                              //fontFamily: 'BalooBhaijaan2',
                             ),
                           ),
                         ),
                         SizedBox(height: 25),
                         // Username input with validator
-                        TextFormField(
+                        CustomText(
+
+                          isRequired: true,
                           controller: _usernameController,
-                          decoration: InputDecoration(
-                            hintText: 'الاسم',
-                            hintStyle: TextStyle(
-                              color: Colors.grey,
-                              fontFamily: 'BalooBhaijaan2',
-                            ),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            contentPadding: EdgeInsets.symmetric(horizontal: 16),
-                          ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'من فضلك ادخل اسم المستخدم';
-                            }
-                            return null;
-                          },
                         ),
                         SizedBox(height: 25),
                         // Password input with validator
-                        TextFormField(
+                        CustomPassword(
+                          isRequired: true,
                           controller: _passwordController,
-                          obscureText: _obscurePassword,
-                          decoration: InputDecoration(
-                            hintText: 'الباسورد',
-                            hintStyle: TextStyle(
-                              color: Colors.grey,
-                              fontFamily: 'BalooBhaijaan2',
-                            ),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            contentPadding: EdgeInsets.symmetric(horizontal: 16),
-                            suffixIcon: IconButton(
-                              icon: Icon(
-                                  _obscurePassword ? Icons.visibility : Icons.visibility_off),
-                              onPressed: _togglePasswordVisibility,
-                            ),
-                          ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'من فضلك ادخل كلمة المرور';
-                            }
-                            return null;
-                          },
                         ),
+
                         SizedBox(height: 40),
                         if (controller.errorMessage.isNotEmpty)
                           Text(
                             controller.errorMessage,
-                            style: TextStyle(color: Colors.red),
+                            style:GoogleFonts.cairo(color: Colors.red,),
                           ),
                         // Login Button
                         Center(
@@ -150,8 +126,8 @@ class _LoginPageState extends State<LoginPage> {
                                 },
                                 child: Text(
                                   'تسجيل الدخول',
-                                  style: TextStyle(
-                                    fontFamily: 'BalooBhaijaan2',
+                                  style: GoogleFonts.cairo(
+
                                     fontSize: 16,
                                     fontWeight: FontWeight.w600,
                                     color: Colors.white,

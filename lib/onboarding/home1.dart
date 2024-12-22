@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:ui' as flutter;
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:flutter/material.dart';
@@ -11,6 +12,9 @@ import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:network_info_plus/network_info_plus.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:page_transition/page_transition.dart';
+import 'package:swipeable_button_view/swipeable_button_view.dart';
 
 class AttendanceScreen extends StatefulWidget {
   @override
@@ -24,12 +28,14 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
   DateTime? endTime;
   bool isCheckedIn = true;
   Duration elapsedTime = Duration.zero;
+
   /// Variables for location and Wi-Fi checking
   static const targetLatitude = 30.580996;
   static const double targetLongitude = 31.4904367;
   static const double allowedDistance = 15;
   static const requiredWifiName = '"ElBoshy"';
   Timer? _timer;
+
   String formatDuration(Duration duration) {
     int hours = duration.inHours;
     int minutes = duration.inMinutes % 60;
@@ -37,13 +43,18 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
     return "${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}";
   }
 
+  bool isSwipeVisible = false;
+  bool isFinished = false;
+  bool _isRequestInProgress = false; // متغير لتعقب حالة الطلب
+
   StreamController<bool> _wifiController = StreamController<bool>();
   StreamController<bool> _locationController = StreamController<bool>();
+
   // Variables for location and Wi-Fi checking
   bool isLocationPermissionGranted = false;
   bool isWifiConnected = false;
 
- // الوقت المنقضي
+  // الوقت المنقضي
   @override
   void initState() {
     super.initState();
@@ -84,7 +95,8 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
 
   // Check if the device is within a specific location
   void _checkLocationInBackground() async {
-    Geolocator.getPositionStream(locationSettings: LocationSettings(accuracy: LocationAccuracy.high))
+    Geolocator.getPositionStream(
+            locationSettings: LocationSettings(accuracy: LocationAccuracy.high))
         .listen((Position position) {
       double distance = Geolocator.distanceBetween(
         targetLatitude,
@@ -93,7 +105,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
         position.longitude,
       );
 
-      print('Current Distance: $distance meters');
+      //  print('Current Distance: $distance meters');
       if (distance <= allowedDistance) {
         // Perform any action when within allowed distance
         print('Device is within allowed range');
@@ -109,53 +121,160 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
       String? wifiName = await info.getWifiName();
       print('Connected Wifi: $wifiName');
 
-      if (wifiName != null && wifiName.toLowerCase() == requiredWifiName.toLowerCase()) {
+      if (wifiName != null &&
+          wifiName.toLowerCase() == requiredWifiName.toLowerCase()) {
         setState(() {
           isWifiConnected = true;
         });
-        print('Connected to the required Wi-Fi');
+        //  print('Connected to the required Wi-Fi');
       } else {
         setState(() {
           isWifiConnected = false;
         });
-        print('Not connected to the required Wi-Fi');
+        //   print('Not connected to the required Wi-Fi');
       }
     } catch (e) {
       print('Error checking Wi-Fi: $e');
     }
   }
 
+  void _openQRCodeScanner() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? userId = prefs.getString('user_id'); // قراءة الـ user_id
 
-/*  void _openQRCodeScanner() {
+    if (userId == null) {
+      print('User ID is not available in SharedPreferences');
+      return;
+    }
+
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Scan QR Code', style: GoogleFonts.cairo(fontWeight: FontWeight.bold)),
+          title: Text('Scan QR Code',
+              style: GoogleFonts.cairo(fontWeight: FontWeight.bold)),
           content: Container(
             height: 400,
             width: double.maxFinite,
             child: MobileScanner(
-              onDetect: (BarcodeCapture barcodeCapture) {
+              controller: MobileScannerController(
+                detectionSpeed: DetectionSpeed.noDuplicates,
+              ),
+              onDetect: (BarcodeCapture barcodeCapture) async {
                 final barcode = barcodeCapture.barcodes.isNotEmpty
                     ? barcodeCapture.barcodes.first
                     : null;
+
                 if (barcode != null && barcode.rawValue != null) {
                   final scannedCode = barcode.rawValue!;
                   print('Scanned QR Code: $scannedCode');
-                  Navigator.pop(context); // Close the scanner dialog
-                  setState(() {
-                    isCheckedIn = !isCheckedIn;
-                    if (!isAttendanceStarted) {
-                      startTime = DateTime.now();
-                      buttonText = 'تسجيل انصراف';
+                  Map<String, dynamic> requestData = {
+                    "user_id": userId,
+                    "qr_code": scannedCode,
+                  };
+
+                  // تحويل الكائن إلى JSON
+                  String jsonBody = jsonEncode(requestData);
+                  print("Sending request...");
+
+                  try {
+                    // إرسال الطلب
+
+
+                    Uri uri = Uri.parse(scannedCode);
+
+                    // تحقق من أن الرابط يحتوي على userId
+                    if (uri.queryParameters.containsKey('userId')) {
+                      String scannedUserId = uri.queryParameters['userId']!;
+
+                      if (scannedUserId == userId) {
+                        print('User ID matches. Registering attendance.');
+                        await _sendCheckInRequest(userId, jsonBody);
+
+                        // إغلاق نافذة الماسح بعد التحقق من الـ context
+                        if (mounted) {
+                          Navigator.pop(context);
+                        }
+                        // تسجيل الحضور أو الانصراف
+                        if (mounted) {
+                          setState(() {
+                            isCheckedIn = !isCheckedIn;
+                            if (!isAttendanceStarted) {
+                              startTime = DateTime.now();
+                              buttonText = 'تسجيل انصراف';
+                            } else {
+                              endTime = DateTime.now();
+                              buttonText = 'تسجيل حضور';
+                            }
+                            isAttendanceStarted = !isAttendanceStarted;
+                          });
+                        }
+
+
+                        if (await canLaunchUrl(uri)) {
+                          await launchUrl(uri);
+                        } else {
+                          print('Cannot launch the URL.');
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Cannot launch the URL.')),
+                          );
+                        }
+                      } else {
+                        print('User ID does not match. Access denied.');
+                        if (mounted) {
+                          Navigator.pop(context);
+                        }
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Row(
+                              children: [
+                                Icon(Icons.close, color: Colors.white),
+                                SizedBox(width: 10),
+                                Expanded(
+                                  child: Text(
+                                    "الحساب مختلف",
+                                    style: GoogleFonts.balooBhaijaan2(),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            backgroundColor: Colors.red,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            behavior: SnackBarBehavior.floating,
+                          ),
+                        );
+                      }
                     } else {
-                      endTime = DateTime.now();
-                      buttonText = 'تسجيل حضور';
+
+                      print('User ID is missing in the scanned QR Code.');
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Row(
+                            children: [
+                              Icon(Icons.close, color: Colors.white),
+                              SizedBox(width: 10),
+                              Expanded(
+                                child: Text(
+                                  "الحساب مختلف",
+                                  style: GoogleFonts.balooBhaijaan2(),
+                                ),
+                              ),
+                            ],
+                          ),
+                          backgroundColor: Colors.red,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          behavior: SnackBarBehavior.floating,
+                        ),
+                      );
                     }
-                    isAttendanceStarted = !isAttendanceStarted;
-                  });
+                  } catch (e) {
+                    print('Error processing QR Code: $e');
+                  }
                 }
               },
             ),
@@ -163,102 +282,62 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
         );
       },
     );
-
-  }*/
-
-
-
-  void _openQRCodeScanner() async{
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? userId = prefs.getString('user_id');  // قراءة الـ user_id
-
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Scan QR Code', style: GoogleFonts.cairo(fontWeight: FontWeight.bold)),
-        content: Container(
-        height: 400,
-          width: double.maxFinite,
-          child: MobileScanner(
-            onDetect: (BarcodeCapture barcodeCapture) async {
-              final barcode = barcodeCapture.barcodes.isNotEmpty
-                  ? barcodeCapture.barcodes.first
-                  : null;
-              if (barcode != null && barcode.rawValue != null) {
-                final scannedCode = barcode.rawValue!;
-                print('Scanned QR Code: $scannedCode');
-
-                // Close the scanner dialog
-                Navigator.pop(context);
-
-                // Get the current timestamp
-                String timestamp = DateTime.now().toIso8601String();
-
-                // قراءة user_id من SharedPreferences
-                SharedPreferences prefs = await SharedPreferences.getInstance();
-                String? userId = prefs.getString('user_id'); // قراءة user_id
-
-                // تحقق من أن user_id موجود
-                if (userId == null) {
-                  print('لم يتم العثور على user_id في SharedPreferences');
-                  return;
-                }
-
-                // إنشاء كائن JSON يتضمن البيانات
-                Map<String, dynamic> requestData = {
-                  "user_id": userId,
-                  "qr_code": scannedCode,
-                  "timestamp": timestamp,
-                };
-
-                // تحويل الكائن إلى JSON
-                String jsonBody = jsonEncode(requestData);
-
-                // إرسال الطلب
-                _sendCheckInRequest(jsonBody);
-
-                setState(() {
-                  isCheckedIn = !isCheckedIn;
-                  if (!isAttendanceStarted) {
-                    startTime = DateTime.now();
-                    buttonText = 'تسجيل انصراف';
-                  } else {
-                    endTime = DateTime.now();
-                    buttonText = 'تسجيل حضور';
-                  }
-                  isAttendanceStarted = !isAttendanceStarted;
-                });
-              }
-            },
-          ),
-        ),
-
-        );
-      },
-    );
   }
 
-  Future<void> _sendCheckInRequest(String url) async {
+
+  Future<void> _sendCheckInRequest(String userId, String jsonBody) async {
     try {
-      final response = await http.post(Uri.parse(url));
+      String url =
+          'https://demos.elboshy.com/attendance/wp-json/attendance/v1/check-in?user_id=$userId';
+
+      final response = await http.post(
+        Uri.parse(url),
+        body: jsonBody,
+        headers: {'Content-Type': 'application/json'},
+      );
+
       if (response.statusCode == 200) {
         print('Successfully sent check-in request');
         print(response.body);
-        // Handle success if needed (e.g., show a success message)
+
+        Map<String, dynamic> responseJson = jsonDecode(response.body);
+        if (responseJson['status'] == 'success') {
+          if (responseJson['qr_code'] != null &&
+              responseJson['qr_code'].startsWith('http')) {
+            Uri uri = Uri.parse(responseJson['qr_code']);
+            if (await canLaunchUrl(uri)) {
+              await launchUrl(uri);
+            } else {
+              print('الرابط غير صالح أو لا يمكن فتحه');
+            }
+          } else {
+            // تحديث الحالة بناءً على الاستجابة
+            /* if (mounted) {
+              setState(() {
+                isCheckedIn = !isCheckedIn;
+                if (!isAttendanceStarted) {
+                  startTime = DateTime.now();
+                  buttonText = 'تسجيل انصراف';
+                } else {
+                  endTime = DateTime.now();
+                  buttonText = 'تسجيل حضور';
+                }
+                isAttendanceStarted = !isAttendanceStarted;
+              });
+            }*/
+          }
+        } else {
+          print('فشل التحقق من البيانات، لم يتم تسجيل الحضور');
+        }
       } else {
         print('Failed to send check-in request: ${response.statusCode}');
-        // Handle error if needed (e.g., show an error message)
       }
     } catch (e) {
       print('Error sending check-in request: $e');
-      // Handle network error if needed
     }
   }
 
-
-  // Handle the attendance button
+// Handle the attendance button
   void _handleAttendance() async {
     // تحقق من اتصال Wi-Fi
     if (!isWifiConnected) {
@@ -281,11 +360,11 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                   style: GoogleFonts.cairo(),
                 ),
                 onPressed: () {
-                  Navigator.of(context).pop(); // إغلاق الـ Dialog
+                  Navigator.of(context).pop();
                   if (!isAttendanceStarted) {
-                    _openQRCodeScanner(); // فتح نافذة الماسح الضوئي فقط لتسجيل الحضور
+                    _openQRCodeScanner();
                   } else {
-                    _processAttendance(); // تسجيل الانصراف مباشرة
+                    _processAttendance();
                   }
                 },
               ),
@@ -296,9 +375,9 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
       return;
     }
 
-    // تحقق من إذن الموقع
     if (isLocationPermissionGranted) {
-      Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high).then((position) {
+      Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high)
+          .then((position) {
         double distance = Geolocator.distanceBetween(
           targetLatitude,
           targetLongitude,
@@ -307,7 +386,6 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
         );
 
         if (distance > allowedDistance) {
-          // عرض رسالة تحذير
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(
@@ -319,18 +397,17 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
           );
 
           if (!isAttendanceStarted) {
-            _openQRCodeScanner(); // فتح نافذة الماسح الضوئي فقط عند تسجيل الحضور
+            _openQRCodeScanner();
           } else {
-            _processAttendance(); // تسجيل الانصراف مباشرة
+            _processAttendance();
           }
           return;
         }
 
-        // إذا كانت الشروط صحيحة (داخل النطاق)
         if (!isAttendanceStarted) {
-          _openQRCodeScanner(); // فتح نافذة الماسح الضوئي فقط عند تسجيل الحضور
+          _openQRCodeScanner();
         } else {
-          _processAttendance(); // تسجيل الانصراف مباشرة
+          _processAttendance();
         }
       });
     } else {
@@ -345,23 +422,8 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
       );
     }
   }
-  void _startTimer() {
-    _timer?.cancel(); // Cancel any existing timer
-    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
-      setState(() {
-        if (startTime != null) {
-          elapsedTime = DateTime.now().difference(startTime!);
-        }
-      });
-    });
-  }
-
-  void _stopTimer() {
-    _timer?.cancel(); // إلغاء الـ Timer
-  }
 
   void _processAttendance() async {
-    // التحقق من اتصال الإنترنت
     final bool isConnected = await _checkInternetConnection();
     if (!isConnected) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -373,51 +435,73 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
           backgroundColor: Colors.red,
         ),
       );
-      return; // إنهاء الوظيفة إذا لم يكن هناك اتصال
+      return;
     }
 
-    // إذا كان الإنترنت متصلاً، قم بتحديث الحالة
     setState(() {
-      isCheckedIn = !isCheckedIn;
       if (!isAttendanceStarted) {
         // تسجيل حضور
         startTime = DateTime.now();
         isCheckedIn = true;
-        elapsedTime = Duration.zero;
         buttonText = 'تسجيل انصراف';
       } else {
+        isSwipeVisible = true;
         // تسجيل انصراف
-        endTime = DateTime.now();
+        /*endTime = DateTime.now();
         isCheckedIn = false;
-        _sendCheckOutRequest(); // استدعاء الدالة الخاصة بتسجيل الانصراف
-        buttonText = 'تسجيل حضور';
+
+        buttonText = 'تسجيل حضور';*/
       }
       isAttendanceStarted = !isAttendanceStarted;
+    });
+  }
+
+  void _processCheckOut2() {
+    setState(() {
+      _sendCheckOutRequest();
+      isCheckedIn = false;
+      isSwipeVisible = false;
+      buttonText = 'تسجيل حضور';
+    });
+  }
+
+  void _handleCheckOut() {
+    setState(() {});
+  }
+
+  Future<void> _processCheckOut() async {
+    print("Processing Check Out...");
+    await _sendCheckOutRequest();
+
+    setState(() {
+      isCheckedIn = false;
+      isSwipeVisible = false;
+      endTime = DateTime.now();
+      buttonText = 'تسجيل حضور';
     });
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
-          isAttendanceStarted ? 'تم تسجيل حضور بنجاح' : 'تم تسجيل انصراف',
+          'تم تسجيل انصراف بنجاح',
           style: GoogleFonts.cairo(color: Colors.white),
         ),
-        backgroundColor: isAttendanceStarted ? Colors.green : Colors.red,
+        backgroundColor: Colors.red,
       ),
     );
   }
 
   Future<void> _sendCheckOutRequest() async {
-
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? userId = prefs.getString('user_id');  // قراءة الـ user_id
+    String? userId = prefs.getString('user_id'); // قراءة الـ user_id
 
-    // تحقق من أن user_id موجود
     if (userId == null) {
       print('لم يتم العثور على user_id في SharedPreferences');
       return;
     }
-    // رابط الانصراف
-    String url = 'https://demos.elboshy.com/attendance/wp-json/attendance/v1/check-out?user_id=$userId';
+
+    String url =
+        'https://demos.elboshy.com/attendance/wp-json/attendance/v1/check-out?user_id=$userId';
 
     try {
       final response = await http.post(Uri.parse(url));
@@ -425,19 +509,14 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
       if (response.statusCode == 200) {
         print('تم تسجيل الانصراف بنجاح');
         print(response.body);
-        // التعامل مع الاستجابة الناجحة إذا لزم الأمر
       } else {
         print('فشل تسجيل الانصراف: ${response.statusCode}');
-        // التعامل مع الخطأ في حال فشل الطلب
       }
     } catch (e) {
       print('حدث خطأ أثناء إرسال طلب الانصراف: $e');
-      // التعامل مع الخطأ الشبكي إذا لزم الأمر
     }
   }
 
-
-// وظيفة للتحقق من الاتصال بالإنترنت
   Future<bool> _checkInternetConnection() async {
     try {
       final result = await InternetAddress.lookup('example.com');
@@ -446,10 +525,6 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
       return false;
     }
   }
-
-
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -470,7 +545,8 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.only(top: 15, left: 10, right: 10),
+                    padding:
+                        const EdgeInsets.only(top: 15, left: 10, right: 10),
                     child: Column(
                       children: [
                         SizedBox(height: 40),
@@ -482,13 +558,16 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                               children: [
                                 Container(
                                   decoration: BoxDecoration(
-                                    border: Border.all(color: Colors.white, width: 2),
-                                    borderRadius: BorderRadius.all(Radius.circular(35)),
+                                    border: Border.all(
+                                        color: Colors.white, width: 2),
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(35)),
                                   ),
                                   child: CircleAvatar(
                                     backgroundColor: Colors.red,
                                     radius: 32,
-                                    backgroundImage: AssetImage('assets/img1.jpg'),
+                                    backgroundImage:
+                                        AssetImage('assets/img1.jpg'),
                                   ),
                                 ),
                                 Positioned(
@@ -500,7 +579,8 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                                     decoration: BoxDecoration(
                                       color: Colors.green,
                                       shape: BoxShape.circle,
-                                      border: Border.all(color: Colors.white, width: 2),
+                                      border: Border.all(
+                                          color: Colors.white, width: 2),
                                     ),
                                   ),
                                 ),
@@ -520,7 +600,8 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                                 SizedBox(height: 3),
                                 Text(
                                   'Mark Your Attendance!',
-                                  style: GoogleFonts.cairo(color: Colors.white70, fontSize: 14),
+                                  style: GoogleFonts.cairo(
+                                      color: Colors.white70, fontSize: 14),
                                 ),
                               ],
                             ),
@@ -549,52 +630,88 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                   SizedBox(height: 5),
                   Text(
                     DateFormat('hh:mm a', 'ar').format(DateTime.now()),
-                    style: GoogleFonts.cairo(color: Colors.black, fontSize: 32, fontWeight: FontWeight.bold),
+                    style: GoogleFonts.cairo(
+                        color: Colors.black,
+                        fontSize: 32,
+                        fontWeight: FontWeight.bold),
                   ),
                   SizedBox(height: 5),
                   Text(
-                    DateFormat('MMMM dd, yyyy - EEEE', 'ar').format(DateTime.now()),
-                    style: GoogleFonts.cairo(color: Colors.grey[400], fontSize: 14),
+                    DateFormat('MMMM dd, yyyy - EEEE', 'ar')
+                        .format(DateTime.now()),
+                    style: GoogleFonts.cairo(
+                        color: Colors.grey[400], fontSize: 14),
                   ),
                   SizedBox(height: 25),
                   Center(
                     child: GestureDetector(
-                      onTap: _handleAttendance,
-                      child: Container(
-                        width: 200,
-                        height: 200,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          gradient: LinearGradient(
-                            colors: isCheckedIn
-                                ? [Color(0xff3880ee), Color(0xff3880ee), Color(0xffc087e5), Color(0xffc087e5)]
-                                : [Color(0xff992f92), Color(0xffe02f73), Color(0xffe02f73)],
-                            begin: isCheckedIn ? Alignment.topRight : Alignment.topCenter,
-                            end: isCheckedIn ? Alignment.bottomLeft : Alignment.bottomCenter,
-                          ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Color(0xff3880ee).withOpacity(0.5),
-                              blurRadius: 10,
-                              offset: Offset(0, 5),
+                      onTap: () {
+                        setState(() {
+                          _handleAttendance();
+                        });
+                      },
+                      child: Dismissible(
+                        key: Key('attendance_button'),
+                        direction: DismissDirection.none,
+                        onDismissed: (direction) {
+                          if (isSwipeVisible) {
+                            _processCheckOut2();
+                            isCheckedIn = true;
+                          }
+                        },
+                        child: Container(
+                          width: 200,
+                          height: 200,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            gradient: LinearGradient(
+                              colors: isCheckedIn
+                                  ? [
+                                      Color(0xff3880ee),
+                                      Color(0xff3880ee),
+                                      Color(0xffc087e5),
+                                      Color(0xffc087e5)
+                                    ] // ألوان عند الحضور
+                                  : [
+                                      Color(0xff992f92),
+                                      Color(0xffe02f73),
+                                      Color(0xffe02f73)
+                                    ], // ألوان عند الانصراف
+                              begin: isCheckedIn
+                                  ? Alignment.topRight
+                                  : Alignment.topCenter,
+                              end: isCheckedIn
+                                  ? Alignment.bottomLeft
+                                  : Alignment.bottomCenter,
                             ),
-                          ],
-                        ),
-                        child: Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.touch_app_rounded,
-                                color: Colors.white,
-                                size: 80,
-                              ),
-                              SizedBox(height: 5),
-                              Text(
-                                buttonText,
-                                style: GoogleFonts.cairo(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Color(0xff3880ee).withOpacity(0.5),
+                                blurRadius: 10,
+                                offset: Offset(0, 5),
                               ),
                             ],
+                          ),
+                          child: Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.touch_app_rounded,
+                                  color: Colors.white,
+                                  size: 80,
+                                ),
+                                SizedBox(height: 5),
+                                Text(
+                                  buttonText,
+                                  // النص الذي يتغير بين "تسجيل انصراف" و "تسجيل حضور"
+                                  style: GoogleFonts.cairo(
+                                      color: Colors.white,
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ),
@@ -624,29 +741,69 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                         time: isCheckedIn
                             ? "${elapsedTime.inHours.toString().padLeft(2, '0')}:${(elapsedTime.inMinutes % 60).toString().padLeft(2, '0')}:${(elapsedTime.inSeconds % 60).toString().padLeft(2, '0')}"
                             : startTime != null && endTime != null
-                            ? "${endTime!.difference(startTime!).inHours.toString().padLeft(2, '0')}:${(endTime!.difference(startTime!).inMinutes % 60).toString().padLeft(2, '0')}:${(endTime!.difference(startTime!).inSeconds % 60).toString().padLeft(2, '0')}"
-                            : "--:--",
+                                ? "${endTime!.difference(startTime!).inHours.toString().padLeft(2, '0')}:${(endTime!.difference(startTime!).inMinutes % 60).toString().padLeft(2, '0')}:${(endTime!.difference(startTime!).inSeconds % 60).toString().padLeft(2, '0')}"
+                                : "--:--",
                       ),
-
                     ],
                   ),
                 ],
               ),
             ),
           ),
+          Positioned(
+              left: 0,
+              right: 0,
+              bottom: 20,
+              child: Visibility(
+                visible: isSwipeVisible,
+                child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 40, vertical: 25),
+                    child: Directionality(
+                      textDirection: flutter.TextDirection.ltr,
+                      child: SwipeableButtonView(
+                        buttonText: "اسحب للتأكيد",
+                        buttonWidget: Container(
+                          child: Icon(
+                            Icons.arrow_forward_ios,
+                            color: Colors.grey,
+                          ),
+                        ),
+                        activeColor: Color(0xff3398F6),
+                        isFinished: isFinished,
+                        onWaitingProcess: () {
+                          Future.delayed(Duration(seconds: 1), () {
+                            setState(() {
+                              isFinished = true;
+                            });
+                          });
+                        },
+                        onFinish: () async {
+                          await _processCheckOut();
+                          setState(() {
+                            isFinished = false;
+                          });
+                        },
+                      ),
+                    )),
+              ))
         ],
       ),
     );
   }
 
-  Widget _buildInfoCard({required IconData icon, required String label, required String time}) {
+  Widget _buildInfoCard(
+      {required IconData icon, required String label, required String time}) {
     return Column(
       children: [
         Icon(icon, size: 30, color: Colors.grey[400]),
         SizedBox(height: 5),
-        Text(time, style: GoogleFonts.cairo(color: Colors.black, fontWeight: FontWeight.bold)),
+        Text(time,
+            style: GoogleFonts.cairo(
+                color: Colors.black, fontWeight: FontWeight.bold)),
         SizedBox(height: 5),
-        Text(label, style: GoogleFonts.cairo(color: Colors.grey[400], fontSize: 13)),
+        Text(label,
+            style: GoogleFonts.cairo(color: Colors.grey[400], fontSize: 13)),
       ],
     );
   }

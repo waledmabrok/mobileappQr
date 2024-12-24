@@ -46,13 +46,13 @@ class _CustomPasswordState extends State<CustomPassword> {
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8),
-        boxShadow: [
+       /* boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.1),
             offset: Offset(0, 2),
             blurRadius: 4,
           ),
-        ],
+        ],*/
       ),
       child: TextFormField(
         controller: widget.controller,

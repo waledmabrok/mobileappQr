@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../ FieldsMachine/FieldsContext/Password.dart';
 import '../ FieldsMachine/FieldsContext/Text.dart';
+import '../ FieldsMachine/setup/MainColors.dart';
 import '../CustomApi/ApiLogin/LoginService.dart';
 import '../onboarding/navgate.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:network_info_plus/network_info_plus.dart';
+
 class LoginPage extends StatefulWidget {
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -15,13 +18,35 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-
+  String _wifiName = 'إنتظر...';
+  String _wifiBSSID = 'إنتظر...';
+  final NetworkInfo _networkInfo = NetworkInfo();
   bool _obscurePassword = true;
-
+  bool isLoading = false;
   void _togglePasswordVisibility() {
     setState(() {
       _obscurePassword = !_obscurePassword;
     });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _getWiFiInfo();
+  }
+
+  // Fetch Wi-Fi information
+  Future<void> _getWiFiInfo() async {
+    String? wifiName = await _networkInfo.getWifiName(); // Get Wi-Fi SSID
+    String? wifiBSSID = await _networkInfo.getWifiBSSID(); // Get Wi-Fi MAC address (BSSID)
+
+    setState(() {
+      _wifiName = wifiName ?? 'غير متصل';
+      _wifiBSSID = wifiBSSID ?? 'غير متصل';
+    });
+
+    print('Wi-Fi Name: $_wifiName');
+    print('Wi-Fi MAC (BSSID): $_wifiBSSID');
   }
 
   @override
@@ -82,7 +107,12 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                         // Login Button
                         Center(
-                          child: SizedBox(
+                          child:
+                          isLoading
+                              ? CircularProgressIndicator(
+                            valueColor: AlwaysStoppedAnimation<Color>(Colorss.mainColor),
+                          )
+                              : SizedBox(
                             width: 200,
                             child: Container(
                               decoration: BoxDecoration(
@@ -107,27 +137,34 @@ class _LoginPageState extends State<LoginPage> {
                                   ),
                                 ),
                                 onPressed: () async {
+                                  setState(() {
+                                    isLoading = true;  // Set loading to true
+                                  });
                                   // Validate the form before attempting login
                                   if (_formKey.currentState?.validate() ?? false) {
                                     // If valid, proceed with login
                                     await controller.login(
                                       _usernameController.text,
                                       _passwordController.text,
+                                        _wifiBSSID,
+
                                     );
 
                                     if (controller.errorMessage.isEmpty) {
                                       // Navigate to HomeScreen after a successful login
                                       Navigator.pushReplacement(
                                         context,
-                                        MaterialPageRoute(builder: (context) => HomeScreen()),
+                                        MaterialPageRoute(builder: (context) => HomeScreen(index2: 0,filter: "All",)),
                                       );
                                     }
                                   }
+                                  setState(() {
+                                    isLoading = false;  // Set loading to false after login attempt
+                                  });
                                 },
-                                child: Text(
+                                child:  Text(
                                   'تسجيل الدخول',
                                   style: GoogleFonts.cairo(
-
                                     fontSize: 16,
                                     fontWeight: FontWeight.w600,
                                     color: Colors.white,

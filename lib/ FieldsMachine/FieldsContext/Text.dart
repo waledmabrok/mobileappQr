@@ -22,7 +22,7 @@ class CustomText extends StatelessWidget {
  
     final effectiveValidator = validator ?? (value) {
       if (value == null || value.isEmpty) {
-        return 'من فضلك ادخل $hintText';
+        return '';
       }
       return null;
     };
@@ -31,13 +31,13 @@ class CustomText extends StatelessWidget {
       Container(
         decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8),
-    boxShadow: [
+  /*  boxShadow: [
     BoxShadow(
     color: Colors.black.withOpacity(0.1),
     offset: Offset(0, 2),
     blurRadius: 4,
     ),
-    ],
+    ],*/
     ),
     child:
       TextFormField(
@@ -50,7 +50,10 @@ class CustomText extends StatelessWidget {
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
           borderSide: BorderSide(color: Colors.grey),
-        ),
+        ),   errorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8),
+        borderSide: BorderSide(color: Colors.red, width: 1),
+      ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
           borderSide: BorderSide(color: Colorss.mainColor, width:1),
@@ -79,7 +82,8 @@ class CustomText extends StatelessWidget {
             : null,
     ),
       validator: effectiveValidator,
-    ) );
+        textAlignVertical: TextAlignVertical.center,
+      ) );
   }
 }
 

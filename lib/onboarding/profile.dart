@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:google_fonts/google_fonts.dart';
-
+import 'package:shared_preferences/shared_preferences.dart';
 class ProfileScreen extends StatefulWidget {
   @override
   _ProfileScreenState createState() => _ProfileScreenState();
@@ -12,11 +12,11 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   // بيانات المستخدم
-  String name = "Waled Ahmed";
-  String address = "القاهرة، مصر";
-  String email = "waled.ahmed@example.com";
-  String phone = "+201234567890";
-  String id = "12345";
+  String name = "";
+  String address = "";
+  String email = "";
+  String phone = "";
+  String id = "";
   String postion = "Flutter Developer";
 
   // الصورة الشخصية
@@ -52,7 +52,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
 // دالة لجلب البيانات
   Future<void> _fetchEmployeeData() async {
-    String url = 'https://demos.elboshy.com/attendance/wp-json/attendance/v1/employee/1';
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? userId = prefs.getString('user_id'); // قراءة الـ user_id
+
+    String url = 'https://demos.elboshy.com/attendance/wp-json/attendance/v1/employee/$userId';
 
     try {
       final response = await http.get(Uri.parse(url));

@@ -9,14 +9,14 @@ class LoginController extends ChangeNotifier {
 
   String errorMessage = '';
 
-  Future<void> login(String username, String password) async {
+  Future<void> login(String username, String password,String wifi) async {
     if (username.isEmpty || password.isEmpty) {
       errorMessage = 'من فضلك ادخل اسم المستخدم وكلمة المرور';
       notifyListeners();
       return;
     }
 
-    Map<String, dynamic> response = await _loginService.login(username, password);
+    Map<String, dynamic> response = await _loginService.login(username, password,wifi);
 
     if (response['status'] == 'success') {
       errorMessage = '';

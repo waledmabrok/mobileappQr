@@ -3,17 +3,20 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';  // أضف هذه المكتبة
 
 class LoginService {
-  Future<Map<String, dynamic>> login(String username, String password) async {
+  Future<Map<String, dynamic>> login(String username, String password,String wifi) async {
     try {
       final response = await http.post(
         Uri.parse('https://demos.elboshy.com/attendance/wp-json/attendance/v1/login'),
         body: {
           'username': username,
           'password': password,
+          "wifi":wifi
+
         },
+
       );
 
-      if (response.statusCode == 200) {
+      if (response.statusCode == 200) {print(wifi);
         print(response.body);
         var responseBody = json.decode(response.body);
 

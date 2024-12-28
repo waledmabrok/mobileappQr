@@ -5,57 +5,64 @@ import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:http_parser/http_parser.dart';
+
 class ProfileScreen extends StatefulWidget {
   @override
   _ProfileScreenState createState() => _ProfileScreenState();
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  // بيانات المستخدم
   String name = "";
   String address = "";
   String email = "";
   String phone = "";
   String id = "";
-  String postion = "Flutter Developer";
-
-  // الصورة الشخصية
+  String position = "";
+  bool isLoading = true;
   File? profileImage;
+  String? _profileImageUrl;
 
-  // Controllers للحفاظ على البيانات عند التعديل
   late TextEditingController nameController;
   late TextEditingController addressController;
   late TextEditingController emailController;
   late TextEditingController phoneController;
   late TextEditingController idController;
   late TextEditingController positionController;
-  /*@override
-  void initState() {
-    super.initState();
-    // تعيين القيم الأولية للـ TextEditingControllers
-    nameController = TextEditingController(text: name);
-    addressController = TextEditingController(text: address);
-    emailController = TextEditingController(text: email);
-    phoneController = TextEditingController(text: phone);
-  }*/
+
   @override
   void initState() {
     super.initState();
-    nameController = TextEditingController(text: name);
-    addressController = TextEditingController(text: address);
-    emailController = TextEditingController(text: email);
-    phoneController = TextEditingController(text: phone);
-    idController = TextEditingController(text: id);
-    positionController = TextEditingController(text: postion);
+    nameController = TextEditingController();
+    addressController = TextEditingController();
+    emailController = TextEditingController();
+    phoneController = TextEditingController();
+    idController = TextEditingController();
+    positionController = TextEditingController();
     _fetchEmployeeData();
+    _loadProfileImage();
   }
 
-// دالة لجلب البيانات
-  Future<void> _fetchEmployeeData() async {
+  void _loadProfileImage() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? userId = prefs.getString('user_id'); // قراءة الـ user_id
+    String? profileImagePath = prefs.getString('profile_image_path');
+    if (profileImagePath != null && profileImagePath.isNotEmpty) {
+      setState(() {
+        profileImage = File(profileImagePath);
+      });
+    }
+  }
 
-    String url = 'https://demos.elboshy.com/attendance/wp-json/attendance/v1/employee/$userId';
+  Future<void> _fetchEmployeeData() async {
+    if (name.isNotEmpty) {
+      return; // البيانات محملة مسبقًا
+    }
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? userId = prefs.getString('user_id');
+
+    String url = 'https://demos.elboshy.com/attendance/wp-json/attendance/v1/employee?id=$userId';
 
     try {
       final response = await http.get(Uri.parse(url));
@@ -67,71 +74,124 @@ class _ProfileScreenState extends State<ProfileScreen> {
           id = data['id']?.toString() ?? "";
           email = data['email'] ?? "";
           phone = data['phone'] ?? "";
-          postion = data['position'] ?? "";
+          position = data['position'] ?? "";
+          address = data['address'] ?? "";
+          _profileImageUrl = data['profile_picture'];
           nameController.text = name;
           emailController.text = email;
           phoneController.text = phone;
           idController.text = id;
-          addressController.text = "الزقازيق";
+          addressController.text = address;
+          positionController.text = position;
+          isLoading = false;
         });
       } else {
-        print("خطأ في جلب البيانات: ${response.statusCode}");
+        _showSnackBar("خطأ في جلب البيانات: ${response.statusCode}", Colors.red);
       }
     } catch (e) {
-      print("حدث خطأ أثناء جلب البيانات: $e");
+      _showSnackBar("حدث خطأ أثناء جلب البيانات: $e", Colors.red);
     }
   }
+
+  Future<void> _pickImage() async {
+    final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      setState(() {
+        profileImage = File(pickedFile.path);
+      });
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setString('profile_image_path', pickedFile.path);
+    } else {
+      _showSnackBar('لم يتم اختيار أي صورة', Colors.orange);
+    }
+  }
+
   void _saveChanges() async {
-    String url = 'https://demos.elboshy.com/attendance/wp-json/attendance/v1/employee/1';
+    SharedPreferences prefs = await SharedPreferences.getInstance();
 
-    Map<String, dynamic> updatedData = {
+    // تحقق من الحقول الفارغة
+    if (nameController.text.isEmpty || emailController.text.isEmpty) {
+      _showSnackBar("يرجى ملء جميع الحقول الضرورية", Colors.red);
+      return;
+    }
+
+    String url = 'https://demos.elboshy.com/attendance/wp-json/attendance/v1/employee';
+
+    Map<String, String> updatedData = {
+      "id": idController.text,
       "name": nameController.text,
-
       "email": emailController.text,
       "phone": phoneController.text,
-      "position": postion,
+      "position": positionController.text,
+      "address": addressController.text,
     };
 
     try {
-      final response = await http.post(
-        Uri.parse(url),
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: jsonEncode(updatedData),
-      );
+      var request = http.MultipartRequest('POST', Uri.parse(url));
+
+      updatedData.forEach((key, value) {
+        request.fields[key] = value;
+      });
+
+      if (profileImage != null) {
+        request.files.add(await http.MultipartFile.fromPath(
+          'profile_picture',
+          profileImage!.path,
+          contentType: MediaType('image', 'jpeg'),
+        ));
+      }
+
+      final response = await request.send();
 
       if (response.statusCode == 200) {
-        print("تم تحديث البيانات بنجاح");
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Row(
-              children: [
-                Icon(Icons.check, color: Colors.white),
-                SizedBox(width: 10),
-                Expanded(child: Text("تم التغيير بنجاح")),
-              ],
-            ),
-            backgroundColor: Colors.green,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
+        // تفريغ البيانات القديمة من SharedPreferences
+        await prefs.clear();
+
+        // تخزين البيانات الجديدة
+        await prefs.setString('user_id', idController.text);
+        await prefs.setString('name', nameController.text);
+        await prefs.setString('email', emailController.text);
+        await prefs.setString('phone', phoneController.text);
+        await prefs.setString('position', positionController.text);
+        await prefs.setString('address', addressController.text);
+
+        if (profileImage != null) {
+          await prefs.setString('profile_image_path', profileImage!.path);
+        }
+
+        setState(() {
+          name = nameController.text;
+          email = emailController.text;
+          phone = phoneController.text;
+          position = positionController.text;
+          address = addressController.text;
+        });
+
+        _showSnackBar("تم تحديث البيانات بنجاح", Colors.green);
       } else {
-        print("خطأ في تحديث البيانات: ${response.statusCode}");
+        _showSnackBar("حدث خطأ أثناء التحديث", Colors.red);
       }
     } catch (e) {
-      print("حدث خطأ أثناء تحديث البيانات: $e");
+      _showSnackBar("حدث خطأ أثناء الاتصال بالخادم", Colors.red);
     }
+  }
 
-    setState(() {
-      name = nameController.text;
-      address = addressController.text;
-      email = emailController.text;
-      phone = phoneController.text;
-    });
+
+  void _showSnackBar(String message, Color color) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            Icon(Icons.info, color: Colors.white),
+            SizedBox(width: 10),
+            Expanded(child: Text(message)),
+          ],
+        ),
+        backgroundColor: color,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
   }
 
   @override
@@ -140,70 +200,42 @@ class _ProfileScreenState extends State<ProfileScreen> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
-        title: Text('الملف الشخصي',style: GoogleFonts.cairo(),),
-      /*  actions: [
-          IconButton(
-            icon: Icon(Icons.save),
-            onPressed: _saveChanges,
-          ),
-        ],*/
+        title: Text('الملف الشخصي', style: GoogleFonts.cairo()),
       ),
-      body: SingleChildScrollView(
+      body: isLoading
+          ? Center(child: _buildSkeleton())
+          : SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
             children: [
               GestureDetector(
                 onTap: _pickImage,
-                child: CircleAvatar(
-                  radius: 80,
-                  backgroundImage: profileImage != null
-                      ? FileImage(profileImage!) as ImageProvider
-                      : AssetImage('assets/img1.jpg'),
-                  child: Align(
-                    alignment: Alignment.bottomRight,
-                    child: CircleAvatar(
-                      radius: 20,
-                      backgroundColor: Colors.blue,
-                      child: Icon(Icons.camera_alt, color: Colors.white),
-                    ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(18.0),
+                  child: Container(
+                    width: 80,
+                    height: 80,
+                    child: profileImage != null
+                        ? Image.file(profileImage!, fit: BoxFit.cover)
+                        : _profileImageUrl != null && _profileImageUrl!.isNotEmpty
+                        ? CachedNetworkImage(
+                      imageUrl: _profileImageUrl!,
+                      fit: BoxFit.cover,
+                      placeholder: (context, url) => CircularProgressIndicator(),
+                      errorWidget: (context, url, error) => Icon(Icons.error),
+                    )
+                        : Image.asset('assets/images/emptyimage.jpg', fit: BoxFit.cover),
                   ),
                 ),
               ),
               SizedBox(height: 20),
-              _buildEditableField(
-                label: 'الاسم',
-                controller: nameController,
-                icon: Icons.person,
-              ),
-              _buildEditableField(
-                label: 'العنوان',
-                controller: addressController,
-                icon: Icons.location_on,
-              ),
-              _buildEditableField(
-                label: 'البريد الإلكتروني',
-                controller: emailController,
-                icon: Icons.email,
-                keyboardType: TextInputType.emailAddress,
-              ),
-              _buildEditableField(
-                label: 'رقم الهاتف',
-                controller: phoneController,
-                icon: Icons.phone,
-                keyboardType: TextInputType.phone,
-              ),
-          _buildEditableField(
-                label: 'الرقم التعريفي',
-                //value: id,
-                controller:idController,
-                icon: Icons.badge,
-              ),
-              _buildEditableField(
-                label: 'الوظيفه',
-                controller:positionController,
-                icon: Icons.computer,
-              ),
+              _buildEditableField(label: 'الاسم', controller: nameController, icon: Icons.person),
+              _buildEditableField(label: 'العنوان', controller: addressController, icon: Icons.location_on),
+              _buildEditableField(label: 'البريد الإلكتروني', controller: emailController, icon: Icons.email, keyboardType: TextInputType.emailAddress),
+              _buildEditableField(label: 'رقم الهاتف', controller: phoneController, icon: Icons.phone, keyboardType: TextInputType.phone),
+            //  _buildEditableField(label: 'الرقم التعريفي', controller: idController, icon: Icons.badge),
+              _buildEditableField(label: 'الوظيفة', controller: positionController, icon: Icons.computer),
               SizedBox(height: 20),
               ElevatedButton(
                 onPressed: _saveChanges,
@@ -211,19 +243,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   backgroundColor: Colors.blue,
                   padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(25), // زوايا مستديرة
+                    borderRadius: BorderRadius.circular(25),
                   ),
-                  shadowColor: Colors.black.withOpacity(0.5), // تأثير الظل
-                  elevation: 5, // ارتفاع الظل
+                  shadowColor: Colors.black.withOpacity(0.5),
+                  elevation: 5,
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.save, color: Colors.white), // إضافة أيقونة
-                    SizedBox(width: 8), // مسافة صغيرة بين الأيقونة والنص
+                    Icon(Icons.save, color: Colors.white),
+                    SizedBox(width: 8),
                     Text(
                       'حفظ التغييرات',
-                      style: GoogleFonts.cairo(fontSize: 18, color: Colors.white, fontWeight: FontWeight.bold),
+                      style: GoogleFonts.cairo(
+                        fontSize: 18,
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ],
                 ),
@@ -236,95 +272,82 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-
   Widget _buildEditableField({
     required String label,
     required TextEditingController controller,
     required IconData icon,
-    TextInputType keyboardType = TextInputType.text,
-
+    TextInputType? keyboardType,
   }) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: TextField(
+      child: TextFormField(
         controller: controller,
-        keyboardType: keyboardType,
         decoration: InputDecoration(
-          labelText: label,labelStyle: GoogleFonts.cairo(),
-
           prefixIcon: Icon(icon),
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-        ),
-      ),
-    );
-  }
-
-
-  Widget _buildReadOnlyField({
-    required String label,
-    required String value,
-    required IconData icon,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: TextField(
-        readOnly: true,
-        decoration: InputDecoration(
           labelText: label,
-          prefixIcon: Icon(icon),
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-          hintText: value,
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(18.0)),
         ),
+        keyboardType: keyboardType,
       ),
     );
   }
-
-  Future<void> _pickImage() async {
-    final ImagePicker picker = ImagePicker();
-    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
-
-    if (image != null) {
-      setState(() {
-        profileImage = File(image.path);
-      });
-    }
-  }
-
-
-  /*void _saveChanges() {
-    setState(() {
-      name = nameController.text;
-      address = addressController.text;
-      email = emailController.text;
-      phone = phoneController.text;
-    });
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Row(
-          children: [
-            Icon(Icons.check, color: Colors.white), // إضافة أيقونة
-            SizedBox(width: 10),
-            Expanded(
-              child: Text("تم التغيير بنجاح"),
-            ),
-          ],
-        ),
-        backgroundColor: Colors.green, // تغيير لون الخلفية
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10), // تحديد قيمة الحافة الدائرية
-        ),
-        behavior: SnackBarBehavior.floating, // جعل SnackBar يطفو فوق المحتوى
+}
+Widget _buildSkeleton() {
+  return SingleChildScrollView(
+    child: Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        children: [
+          _buildSkeletonAvatar(),
+          SizedBox(height: 20),
+          _buildSkeletonField(),
+          _buildSkeletonField(),
+          _buildSkeletonField(),
+          _buildSkeletonField(),
+          _buildSkeletonField(),
+          _buildSkeletonField(),
+          SizedBox(height: 20),
+          _buildSkeletonButton(),
+        ],
       ),
-    );
-  }*/
+    ),
+  );
+}
 
-  @override
-  void dispose() {
-    nameController.dispose();
-    addressController.dispose();
-    emailController.dispose();
-    phoneController.dispose();
-    super.dispose();
-  }
+// اسكتلون للصورة
+Widget _buildSkeletonAvatar() {
+  return Container(
+    width: 160,
+    height: 160,
+    decoration: BoxDecoration(
+      color: Colors.grey[300],
+      borderRadius: BorderRadius.circular(80),
+    ),
+  );
+}
+
+// اسكتلون للحقل النصي
+Widget _buildSkeletonField() {
+  return Padding(
+    padding: const EdgeInsets.symmetric(vertical: 8.0),
+    child: Container(
+      height: 50,
+      decoration: BoxDecoration(
+        color: Colors.grey[300],
+        borderRadius: BorderRadius.circular(10),
+      ),
+    ),
+  );
+}
+
+// اسكتلون للزر
+Widget _buildSkeletonButton() {
+  return Container(
+    height: 50,
+    width: double.infinity,
+    decoration: BoxDecoration(
+      color: Colors.grey[300],
+      borderRadius: BorderRadius.circular(25),
+    ),
+  );
 }

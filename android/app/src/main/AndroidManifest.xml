@@ -9,7 +9,7 @@
 
 
     <application
-        android:label="wfi_details"
+        android:label="yourcolor"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

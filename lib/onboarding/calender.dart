@@ -264,7 +264,7 @@ class _AttendancePageState extends State<AttendancePage> {
 
                   // Apply filters to the data (Full Day, Late, etc.)
                   if (isAll) {
-                    filteredData = filteredData.where((attendance) => attendance.status == 'All').toList();
+                    filteredData = snapshot.data!;
                   }
                   if (isEarlyLeaveSelected) {
                     filteredData = filteredData.where((attendance) => attendance.status == 'Under Time').toList();
@@ -402,8 +402,8 @@ class AttendanceCard extends StatelessWidget {
                 DayAndWeekdayColumn(day: day, weekday: weekday),
                 SizedBox(width: 20),
                 Wrap(
-                  spacing: 30.0,
-                  runSpacing: 4.0,
+                  spacing: 10.0,
+                  runSpacing: 2.0,
                   children: details.map((detail) {
                     return AttendanceColumn(
                       clockIn: detail['value'],

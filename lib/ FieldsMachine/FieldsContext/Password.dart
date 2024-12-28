@@ -15,7 +15,7 @@ class CustomPassword extends StatefulWidget {
 
   CustomPassword({
     this.controller,
-    this.hintText = 'الباسورد',
+    this.hintText = 'الرقم السري',
     this.validator,
     this.isRequired = false,
   });
@@ -26,11 +26,29 @@ class CustomPassword extends StatefulWidget {
 
 class _CustomPasswordState extends State<CustomPassword> {
   bool _obscureText = true;
-
+  late FocusNode _focusNode;
+  bool _isFocused = false;
+  Color _iconColor = Colorss.icons;
   void _toggleVisibility() {
     setState(() {
       _obscureText = !_obscureText;
     });
+  }
+  @override
+  void initState() {
+    super.initState();
+    _focusNode = FocusNode();
+    _focusNode.addListener(() {
+      setState(() {
+        _isFocused = _focusNode.hasFocus;
+        _iconColor = _focusNode.hasFocus ? Colorss.mainColor : Colorss.icons;
+      });
+    });
+  }
+  @override
+  void dispose() {
+    _focusNode.dispose(); // تأكد من التخلص من الـ FocusNode عند التخلص من الويدجت
+    super.dispose();
   }
 
   @override
@@ -46,30 +64,42 @@ class _CustomPasswordState extends State<CustomPassword> {
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8),
-       /* boxShadow: [
+        boxShadow: _isFocused
+            ? [
+          BoxShadow(
+            color: Colorss.mainColor.withOpacity(0.4),
+            offset: Offset(0, 4),
+            blurRadius: 8,
+          ),
+        ]
+            : [
           BoxShadow(
             color: Colors.black.withOpacity(0.1),
             offset: Offset(0, 2),
             blurRadius: 4,
           ),
-        ],*/
+        ],
       ),
       child: TextFormField(
         controller: widget.controller,
         obscureText: _obscureText,
+        focusNode: _focusNode,
         decoration: InputDecoration(
           hintText: widget.hintText,
-          hintStyle: GoogleFonts.cairo(
-            color: Colors.grey,
+          hintStyle: GoogleFonts.balooBhaijaan2(
+            color: Colorss.SecondText,
+
+            fontSize: 20
           ),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(8),
-            borderSide: BorderSide(color: Colors.grey),
+            borderSide: BorderSide(color: Color(0x13859de4)),
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(8),
-            borderSide: BorderSide(color: Colors.blue, width: 1),  // You can replace this with your custom color
-          ),
+            borderSide: BorderSide(color: Colors.blue, width: 1),
+            // You can replace this with your custom color
+          ),suffixIconColor: Colorss.mainColor,
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(8),
             borderSide: BorderSide(color: Colors.grey, width: 0.5),
@@ -81,18 +111,17 @@ class _CustomPasswordState extends State<CustomPassword> {
           prefixIcon: widget.isRequired
               ? Icon(
             Icons.lock,
-            color: Colorss.icons,  // Replace with your custom color
+            color: _iconColor, // لون الأيقونة بناءً على حالة التركيز
           )
               : null,
           suffixIcon: IconButton(
             icon: Icon(
               _obscureText ? Icons.visibility : Icons.visibility_off,
-              color: Colorss.icons,  // Replace with your custom color
+              color: _iconColor, // لون الأيقونة بناءً على حالة التركيز
             ),
             onPressed: _toggleVisibility,
           ),
         ),
-
         validator: effectiveValidator,
       ),
     );

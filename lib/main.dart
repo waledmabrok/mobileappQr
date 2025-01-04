@@ -5,15 +5,12 @@ import 'onboarding/navgate.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 void main() {
-
   WidgetsFlutterBinding.ensureInitialized();
   runApp(MyApp());
   SystemChrome.setSystemUIOverlayStyle(
-
     SystemUiOverlayStyle(
       statusBarColor: Colors.transparent, // شفافية شريط الحالة
       statusBarIconBrightness: Brightness.dark, // أيقونات بيضاء
-
     ),
   );
 }
@@ -22,7 +19,6 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-
       debugShowCheckedModeBanner: false,
       home: LoginPage(),
       locale: Locale('ar', 'AE'),
@@ -34,8 +30,14 @@ class MyApp extends StatelessWidget {
       supportedLocales: [
         Locale('ar', 'AE'),
       ],
-
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+        textSelectionTheme: TextSelectionThemeData(
+          cursorColor: Colors.blue, // لون المؤشر
+          selectionColor: Colors.blue.withOpacity(0.4), // لون النص المحدد
+          selectionHandleColor: Colors.blue, // لون مقبض التحديد
+        ),
+      ),
     );
   }
 }
-

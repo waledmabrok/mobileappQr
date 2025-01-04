@@ -1,12 +1,17 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:http_parser/http_parser.dart';
+
+import '../ FieldsMachine/FieldsContext/Button.dart';
+import '../ FieldsMachine/FieldsContext/Text.dart';
+import '../ FieldsMachine/setup/background.dart';
 
 class ProfileScreen extends StatefulWidget {
   @override
@@ -62,7 +67,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? userId = prefs.getString('user_id');
 
-    String url = 'https://demos.elboshy.com/attendance/wp-json/attendance/v1/employee?id=$userId';
+    String url =
+        'https://demos.elboshy.com/attendance/wp-json/attendance/v1/employee?id=$userId';
 
     try {
       final response = await http.get(Uri.parse(url));
@@ -86,7 +92,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
           isLoading = false;
         });
       } else {
-        _showSnackBar("خطأ في جلب البيانات: ${response.statusCode}", Colors.red);
+        _showSnackBar(
+            "خطأ في جلب البيانات: ${response.statusCode}", Colors.red);
       }
     } catch (e) {
       _showSnackBar("حدث خطأ أثناء جلب البيانات: $e", Colors.red);
@@ -94,7 +101,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> _pickImage() async {
-    final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
+    final pickedFile =
+        await ImagePicker().pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
       setState(() {
         profileImage = File(pickedFile.path);
@@ -115,7 +123,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
       return;
     }
 
-    String url = 'https://demos.elboshy.com/attendance/wp-json/attendance/v1/employee';
+    String url =
+        'https://demos.elboshy.com/attendance/wp-json/attendance/v1/employee';
 
     Map<String, String> updatedData = {
       "id": idController.text,
@@ -176,7 +185,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
-
   void _showSnackBar(String message, Color color) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -198,77 +206,232 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        title: Text('الملف الشخصي', style: GoogleFonts.cairo()),
-      ),
       body: isLoading
           ? Center(child: _buildSkeleton())
-          : SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            children: [
-              GestureDetector(
-                onTap: _pickImage,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(18.0),
-                  child: Container(
-                    width: 80,
-                    height: 80,
-                    child: profileImage != null
-                        ? Image.file(profileImage!, fit: BoxFit.cover)
-                        : _profileImageUrl != null && _profileImageUrl!.isNotEmpty
-                        ? CachedNetworkImage(
-                      imageUrl: _profileImageUrl!,
-                      fit: BoxFit.cover,
-                      placeholder: (context, url) => CircularProgressIndicator(),
-                      errorWidget: (context, url, error) => Icon(Icons.error),
-                    )
-                        : Image.asset('assets/images/emptyimage.jpg', fit: BoxFit.cover),
-                  ),
-                ),
-              ),
-              SizedBox(height: 20),
-              _buildEditableField(label: 'الاسم', controller: nameController, icon: Icons.person),
-              _buildEditableField(label: 'العنوان', controller: addressController, icon: Icons.location_on),
-              _buildEditableField(label: 'البريد الإلكتروني', controller: emailController, icon: Icons.email, keyboardType: TextInputType.emailAddress),
-              _buildEditableField(label: 'رقم الهاتف', controller: phoneController, icon: Icons.phone, keyboardType: TextInputType.phone),
-            //  _buildEditableField(label: 'الرقم التعريفي', controller: idController, icon: Icons.badge),
-              _buildEditableField(label: 'الوظيفة', controller: positionController, icon: Icons.computer),
-              SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: _saveChanges,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue,
-                  padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(25),
-                  ),
-                  shadowColor: Colors.black.withOpacity(0.5),
-                  elevation: 5,
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(Icons.save, color: Colors.white),
-                    SizedBox(width: 8),
-                    Text(
-                      'حفظ التغييرات',
-                      style: GoogleFonts.cairo(
-                        fontSize: 18,
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+          : Stack(
+              children: [
+                BackgroundWidget2(),
+                SafeArea(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        Container(
+                          height: 40,
+                          width: double.infinity,
+                          child: Padding(
+                            padding: const EdgeInsets.only(
+                                top: 10.0, left: 20, right: 20),
+                            child: Row(
+                              children: [
+                                // Ellipse with Icon (Arrow Left)
+                                Container(
+                                  width: 32,
+                                  height: 32,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: Color(
+                                        0xFFE1E0F3), // Ellipse background color
+                                  ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(right: 5.0),
+                                    child: Center(
+                                      child: Icon(
+                                        Icons.arrow_back_ios,
+                                        // You can replace this with another icon or image
+                                        size: 16,
+                                        color: Color(0xff7A5AF8),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                // Title Text
+                                SizedBox(
+                                  width: 60,
+                                ),
+                                Container(
+                                  alignment: Alignment.center,
+                                  child: Text(
+                                    'الحساب الشخصي', // Your title in Arabic
+                                    style: GoogleFonts.balooBhaijaan2(
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 18,
+                                      color: Color(0xFF101828),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Column(
+                            children: [
+                              // Frame
+                              Container(
+                                padding: EdgeInsets.all(24),
+                                decoration: BoxDecoration(
+                                  //   color: Color(0xFFFEFEFE),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Column(
+                                  children: [
+                                    // Title
+                                    /*     Text(
+                                "معلوماتك الشخصيه",
+                                style: GoogleFonts.balooBhaijaan2(
 
-            ],
-          ),
-        ),
-      ),
+                                  fontWeight: FontWeight.w800,
+                                  fontSize: 17,
+                                  color: Colors.black,
+                                ),
+                                textAlign: TextAlign.start,
+                              ),
+                              SizedBox(height: 8),
+                              Text(
+                                "هنا يمكنك تعديل بياناتك",
+                                style: GoogleFonts.balooBhaijaan2(
+
+                                  fontWeight: FontWeight.w400,
+                                  fontSize: 12,
+                                  color: Color(0xFF667085),
+                                ),
+                              ),
+                              SizedBox(height: 16),*/
+                                    // Photo Upload Section
+                                    Stack(
+                                      clipBehavior: Clip.none,
+                                      children: [
+                                        // Circle Image
+                                        Container(
+                                          decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(14),
+                                            border: Border.all(
+                                                color: Colors.grey, width: 2),
+                                          ),
+                                          child: Container(
+                                            width: 100,
+                                            height: 100,
+                                            decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(12),
+                                              border: Border.all(
+                                                  color: Colors.white,
+                                                  width: 3),
+                                              image: DecorationImage(
+                                                image: profileImage != null
+                                                    ? FileImage(
+                                                        profileImage!) // إذا كانت الصورة من ملف محلي
+                                                    : _profileImageUrl !=
+                                                                null &&
+                                                            _profileImageUrl!
+                                                                .isNotEmpty
+                                                        ? CachedNetworkImageProvider(
+                                                            _profileImageUrl!) // إذا كانت الصورة من رابط URL
+                                                        : AssetImage(
+                                                                'assets/images/emptyimage.jpg')
+                                                            as ImageProvider,
+                                                // إذا كانت الصورة افتراضية
+                                                fit: BoxFit.cover,
+
+                                                /*  image: AssetImage('assets/your_photo.png'),
+                                                                                fit: BoxFit.cover,*/
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        // Ellipse 22 (absolute positioning)
+                                        Positioned(
+                                          top: -10,
+                                          right: -10,
+                                          child: InkWell(
+                                            onTap: _pickImage,
+                                            child: Container(
+                                              width: 32,
+                                              height: 32,
+                                              decoration: BoxDecoration(
+                                                shape: BoxShape.circle,
+                                                color: Color(0xFF7A5AF8),
+                                                border: Border.all(
+                                                    color: Colors.white,
+                                                    width: 3),
+                                              ),
+                                              child: Padding(
+                                                padding:
+                                                    const EdgeInsets.all(4.0),
+                                                child: SvgPicture.asset(
+                                                    'assets/SvgProfile/update.svg'),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    SizedBox(height: 20),
+
+                                    // Input Fields Section
+                                    CustomText(
+                                      isRequired: true,
+                                      controller: nameController,
+                                    ),
+                                    SizedBox(
+                                      height: 20,
+                                    ),
+                                    CustomText(
+                                      isRequired: true,
+                                      controller: positionController,
+                                      hintText: 'الوظيفه',
+                                      prefixIcon: Icons.computer,
+                                    ),
+
+                                    SizedBox(
+                                      height: 20,
+                                    ),
+                                    CustomText(
+                                      isRequired: true,
+                                      hintText: 'البريد الإلكتروني',
+                                      controller: emailController,
+                                      prefixIcon: Icons.email,
+                                    ),
+                                    SizedBox(
+                                      height: 20,
+                                    ),
+                                    CustomText(
+                                      isRequired: true,
+                                      hintText: 'رقم الهاتف',
+                                      controller: phoneController,
+                                      prefixIcon: Icons.phone,
+                                    ),
+                                    SizedBox(height: 20),
+                                    CustomText(
+                                      isRequired: true,
+                                      hintText: 'العنوان',
+                                      controller: addressController,
+                                      prefixIcon: Icons.location_on,
+                                    ),
+
+                                    ///=============================
+                                    ///
+                                  ],
+                                ),
+                              ),
+
+                              SizedBox(height: 16),
+                            ],
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(55.0),
+                          child: CustomButton(
+                              text: 'تحديث بيانات', onPressed: _saveChanges),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
     );
   }
 
@@ -279,19 +442,39 @@ class _ProfileScreenState extends State<ProfileScreen> {
     TextInputType? keyboardType,
   }) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: TextFormField(
-        controller: controller,
-        decoration: InputDecoration(
-          prefixIcon: Icon(icon),
-          labelText: label,
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(18.0)),
-        ),
-        keyboardType: keyboardType,
-      ),
-    );
+        padding: const EdgeInsets.symmetric(vertical: 8.0),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Text(
+            label,
+            style: GoogleFonts.balooBhaijaan2(
+              fontWeight: FontWeight.w400,
+              fontSize: 12,
+              color: Color(0xFF475467),
+            ),
+          ),
+          SizedBox(height: 4),
+          Container(
+            height: 44,
+            padding: EdgeInsets.symmetric(horizontal: 12),
+            decoration: BoxDecoration(
+              //  color: Colors.white,
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: Color(0xFFDFE2E8)),
+            ),
+            child: TextField(
+              controller: controller,
+              decoration: InputDecoration(
+                prefixIcon: Icon(icon),
+
+                border: InputBorder.none, // التصحيح هنا
+              ),
+              keyboardType: keyboardType,
+            ),
+          )
+        ]));
   }
 }
+
 Widget _buildSkeleton() {
   return SingleChildScrollView(
     child: Padding(
@@ -317,16 +500,15 @@ Widget _buildSkeleton() {
 // اسكتلون للصورة
 Widget _buildSkeletonAvatar() {
   return Container(
-    width: 160,
-    height: 160,
+    width: 120,
+    height: 120,
     decoration: BoxDecoration(
       color: Colors.grey[300],
-      borderRadius: BorderRadius.circular(80),
+      borderRadius: BorderRadius.circular(30),
     ),
   );
 }
 
-// اسكتلون للحقل النصي
 Widget _buildSkeletonField() {
   return Padding(
     padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -348,6 +530,42 @@ Widget _buildSkeletonButton() {
     decoration: BoxDecoration(
       color: Colors.grey[300],
       borderRadius: BorderRadius.circular(25),
+    ),
+  );
+}
+
+// Method to create an input field
+Widget _buildInputField(String label) {
+  return Padding(
+    padding: const EdgeInsets.only(bottom: 12.0),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: GoogleFonts.balooBhaijaan2(
+            fontWeight: FontWeight.w400,
+            fontSize: 12,
+            color: Color(0xFF475467),
+          ),
+        ),
+        SizedBox(height: 4),
+        Container(
+          height: 44,
+          padding: EdgeInsets.symmetric(horizontal: 12),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: Color(0xFFDFE2E8)),
+          ),
+          child: TextField(
+            decoration: InputDecoration(
+              hintText: ' ادخل $label',
+              border: InputBorder.none,
+            ),
+          ),
+        ),
+      ],
     ),
   );
 }

@@ -85,7 +85,7 @@ class SkeletonCard extends StatelessWidget {
                 ],
               ),
               Wrap(
-                spacing: 30.0,
+                spacing: 10.0,
                 children: List.generate(3, (index) {
                   return Column(
                     children: [

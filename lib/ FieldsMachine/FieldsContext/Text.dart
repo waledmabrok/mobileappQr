@@ -10,12 +10,15 @@ class CustomText extends StatefulWidget {
   final bool isRequired;
   final bool iconLeft;
 
+  final IconData? prefixIcon;
+
   CustomText({
     this.controller,
     this.hintText = 'الاسم',
     this.validator,
     this.isRequired = false,
     this.iconLeft = false,
+    this.prefixIcon,
   });
 
   @override
@@ -26,6 +29,7 @@ class _CustomTextState extends State<CustomText> {
   late FocusNode _focusNode;
   Color _iconColor = Colorss.icons;
   bool _isFocused = false;
+
   @override
   void initState() {
     super.initState();
@@ -40,7 +44,8 @@ class _CustomTextState extends State<CustomText> {
 
   @override
   void dispose() {
-    _focusNode.dispose(); // تأكد من التخلص من الـ FocusNode عند التخلص من الويدجت
+    _focusNode
+        .dispose(); // تأكد من التخلص من الـ FocusNode عند التخلص من الويدجت
     super.dispose();
   }
 
@@ -74,7 +79,8 @@ class _CustomTextState extends State<CustomText> {
       ),
       child: TextFormField(
         controller: widget.controller,
-        focusNode: _focusNode, // إضافة FocusNode
+        focusNode: _focusNode,
+        // إضافة FocusNode
         decoration: InputDecoration(
           hintText: widget.hintText,
           hintStyle: GoogleFonts.balooBhaijaan2(
@@ -102,14 +108,14 @@ class _CustomTextState extends State<CustomText> {
           fillColor: Colors.white,
           prefixIcon: widget.isRequired
               ? Icon(
-            Icons.person,
-            color: _iconColor, // تغيير اللون بناءً على حالة التركيز
+            widget.prefixIcon ?? Icons.person,
+            color: _iconColor,
           )
               : null,
           suffixIcon: widget.iconLeft
               ? Icon(
             Icons.person,
-            color: _iconColor, // تغيير اللون بناءً على حالة التركيز
+            color: _iconColor,
           )
               : null,
         ),

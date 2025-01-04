@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -9,13 +10,15 @@ import '../ FieldsMachine/Custom in Calender/line.dart';
 import '../ FieldsMachine/Custom in Calender/status.dart';
 import '../ FieldsMachine/Custom in Calender/Sketlon.dart';
 import '../CustomApi/Api calender/api calender.dart';
-
+import 'package:lottie/lottie.dart';
 import '../CustomApi/Api calender/modelcalender.dart';
 
 class AttendancePage extends StatefulWidget {
   final String filter;
   late List<dynamic> attendanceData;
+
   AttendancePage({this.filter = 'All'});
+
   //const AttendancePage({super.key});
 
   @override
@@ -23,8 +26,8 @@ class AttendancePage extends StatefulWidget {
 }
 
 class _AttendancePageState extends State<AttendancePage> {
-  String selectedMonth = 'December 2024';
-  int selectedYear = 2024;
+  String selectedMonth = ''; // To store the formatted current month
+  int selectedYear = 0;
   bool isLoading = true;
   DateTime selectedDate = DateTime.now();
   late Future<List<Attendance>> attendanceData; // Future for API data
@@ -35,10 +38,14 @@ class _AttendancePageState extends State<AttendancePage> {
   bool isEarlyLeaveSelected = false;
   bool isAbsentSelected = false;
   int? employeeId;
+
   @override
   void initState() {
     super.initState();
     _loadAttendanceData();
+    selectedMonth = DateFormat('MMMM yyyy')
+        .format(selectedDate); // تعيين الشهر والسنة بشكل صحيح
+    selectedYear = selectedDate.year;
     _getUserId();
     attendanceData = Future.value([]);
     // Delay applying the initial filter to give data time to load
@@ -60,7 +67,6 @@ class _AttendancePageState extends State<AttendancePage> {
       isAbsentSelected = filter == 'الغياب';
     });
   }
-
 
   // Function to retrieve user ID from SharedPreferences
   Future<void> _getUserId() async {
@@ -111,12 +117,14 @@ class _AttendancePageState extends State<AttendancePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar:AppBar(
+      appBar: AppBar(
         automaticallyImplyLeading: false,
-        toolbarHeight: 80, // Adjust toolbar height as needed
+        toolbarHeight: 80,
+        // Adjust toolbar height as needed
         backgroundColor: Colors.white,
         forceMaterialTransparency: true,
-        elevation: 0, // Optional to remove shadow
+        elevation: 0,
+        // Optional to remove shadow
         title: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Row(
@@ -168,11 +176,9 @@ class _AttendancePageState extends State<AttendancePage> {
           ),
         ),
       ),
-
-
-      body: Container(color: Color(0xfffafafc),
+      body: Container(
+        color: Color(0xfffafafc),
         child: Column(
-
           children: [
             // Month Navigation
 
@@ -200,8 +206,9 @@ class _AttendancePageState extends State<AttendancePage> {
                                 isAbsentSelected = false;
                               });
                             },
+                            required: false,
                           ),
-                         /* FilterChipWidget(
+                          /* FilterChipWidget(
                             label: 'اليوم كامل',
                             isSelected: isFullDaySelected,
                             onSelected: () {
@@ -216,7 +223,8 @@ class _AttendancePageState extends State<AttendancePage> {
                           FilterChipWidget(
                             label: 'الخروج مبكرا',
                             isSelected: isEarlyLeaveSelected,
-                            onSelected: () {   _updateSelectedFilter(filter: "الخروج المبكر");
+                            onSelected: () {
+                              _updateSelectedFilter(filter: "الخروج المبكر");
                               setState(() {
                                 isAll = false;
                                 isFullDaySelected = false;
@@ -224,20 +232,21 @@ class _AttendancePageState extends State<AttendancePage> {
                                 isAbsentSelected = false;
                               });
                             },
+                            required: false,
                           ),
                           FilterChipWidget(
                             label: 'الغياب',
                             isSelected: isAbsentSelected,
                             onSelected: () {
-      _updateSelectedFilter(filter: "الغياب");
+                              _updateSelectedFilter(filter: "الغياب");
                               setState(() {
-
                                 isAll = false;
                                 isFullDaySelected = false;
                                 isEarlyLeaveSelected = false;
                                 isAbsentSelected = true;
                               });
                             },
+                            required: false,
                           ),
                         ],
                       ),
@@ -248,15 +257,20 @@ class _AttendancePageState extends State<AttendancePage> {
               ),
             ),
 
-            SizedBox(height: 15,),
+            SizedBox(
+              height: 15,
+            ),
             // Attendance Data
             FutureBuilder<List<Attendance>>(
               future: attendanceData,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-              return SingleChildScrollView(child: SkeletonCard());
+                  return SingleChildScrollView(child: SkeletonCard());
                 } else if (snapshot.hasError) {
-                  return Center(child: Text('Failed to load attendance data'));
+                  return Center(
+                    child:
+                    Image.asset("assets/Calender/result-not-found-1.png"),
+                  );
                 } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
                   return Center(child: Text('No attendance records found'));
                 } else {
@@ -267,10 +281,15 @@ class _AttendancePageState extends State<AttendancePage> {
                     filteredData = snapshot.data!;
                   }
                   if (isEarlyLeaveSelected) {
-                    filteredData = filteredData.where((attendance) => attendance.status == 'Under Time').toList();
+                    filteredData = filteredData
+                        .where(
+                            (attendance) => attendance.status == 'Under Time')
+                        .toList();
                   }
                   if (isAbsentSelected) {
-                    filteredData = filteredData.where((attendance) => attendance.status == 'Absent').toList();
+                    filteredData = filteredData
+                        .where((attendance) => attendance.status == 'Absent')
+                        .toList();
                   }
 
                   return Expanded(
@@ -280,9 +299,9 @@ class _AttendancePageState extends State<AttendancePage> {
                       itemBuilder: (context, index) {
                         final data = filteredData[index];
                         return AttendanceCard(
-
                           day: data.date.day,
-                          weekday: data.date.dayName, // You might want to improve this to display day names
+                          weekday: data.date.dayName,
+                          // You might want to improve this to display day names
                           clockIn: data.checkInTime,
                           clockOut: data.checkOutTime,
                           totalHours: data.totalTime,
@@ -294,7 +313,6 @@ class _AttendancePageState extends State<AttendancePage> {
                 }
               },
             ),
-
           ],
         ),
       ),
@@ -305,12 +323,14 @@ class _AttendancePageState extends State<AttendancePage> {
 class FilterChipWidget extends StatelessWidget {
   final String label;
   final bool isSelected;
+  final bool required;
   final VoidCallback onSelected;
 
   const FilterChipWidget({
     super.key,
     required this.label,
     required this.isSelected,
+    required this.required,
     required this.onSelected,
   });
 
@@ -319,20 +339,47 @@ class FilterChipWidget extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 4.0),
       child: FilterChip(
-        label: Text(
-          label,
-          style: TextStyle(
-            color: isSelected
-                ? Colors.blue
-                : Colors.grey, // Change text color when selected
-          ),
+        label: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (required)
+              Stack(
+                children: [
+                  Lottie.asset(
+                    'assets/SvgNotifi/Animation - 1736014220484.json',
+                    width: 20,
+                    height: 20,
+                    fit: BoxFit
+                        .cover,
+                  ),
+
+                  Positioned(
+                    left: 6.0,
+                    top: 6.0,
+                    child: CircleAvatar(
+                      radius: 4,
+                      backgroundColor: Colors.red,
+                    ),
+                  ),
+                ],
+              ),
+            Text(
+              label,
+              style: GoogleFonts.balooBhaijaan2(
+                color: isSelected ? Colors.blue : (required
+                    ? Colors.black
+                    : Colors
+                    .grey), // تغيير اللون هنا بناءً على `isSelected` و `required`
+              ),
+            ),
+          ],
         ),
         selected: isSelected,
         onSelected: (_) => onSelected(),
         selectedColor: Colors.white,
         backgroundColor: Colors.white,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(30.0), // Rounded corners
+          borderRadius: BorderRadius.circular(30.0),
           side: BorderSide(
             color: isSelected ? Colors.blue : Colors.grey,
             width: 0.5,
@@ -342,6 +389,8 @@ class FilterChipWidget extends StatelessWidget {
       ),
     );
   }
+
+
 }
 
 class AttendanceCard extends StatelessWidget {
@@ -364,7 +413,10 @@ class AttendanceCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    double screenWidth = MediaQuery.of(context).size.width;
+    double screenWidth = MediaQuery
+        .of(context)
+        .size
+        .width;
 
     List<Map<String, dynamic>> details = [
       {
@@ -394,10 +446,12 @@ class AttendanceCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(8),
         ),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.start, // Start from the beginning
+          mainAxisAlignment:
+          MainAxisAlignment.start, // Start from the beginning
           children: [
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween, // Align content to the left
+              mainAxisAlignment:
+              MainAxisAlignment.spaceBetween, // Align content to the left
               children: [
                 DayAndWeekdayColumn(day: day, weekday: weekday),
                 SizedBox(width: 20),

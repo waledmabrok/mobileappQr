@@ -58,6 +58,11 @@ dependencies:
   cached_network_image: ^3.4.1
   timezone: ^0.10.0
   mime_type: ^1.0.1
+  geocoding: ^3.0.0
+  flutter_advanced_drawer: ^1.3.7
+  lottie: ^2.7.0
+
+
 
 
 
@@ -94,6 +99,10 @@ flutter:
     - assets/SvgNavbar/Calender.svg
     - assets/SvgNavbar/profile.svg
     - assets/SvgNavbar/background.svg
+    - assets/SvgNotifi/
+    - assets/SvgProfile/update.svg
+    - assets/SvgProfile/
+    - assets/Calender/
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

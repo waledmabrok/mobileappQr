@@ -10,6 +10,7 @@ import '../onboarding/navgate.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:network_info_plus/network_info_plus.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -32,8 +33,8 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
   late Animation<Offset> _logoAnimation;
   late Animation<Offset> _textAnimation;
   late Animation<Offset> _formAnimation;
-  late Animation<Offset>  _logoAnimationStage2;
-  late Animation<Offset>   _logoAnimationStage1;
+  late Animation<Offset> _logoAnimationStage2;
+  late Animation<Offset> _logoAnimationStage1;
 
   void _togglePasswordVisibility() {
     setState(() {
@@ -45,7 +46,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
   void initState() {
     super.initState();
     _getWiFiInfo();
-
+    _loadCredentials();
     // Animation controllers
     _logoController = AnimationController(
       duration: Duration(milliseconds: 500),
@@ -104,7 +105,8 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
         // Stage 2 for logo animation
         Future.delayed(Duration(milliseconds: 700), () {
           setState(() {
-            _logoAnimation = _logoAnimationStage2; // Update logo animation to stage 2
+            _logoAnimation =
+                _logoAnimationStage2; // Update logo animation to stage 2
             _logoController.forward(); // Repeat logo animation stage 2
           });
         });
@@ -121,8 +123,18 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
     });
   }
 
+  Future<void> _saveCredentials() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('username', _usernameController.text);
+    await prefs.setString('password', _passwordController.text);
+  }
 
-
+  // استرجاع بيانات المستخدم
+  Future<void> _loadCredentials() async {
+    final prefs = await SharedPreferences.getInstance();
+    _usernameController.text = prefs.getString('username') ?? '';
+    _passwordController.text = prefs.getString('password') ?? '';
+  }
 
   @override
   void dispose() {
@@ -131,11 +143,12 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
     _formController.dispose();
     super.dispose();
   }
+
   // Fetch Wi-Fi information
   Future<void> _getWiFiInfo() async {
     String? wifiName = await _networkInfo.getWifiName(); // Get Wi-Fi SSID
     String? wifiBSSID =
-        await _networkInfo.getWifiBSSID(); // Get Wi-Fi MAC address (BSSID)
+    await _networkInfo.getWifiBSSID(); // Get Wi-Fi MAC address (BSSID)
 
     setState(() {
       _wifiName = wifiName ?? 'غير متصل';
@@ -159,22 +172,34 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
               children: [
                 Positioned(child: SvgPicture.asset("assets/fullFrame.svg")),
                 Positioned(
-                    bottom: 0, left: 0, right: 0, child: Container(
-                    width: double.infinity,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 20),
-                      child: Center(child: Row(crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-
-                          Text("yourcolor.net",style: GoogleFonts.balooBhaijaan2(fontWeight: FontWeight.w500,
-                              letterSpacing: 1.2,
-                              fontSize: 20,color: Colorss.SecondText),),
-                          SizedBox(width: 6,),
-                          Icon(FontAwesomeIcons.earthAfrica,color: Colorss.SecondText,size: 16),
-                        ],
-                      )),
-                    ))),
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    child: Container(
+                        width: double.infinity,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 20),
+                          child: Center(
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    "yourcolor.net",
+                                    style: GoogleFonts.balooBhaijaan2(
+                                        fontWeight: FontWeight.w500,
+                                        letterSpacing: 1.2,
+                                        fontSize: 20,
+                                        color: Colorss.SecondText),
+                                  ),
+                                  SizedBox(
+                                    width: 6,
+                                  ),
+                                  Icon(FontAwesomeIcons.earthAfrica,
+                                      color: Colorss.SecondText, size: 16),
+                                ],
+                              )),
+                        ))),
                 Center(
                   child: SingleChildScrollView(
                     child: Padding(
@@ -239,7 +264,6 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                                     SizedBox(height: 25),
                                     // Password input with validator
                                     CustomPassword(
-
                                       isRequired: true,
                                       controller: _passwordController,
                                     ),
@@ -256,91 +280,102 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                                     Center(
                                       child: isLoading
                                           ? CircularProgressIndicator(
-                                              valueColor:
-                                                  AlwaysStoppedAnimation<Color>(
-                                                      Colorss.mainColor),
-                                            )
+                                        valueColor:
+                                        AlwaysStoppedAnimation<Color>(
+                                            Colorss.mainColor),
+                                      )
                                           : SizedBox(
-                                              width: 200,
-                                              child: Container(
-                                                decoration: BoxDecoration(
-                                                  gradient: LinearGradient(
-                                                      colors: [
-                                                        Color(0xFF7585ec),
-                                                        Color(0xFF9684E1),
-                                                      ],
-                                                      stops: [
-                                                        0.1667,
-                                                        0.6756
-                                                      ],
-                                                      begin: Alignment.topRight,
-                                                      end: Alignment.bottomLeft),
-                                                  borderRadius:
-                                                      BorderRadius.circular(10),
-                                                ),
-                                                child: ElevatedButton(
-                                                  style: ElevatedButton.styleFrom(
-                                                    padding: EdgeInsets.symmetric(
-                                                        vertical: 16),
-                                                    backgroundColor:
-                                                        Colors.transparent,
-                                                    shadowColor:
-                                                        Colors.transparent,
-                                                    shape: RoundedRectangleBorder(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              10),
-                                                    ),
-                                                  ),
-                                                  onPressed: () async {
-                                                    setState(() {
-                                                      isLoading =
-                                                          true; // Set loading to true
-                                                    });
-                                                    // Validate the form before attempting login
-                                                    if (_formKey.currentState
-                                                            ?.validate() ??
-                                                        false) {
-                                                      // If valid, proceed with login
-                                                      await controller.login(
-                                                        _usernameController.text,
-                                                        _passwordController.text,
-                                                        _wifiBSSID,
-                                                      );
-
-                                                      if (controller
-                                                          .errorMessage.isEmpty) {
-                                                        // Navigate to HomeScreen after a successful login
-                                                        Navigator.pushReplacement(
-                                                          context,
-                                                          MaterialPageRoute(
-                                                              builder:
-                                                                  (context) =>
-                                                                      HomeScreen(
-                                                                        index2: 0,
-                                                                        filter:
-                                                                            "All",
-                                                                      )),
-                                                        );
-                                                      }
-                                                    }
-                                                    setState(() {
-                                                      isLoading =
-                                                          false; // Set loading to false after login attempt
-                                                    });
-                                                  },
-                                                  child: Text(
-                                                    'تسجيل الدخول',
-                                                    style: GoogleFonts
-                                                        .balooBhaijaan2(
-                                                      fontSize: 20,
-                                                      fontWeight: FontWeight.w600,
-                                                      color: Colors.white,
-                                                    ),
-                                                  ),
-                                                ),
+                                        width: 200,
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                            gradient: LinearGradient(
+                                                colors: [
+                                                  Color(0xFF7585ec),
+                                                  Color(0xFF9684E1),
+                                                ],
+                                                stops: [
+                                                  0.1667,
+                                                  0.6756
+                                                ],
+                                                begin: Alignment.topRight,
+                                                end:
+                                                Alignment.bottomLeft),
+                                            borderRadius:
+                                            BorderRadius.circular(10),
+                                          ),
+                                          child: ElevatedButton(
+                                            style:
+                                            ElevatedButton.styleFrom(
+                                              padding:
+                                              EdgeInsets.symmetric(
+                                                  vertical: 16),
+                                              backgroundColor:
+                                              Colors.transparent,
+                                              shadowColor:
+                                              Colors.transparent,
+                                              shape:
+                                              RoundedRectangleBorder(
+                                                borderRadius:
+                                                BorderRadius.circular(
+                                                    10),
                                               ),
                                             ),
+                                            onPressed: () async {
+                                              setState(() {
+                                                isLoading =
+                                                true; // Set loading to true
+                                              });
+                                              await _saveCredentials();
+                                              // Validate the form before attempting login
+                                              if (_formKey.currentState
+                                                  ?.validate() ??
+                                                  false) {
+                                                // If valid, proceed with login
+                                                await controller.login(
+                                                  _usernameController
+                                                      .text,
+                                                  _passwordController
+                                                      .text,
+                                                  _wifiBSSID,
+                                                );
+
+                                                if (controller
+                                                    .errorMessage
+                                                    .isEmpty) {
+                                                  // Navigate to HomeScreen after a successful login
+                                                  Navigator
+                                                      .pushReplacement(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                        builder:
+                                                            (context) =>
+                                                            HomeScreen(
+                                                              index2:
+                                                              0,
+                                                              filter:
+                                                              "All",
+                                                            )),
+                                                  );
+                                                }
+                                              }
+                                              setState(() {
+                                                isLoading =
+                                                false; // Set loading to false after login attempt
+                                              });
+                                            },
+                                            child: Text(
+                                              'تسجيل الدخول',
+                                              style: GoogleFonts
+                                                  .balooBhaijaan2(
+                                                fontSize: 20,
+                                                fontWeight:
+                                                FontWeight.w600,
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
                                     ),
                                   ],
                                 ),

@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
+
 class DayAndWeekdayColumn extends StatelessWidget {
   final String day;
   final String weekday;
@@ -10,38 +12,47 @@ class DayAndWeekdayColumn extends StatelessWidget {
     required this.day,
     required this.weekday,
   });
+
   String formatDate(String dateString) {
-    return DateFormat(' d ', 'ar')
+    return DateFormat('EEEE d MMMM yyyy', 'ar')
         .format(DateTime.parse(dateString));
-    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.all(Radius.circular(10)),
-        border: Border.all(color: Color(0xffd1d1d1), width: 1),
-      ),
       child: Padding(
-        padding: const EdgeInsets.all(15.0),
-        child: Column(
+        padding: const EdgeInsets.all(5.0),
+        child: Row(
           children: [
-
             Text(
-    '$day',
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 22,
-              ),
-            ),
-            const SizedBox(height: 2), // المسافة بين اليوم واليوم الأسبوعي
-            Text(
-              weekday.length > 3 ? weekday.substring(0, 3) : weekday,
+              weekday,
+              /*.length > 3 ? weekday.substring(0, 3) : weekday,*/
               style: const TextStyle(
                 fontWeight: FontWeight.w500,
                 fontSize: 15,
-                color: Color(0xff8c8c8c),
+                //  color: Color(0xff8c8c8c),
               ),
+            ),
+
+            const SizedBox(width: 2), // المسافة بين اليوم واليوم الأسبوعي
+            Row(
+              children: [
+                Text(
+                  '$day',
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 15,
+                  ),
+                ),
+                SizedBox(
+                  width: 5,
+                ),
+                Icon(
+                  Icons.calendar_today_outlined,
+                  size: 14,
+                ),
+              ],
             ),
           ],
         ),
@@ -49,3 +60,9 @@ class DayAndWeekdayColumn extends StatelessWidget {
     );
   }
 }
+/*
+decoration: BoxDecoration(
+color: Colors.white,
+borderRadius: BorderRadius.all(Radius.circular(10)),
+border: Border.all(color: Color(0xffd1d1d1), width: 1),
+),*/

@@ -37,9 +37,11 @@ class _WalletState extends State<Wallet> {
         backgroundColor: Colors.white,
         body: Stack(
           children: [
-            // خلفية مستطيل 54
             Positioned(
-              left: MediaQuery.of(context).size.width * 0.5 - 440 / 2 - 5,
+              left: MediaQuery
+                  .of(context)
+                  .size
+                  .width * 0.5 - 440 / 2 - 5,
               top: -6,
               child: Container(
                 width: 440,
@@ -85,11 +87,7 @@ class _WalletState extends State<Wallet> {
                 ),
               ),
             ),
-            // الدائرة (Ellipse 60)
 
-            // العنصر الثاني (الكل)
-
-            // 5,000,00 النص
             Positioned(
               right: 0,
               left: 0,
@@ -181,7 +179,7 @@ class _WalletState extends State<Wallet> {
                         height: 42 / 26,
                       ),
                       textAlign:
-                          TextAlign.right, // تأكد من محاذاة الاسم بشكل صحيح
+                      TextAlign.right, // تأكد من محاذاة الاسم بشكل صحيح
                     ),
                   ),
                 ],
@@ -385,7 +383,7 @@ class TransactionItem extends StatelessWidget {
                           15,
                         ),
                         border:
-                            Border.all(width: 1.5, color: Color(0xffDDDDDD))),
+                        Border.all(width: 1.5, color: Color(0xffDDDDDD))),
                     child: Text(
                       status,
                       style: GoogleFonts.balooBhaijaan2(
@@ -407,7 +405,7 @@ class TransactionItem extends StatelessWidget {
           width: double.infinity,
           decoration: BoxDecoration(
             border: Border.all(
-              color: Color(0xFFE8E5FF), // اللون #E8E5FF
+              color: Color(0xFFE8E5FF),
               width: 1,
             ),
           ),

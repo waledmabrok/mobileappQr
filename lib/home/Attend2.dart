@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-
+import 'package:flutter_svg/svg.dart';
 import '../ FieldsMachine/setup/background.dart';
 
 class ActivityScreen extends StatelessWidget {
@@ -13,7 +13,43 @@ class ActivityScreen extends StatelessWidget {
       backgroundColor: const Color(0xfffafafc),
       body: Stack(
         children: [
-          Positioned.fill(child: BackgroundWidget()),
+          Positioned(
+            top: 0,
+            left: 0,
+            child: SvgPicture.asset("assets/top_shap.svg"),
+          ),
+          Positioned(
+            top: 247,
+            right: 0,
+            child: Container(
+              child: SvgPicture.asset("assets/center_shap.svg"),
+            ),
+          ),
+          Positioned(
+            bottom: 18,
+            left: 0,
+            child: Container(
+              child: SvgPicture.asset("assets/bottom_shap.svg"),
+            ),
+          ),
+          Positioned(
+            top: 382,
+            left: 33,
+            child: Container(
+              child: SvgPicture.asset("assets/3right.svg"),
+            ),
+          ),
+          Positioned(
+            top: 382,
+            right: 0,
+            child: Opacity(
+              opacity: 0.3,
+              child: Container(
+                child: SvgPicture.asset("assets/4center.svg"),
+              ),
+            ),
+          ),
+
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -59,38 +95,6 @@ class ActivityScreen extends StatelessWidget {
                 status: "في الموعد",
                 iconColor: Colors.orange,
               ),
-              /*  const Spacer(),
-              GestureDetector(
-                onTap: () {
-                  // قم بإضافة الوظيفة هنا
-                },
-                child: Container(
-                  height: 60,
-                  decoration: BoxDecoration(
-                    color: Colors.red.shade100,
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-                  alignment: Alignment.center,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(
-                        FontAwesomeIcons.arrowLeft,
-                        color: Colors.red,
-                      ),
-                      const SizedBox(width: 10),
-                      Text(
-                        "اسحب لتسجيل الخروج",
-                        style: GoogleFonts.cairo(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.red,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),*/
             ],
           ),
         ],
@@ -124,6 +128,7 @@ class ActivityScreen extends StatelessWidget {
         child: Row(
           children: [
             Container(
+
               width: 40,
               height: 40,
               decoration: BoxDecoration(

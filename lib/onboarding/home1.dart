@@ -31,7 +31,7 @@ class AttendanceScreen extends StatefulWidget {
 }
 
 class _AttendanceScreenState extends State<AttendanceScreen> {
-  String city = "جار التحميل..."; // النص الافتراضي قبل الحصول على المدينة
+  String city = "جار التحميل...";
   String country = "Loading...";
   String buttonText = 'تسجيل حضور';
   bool isAttendanceStarted = false;
@@ -59,7 +59,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
 
   bool isSwipeVisible = false;
   bool isFinished = false;
-  bool _isRequestInProgress = false; // متغير لتعقب حالة الطلب
+  bool _isRequestInProgress = false;
 
   StreamController<bool> _wifiController = StreamController<bool>();
   StreamController<bool> _locationController = StreamController<bool>();
@@ -89,12 +89,10 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
       _timer = Timer.periodic(Duration(seconds: 1), (timer) {
         if (isCheckedIn) {
           setState(() {
-            // حساب الوقت المنقضي من بداية الحضور
             elapsedTime = DateTime.now().difference(startTime!);
           });
         } else {
-          // إيقاف التايمر عند الخروج من الحضور
-          _stopTimer(); // قم بإيقاف التايمر بشكل صحيح
+          _stopTimer(); //
         }
       });
     }
@@ -102,17 +100,16 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
 
   void _stopTimer() {
     if (_timer != null) {
-      _timer!.cancel(); // إيقاف التايمر عند الحاجة
-      _timer = null; // تعيينه إلى null حتى يمكن بدءه مرة أخرى عند الحاجة
+      _timer!.cancel();
+      _timer = null;
     }
   }
 
   Future<void> _loadUserData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
-      userName = prefs.getString('user_name') ?? 'غير معروف'; // استرجاع الاسم
-      userProfilePicture =
-          prefs.getString('user_profile_picture') ?? ''; // استرجاع الصورة
+      userName = prefs.getString('user_name') ?? 'غير معروف';
+      userProfilePicture = prefs.getString('user_profile_picture') ?? '';
     });
   }
 
@@ -145,7 +142,6 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
     Geolocator.getPositionStream(
       locationSettings: LocationSettings(accuracy: LocationAccuracy.high),
     ).listen((Position position) async {
-      // حساب المسافة بين الموقع الحالي للجهاز والموقع المستهدف
       double distance = Geolocator.distanceBetween(
         targetLatitude,
         targetLongitude,
@@ -155,12 +151,9 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
 
       print('المسافة الحالية: $distance متر');
 
-      // التحقق إذا كانت المسافة أقل من أو تساوي المسافة المسموح بها
       if (distance <= allowedDistance) {
-        // تنفيذ أي إجراء عند التواجد ضمن النطاق المسموح به
         print('الجهاز داخل النطاق المسموح به');
 
-        // تحويل الإحداثيات إلى اسم المدينة والدولة
         Map<String, String> location =
             await getCityAndCountry(position.latitude, position.longitude);
 
@@ -558,9 +551,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                             height: 250,
                             decoration: BoxDecoration(
                               color: Colors.transparent,
-                              // اللون الأساسي للصندوق
-                              borderRadius: BorderRadius.circular(
-                                  20), // تأكد من تحديد الـ BorderRadius
+                              borderRadius: BorderRadius.circular(20),
                             ),
                           ),
                         ),
@@ -575,100 +566,6 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
       },
     );
   }
-
-/*
-  Future<bool> _sendCheckInRequest(String userId, String jsonBody) async {
-    String url =
-        'https://demos.elboshy.com/attendance/wp-json/attendance/v1/check-in';
-
-    try {
-      final response = await http.post(
-        Uri.parse(url),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: jsonBody,
-      );
-
-      if (response.statusCode == 200) {
-        print('تم تسجيل الحضور بنجاح');
-        print(response.body);
-        setState(() {
-          isCheckedIn = !isCheckedIn;
-          if (!isAttendanceStarted) {
-            startTime = DateTime.now();
-            buttonText = 'تسجيل انصراف';
-          } else {
-            endTime = DateTime.now();
-            buttonText = 'تسجيل حضور';
-          }
-          isAttendanceStarted = !isAttendanceStarted;
-        });
-        Timer.periodic(Duration(seconds: 1), (timer) {
-          if (isCheckedIn) {
-            setState(() {
-              elapsedTime = DateTime.now().difference(startTime!);
-            });
-          } else {
-            timer.cancel();
-          }
-        });
-        return true; // العملية نجحت
-      } else {
-       */
-/* ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Row(
-              children: [
-                Icon(Icons.close, color: Colors.white),
-                SizedBox(width: 10),
-                Expanded(
-                  child: Text(
-                    " اعمل اسكان باستخدام qr حسابك",
-                    style: GoogleFonts.balooBhaijaan2(),
-                  ),
-                ),
-              ],
-            ),
-            backgroundColor: Colors.red,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-            behavior: SnackBarBehavior.floating,
-          ),
-        );*/ /*
-
-        print(response.body);
-        print('فشل تسجيل الحضور: ${response.statusCode}');
-        return false; // العملية فشلت
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Row(
-            children: [
-              Icon(Icons.close, color: Colors.white),
-              SizedBox(width: 10),
-              Expanded(
-                child: Text(
-                  "مشكله ف الانترنت",
-                  style: GoogleFonts.balooBhaijaan2(),
-                ),
-              ),
-            ],
-          ),
-          backgroundColor: Colors.red,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
-          behavior: SnackBarBehavior.floating,
-        ),
-      );
-      print('حدث خطأ أثناء إرسال طلب تسجيل الحضور: $e');
-      return false;
-    }
-  }
-*/
 
   Future<bool> _sendCheckInRequest(String userId, String jsonBody) async {
     String url =
@@ -746,10 +643,9 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
             behavior: SnackBarBehavior.floating,
           ),
         );
-        return false; // العملية فشلت
+        return false;
       }
     } catch (e) {
-      // التعامل مع الأخطاء في الاتصال بالإنترنت
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Row(
@@ -970,7 +866,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                 height: 350,
                 padding: EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(0.7), // خلفية داكنة شفافة
+                  color: Colors.black.withOpacity(0.7),
                   borderRadius: BorderRadius.circular(20),
                   boxShadow: [
                     BoxShadow(

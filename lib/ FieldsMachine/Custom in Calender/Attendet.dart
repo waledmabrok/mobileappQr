@@ -1,4 +1,7 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+
+import '../setup/MainColors.dart';
 
 class AttendanceColumn extends StatelessWidget {
   final String clockIn;
@@ -17,20 +20,41 @@ class AttendanceColumn extends StatelessWidget {
     double screenWidth = MediaQuery.of(context).size.width;
 
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Icon(icon, size: screenWidth * 0.04,color:Color(0xff99989a) ,),
-        const SizedBox(height: 4),
-        Text(
-          clockIn,
-          style: TextStyle(fontSize: screenWidth * 0.03,fontWeight: FontWeight.bold,color: Color(0xff373739)), // ضبط حجم النص بناءً على عرض الشاشة
+        ShaderMask(
+          shaderCallback: (bounds) => LinearGradient(
+            colors: [
+              Color(0xFF487FDB),
+              Color(0xFF9684E1),
+            ],
+            stops: [0.1667, 1.9756],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ).createShader(bounds),
+          child: Icon(
+            icon,
+            size: screenWidth * 0.042,
+            color: Colors.white,
+          ),
         ),
-        const SizedBox(height: 4),
+        const SizedBox(height: 2),
         Text(
           label,
-          style: TextStyle(fontSize: screenWidth * 0.030,fontWeight: FontWeight.bold,color:Color(
-              0xff959496)),
+          style: TextStyle(
+              fontSize: screenWidth * 0.030,
+              fontWeight: FontWeight.bold,
+              color: Colorss.SecondText),
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
+        ),
+        const SizedBox(height: 2),
+        Text(
+          clockIn,
+          style: TextStyle(
+              fontSize: screenWidth * 0.03,
+              fontWeight: FontWeight.bold,
+              color: Colors.black),
         ),
       ],
     );

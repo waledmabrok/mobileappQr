@@ -71,159 +71,164 @@ class _AttendanceScreen5State extends State<AttendanceScreen5> {
               child: Container(
                 child: SvgPicture.asset("assets/bottom_shap.svg"),
               )),
-          Padding(
-            padding: const EdgeInsetsDirectional.only(
-                start: 20, top: 70, end: 20, bottom: 10),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+          SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsetsDirectional.only(
+                  start: 20, top: 70, end: 20, bottom: 10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "اهلا ${userName} 👋 ",
+                              style: GoogleFonts.balooBhaijaan2(
+                                color: Color(0xFF9684E1),
+                                fontSize: 26,
+                                fontWeight: FontWeight.w800,
+                              ),
+                            ),
+                            SizedBox(height: 1),
+                            Text(
+                              'قم بتسجيل حضورك الان',
+                              style: GoogleFonts.balooBhaijaan2(
+                                fontWeight: FontWeight.w500,
+                                color: Color(0xff909090),
+                                fontSize: 20,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Stack(
+                        clipBehavior: Clip.none,
                         children: [
-                          Text(
-                            "اهلا ${userName} 👋 ",
-                            style: GoogleFonts.balooBhaijaan2(
-                              color: Color(0xFF9684E1),
-                              fontSize: 26,
-                              fontWeight: FontWeight.w800,
+                          Container(
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                color: Colors.grey,
+                                width: 1.5,
+                              ),
+                              borderRadius:
+                              BorderRadius.all(Radius.circular(35)),
+                            ),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                border: Border.all(
+                                  color: Colors.white,
+                                  width: 3,
+                                ),
+                                borderRadius:
+                                BorderRadius.all(Radius.circular(30)),
+                              ),
+                              child: userProfilePicture.isNotEmpty
+                                  ? CircleAvatar(
+                                radius: 27,
+                                backgroundImage:
+                                NetworkImage(userProfilePicture),
+                              )
+                                  : Icon(Icons.person, size: 35),
                             ),
                           ),
-                          SizedBox(height: 1),
-                          Text(
-                            'قم بتسجيل حضورك الان',
-                            style: GoogleFonts.balooBhaijaan2(
-                              fontWeight: FontWeight.w500,
-                              color: Color(0xff909090),
-                              fontSize: 20,
+                          Positioned(
+                            bottom: 4,
+                            left: 4,
+                            child: Container(
+                              height: 14,
+                              width: 14,
+                              decoration: BoxDecoration(
+                                color: Color(0xff5eb6a1),
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: Colors.white,
+                                  width: 2,
+                                ),
+                              ),
                             ),
                           ),
                         ],
                       ),
-                    ),
-                    Stack(
-                      clipBehavior: Clip.none,
-                      children: [
-                        Container(
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                              color: Colors.grey,
-                              width: 1.5,
-                            ),
-                            borderRadius: BorderRadius.all(Radius.circular(35)),
-                          ),
-                          child: Container(
-                            decoration: BoxDecoration(
-                              border: Border.all(
-                                color: Colors.white,
-                                width: 3,
-                              ),
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(30)),
-                            ),
-                            child: userProfilePicture.isNotEmpty
-                                ? CircleAvatar(
-                                    radius: 27,
-                                    backgroundImage:
-                                        NetworkImage(userProfilePicture),
-                                  )
-                                : Icon(Icons.person, size: 35),
-                          ),
-                        ),
-                        Positioned(
-                          bottom: 4,
-                          left: 4,
-                          child: Container(
-                            height: 14,
-                            width: 14,
-                            decoration: BoxDecoration(
-                              color: Color(0xff5eb6a1),
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: Colors.white,
-                                width: 2,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(width: 10),
-                  ],
-                ),
-                SizedBox(
-                  height: 30,
-                ),
-                Text(
-                  "الحضور اليومي",
-                  style: GoogleFonts.cairo(
-                    color: Colors.black,
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
+                      SizedBox(width: 10),
+                    ],
                   ),
-                ),
-                const SizedBox(height: 20),
-                GridView.builder(
-                  padding: const EdgeInsets.only(top: 10),
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    mainAxisSpacing: 10,
-                    crossAxisSpacing: 10,
-                    childAspectRatio: 1.4,
+                  SizedBox(
+                    height: 30,
                   ),
-                  itemCount: 4,
-                  itemBuilder: (context, index) {
-                    final List<Map<String, dynamic>> cards = [
-                      {
-                        "data": "10:20 صباحًا",
-                        "title": "الدخول",
-                        "subtitle": "في الموعد",
-                        "icon": FontAwesomeIcons.rightToBracket,
-                        "iconColor": Colors.blue,
-                      },
-                      {
-                        "data": "07:00 مساءً",
-                        "title": "الخروج",
-                        "subtitle": "الانصراف",
-                        "icon": FontAwesomeIcons.rightFromBracket,
-                        "iconColor": Colors.red,
-                      },
-                      {
-                        "data": "00:30 دقيقة",
-                        "title": "وقت الراحة",
-                        "subtitle": "متوسط",
-                        "icon": FontAwesomeIcons.clock,
-                        "iconColor": Colors.orange,
-                      },
-                      {
-                        "data": "28 يومًا",
-                        "title": "عدد الأيام",
-                        "subtitle": "أيام العمل",
-                        "icon": FontAwesomeIcons.calendarAlt,
-                        "iconColor": Colors.green,
-                      },
-                    ];
-                    final card = cards[index];
-                    return _buildAttendanceCard(
-                      card['data']!,
-                      card['title']!,
-                      card['subtitle']!,
-                      Colors.white,
-                      Colors.black,
-                      card['icon']!,
-                      card['iconColor']!,
-                    );
-                  },
-                ),
-                const SizedBox(height: 20),
-                ActivityScreenContent(),
-              ],
+                  Text(
+                    "الحضور اليومي",
+                    style: GoogleFonts.cairo(
+                      color: Colors.black,
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  GridView.builder(
+                    padding: const EdgeInsets.only(top: 10),
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    gridDelegate:
+                    const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      mainAxisSpacing: 10,
+                      crossAxisSpacing: 10,
+                      childAspectRatio: 1.4,
+                    ),
+                    itemCount: 4,
+                    itemBuilder: (context, index) {
+                      final List<Map<String, dynamic>> cards = [
+                        {
+                          "data": "10:20 صباحًا",
+                          "title": "الدخول",
+                          "subtitle": "في الموعد",
+                          "icon": FontAwesomeIcons.rightToBracket,
+                          "iconColor": Colors.blue,
+                        },
+                        {
+                          "data": "07:00 مساءً",
+                          "title": "الخروج",
+                          "subtitle": "الانصراف",
+                          "icon": FontAwesomeIcons.rightFromBracket,
+                          "iconColor": Colors.red,
+                        },
+                        {
+                          "data": "00:30 دقيقة",
+                          "title": "وقت الراحة",
+                          "subtitle": "متوسط",
+                          "icon": FontAwesomeIcons.clock,
+                          "iconColor": Colors.orange,
+                        },
+                        {
+                          "data": "28 يومًا",
+                          "title": "عدد الأيام",
+                          "subtitle": "أيام العمل",
+                          "icon": FontAwesomeIcons.calendarAlt,
+                          "iconColor": Colors.green,
+                        },
+                      ];
+                      final card = cards[index];
+                      return _buildAttendanceCard(
+                        card['data']!,
+                        card['title']!,
+                        card['subtitle']!,
+                        Colors.white,
+                        Colors.black,
+                        card['icon']!,
+                        card['iconColor']!,
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 20),
+                  ActivityScreenContent(),
+                  const SizedBox(height: 100),
+                ],
+              ),
             ),
           ),
         ],

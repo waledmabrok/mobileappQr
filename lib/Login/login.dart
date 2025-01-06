@@ -170,7 +170,27 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
             resizeToAvoidBottomInset: false,
             body: Stack(
               children: [
-                Positioned(child: SvgPicture.asset("assets/fullFrame.svg")),
+                Positioned(
+                  top: 0,
+                  left: 0,
+                  child: SvgPicture.asset("assets/top_shap.svg"),
+                ),
+                Positioned(
+                  top: 247,
+                  right: 0,
+                  child: Container(
+                    child: SvgPicture.asset("assets/center_shap.svg"),
+                  ),
+                ),
+                Positioned(
+                  bottom: 18,
+                  left: 0,
+                  child: Container(
+                    child: SvgPicture.asset("assets/bottom_shap.svg"),
+                  ),
+                ),
+
+
                 Positioned(
                     bottom: 0,
                     left: 0,

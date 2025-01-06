@@ -56,7 +56,6 @@ class _TasksScreenState extends State<TasksScreen>
       'icon': 'assets/SvgNotifi/Notifi.svg',
       'icon2': 'assets/Calender/OIP (1).jpeg',
     },
-    // ... بقية الإشعارات
   ];
 
   Future<void> _loadUserData() async {
@@ -331,17 +330,14 @@ class _TasksScreenState extends State<TasksScreen>
                                   isSelected: _tabController.index == 1,
                                   onSelected: () {
                                     setState(() {
-                                      required =
-                                          false; // تغيير قيمة required إلى false عند الضغط
-                                      _tabController.index = 1; // تحديث الفهرس
+                                      required = false;
+                                      _tabController.index = 1;
                                       for (var notification in notifications) {
-                                        notification['isRead'] =
-                                            true; // تعيين الإشعارات كـ مقروءة
+                                        notification['isRead'] = true;
                                       }
                                     });
                                   },
-                                  required:
-                                      required, // تمرير قيمة required إلى FilterChipWidget
+                                  required: required,
                                 ),
                               ],
                             ),
@@ -424,7 +420,7 @@ class NotificationCard extends StatelessWidget {
     required this.icon2,
     this.requiredColor = Colors.red,
     this.isRead = false,
-    this.required = false, // قيمة افتراضية هي false
+    this.required = false,
   });
 
   @override
@@ -433,9 +429,24 @@ class NotificationCard extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 3.0),
       child: Container(
         decoration: BoxDecoration(
+          // استخدام التدرج فقط عندما يكون required صحيحًا
+          gradient: required
+              ? LinearGradient(
+                  colors: [
+                    Color(0xffF2F8FF),
+                    Colors.white,
+                  ],
+                  begin: Alignment.topRight,
+                  end: Alignment.bottomLeft,
+                )
+              : null, // لا نضع التدرج إذا كانت required خاطئة
+
+          // لا نقوم بتعيين color في حالة وجود التدرج، لأن التدرج هو الذي سيظهر
           color: required
-              ? Color(0xfff8fcff).withOpacity(0.9)
-              : Colors.white.withOpacity(0.8),
+              ? null // لا نضع لون ثابت هنا عندما يكون هناك تدرج
+              : Colors.white.withOpacity(
+                  0.8), // اللون الأبيض مع الشفافية عندما لا يكون هناك تدرج
+
           border: Border.all(
             color: Color(0xFFE7F0FF),
             width: 1,
@@ -599,11 +610,11 @@ class NotificationCard extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.all(5.0),
                       child: Container(
-                        width: 6, // تحديد العرض
-                        height: 6, // تحديد الارتفاع
+                        width: 6,
+                        height: 6,
                         decoration: BoxDecoration(
-                          color: Colorss.mainColor, // تحديد اللون الذي تريده
-                          shape: BoxShape.circle, // الشكل الدائري
+                          color: Colorss.mainColor,
+                          shape: BoxShape.circle,
                         ),
                       ),
                     )

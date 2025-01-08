@@ -210,14 +210,14 @@ class _TasksScreenState extends State<TasksScreen>
                     //       required: true,
                   ),
                   NotificationCard(
-                    title: 'طلب اجازة',
-                    content:
-                        'إشعار الإجازات : "تم الموافقة على إجازتك من تاريخ [1/11/2023] إلى تاريخ [1/12/2023]. استمتع بإجازتك!"',
-                    date: ' 13 ساعه',
-                    icon: 'assets/SvgNotifi/Notifi.svg',
-                    icon2: 'assets/SvgNotifi/Notifi.svg',
-                    requiredColor: Colorss.mainColor,
-                  ),
+                      title: 'طلب اجازة',
+                      content:
+                          'إشعار الإجازات : "تم الموافقة على إجازتك من تاريخ [1/11/2023] إلى تاريخ [1/12/2023]. استمتع بإجازتك!"',
+                      date: ' 13 ساعه',
+                      icon: 'assets/SvgNotifi/Notifi.svg',
+                      icon2: 'assets/SvgNotifi/Notifi.svg',
+                      requiredColor: Colorss.mainColor,
+                      isLast: true),
                   Padding(
                     padding: const EdgeInsets.only(right: 20.0, top: 20),
                     child: Text(
@@ -259,14 +259,14 @@ class _TasksScreenState extends State<TasksScreen>
                     requiredColor: Colorss.mainColor,
                   ),
                   NotificationCard(
-                    title: 'طلب اجازة',
-                    content:
-                        'إشعار الإجازات : "تم الموافقة على إجازتك من تاريخ [1/11/2023] إلى تاريخ [1/12/2023]. استمتع بإجازتك!"',
-                    date: ' 24 ساعه',
-                    icon: 'assets/SvgNotifi/Notifi.svg',
-                    icon2: 'assets/SvgNotifi/Notifi.svg',
-                    requiredColor: Colorss.mainColor,
-                  ),
+                      title: 'طلب اجازة',
+                      content:
+                          'إشعار الإجازات : "تم الموافقة على إجازتك من تاريخ [1/11/2023] إلى تاريخ [1/12/2023]. استمتع بإجازتك!"',
+                      date: ' 24 ساعه',
+                      icon: 'assets/SvgNotifi/Notifi.svg',
+                      icon2: 'assets/SvgNotifi/Notifi.svg',
+                      requiredColor: Colorss.mainColor,
+                      isLast: true),
 
                   SizedBox(
                     height: 110,
@@ -410,7 +410,8 @@ class NotificationCard extends StatelessWidget {
   final String icon2;
   final Color requiredColor;
   final bool isRead;
-  final bool required; // إضافة هذه المتغير لتحديد إذا كانت الإشعار مُحدد أو لا.
+  final bool required;
+  final bool isLast; // Add this property to determine if it's the last item
 
   NotificationCard({
     required this.title,
@@ -421,55 +422,52 @@ class NotificationCard extends StatelessWidget {
     this.requiredColor = Colors.red,
     this.isRead = false,
     this.required = false,
+    this.isLast = false, // Initialize it with false by default
   });
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 3.0),
-      child: Container(
-        decoration: BoxDecoration(
-          // استخدام التدرج فقط عندما يكون required صحيحًا
-          gradient: required
-              ? LinearGradient(
-                  colors: [
-                    Color(0xffF2F8FF),
-                    Colors.white,
-                  ],
-                  begin: Alignment.topRight,
-                  end: Alignment.bottomLeft,
-                )
-              : null, // لا نضع التدرج إذا كانت required خاطئة
-
-          // لا نقوم بتعيين color في حالة وجود التدرج، لأن التدرج هو الذي سيظهر
-          color: required
-              ? null // لا نضع لون ثابت هنا عندما يكون هناك تدرج
-              : Colors.white.withOpacity(
-                  0.8), // اللون الأبيض مع الشفافية عندما لا يكون هناك تدرج
-
-          border: Border.all(
-            color: Color(0xFFE7F0FF),
-            width: 1,
-          ),
-          borderRadius: BorderRadius.circular(6),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(12.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Container(
-                    alignment: Alignment.center,
-                    width: 45,
-                    height: 45,
-                    decoration: BoxDecoration(
-                      color: requiredColor.withOpacity(0.08),
-                      shape: BoxShape.circle,
+    return Column(
+      children: [
+        Container(
+          decoration: BoxDecoration(
+            gradient: required
+                ? LinearGradient(
+                    colors: [
+                      Color(0xffF2F8FF),
+                      Colors.white,
+                    ],
+                    begin: Alignment.topRight,
+                    end: Alignment.bottomLeft,
+                  )
+                : null,
+            color: required ? null : Colors.white.withOpacity(0.8),
+            //  borderRadius: BorderRadius.circular(6),
+            border: isLast
+                ? null
+                : Border(
+                    bottom: BorderSide(
+                      color: Colorss.BorderColor,
+                      width: 1,
                     ),
-                    child: Container(
-                      decoration: BoxDecoration(),
+                  ),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.only(
+                left: 15.0, right: 15, top: 25, bottom: 25),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      alignment: Alignment.center,
+                      width: 45,
+                      height: 45,
+                      decoration: BoxDecoration(
+                        color: requiredColor.withOpacity(0.08),
+                        shape: BoxShape.circle,
+                      ),
                       child: SvgPicture.asset(
                         width: 35,
                         height: 35,
@@ -477,13 +475,12 @@ class NotificationCard extends StatelessWidget {
                         fit: BoxFit.cover,
                       ),
                     ),
-                  ),
-                  SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        GestureDetector(
+                    SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          GestureDetector(
                             onTap: () {
                               showDialog(
                                 context: context,
@@ -565,65 +562,70 @@ class NotificationCard extends StatelessWidget {
                               ),
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
-                            )),
-                        SizedBox(
-                          height: 7,
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Text(
-                              date,
-                              style: GoogleFonts.balooBhaijaan2(
-                                fontWeight: FontWeight.w400,
-                                fontSize: 12,
-                                color: Color(0xffC2C2C2),
-                              ),
                             ),
-                            SizedBox(width: 2),
-                            Text(
-                              ".",
-                              style: GoogleFonts.balooBhaijaan2(
-                                fontWeight: FontWeight.w400,
-                                fontSize: 14,
-                                color: Color(0xffC2C2C2),
+                          ),
+                          SizedBox(height: 7),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Text(
+                                date,
+                                style: GoogleFonts.balooBhaijaan2(
+                                  fontWeight: FontWeight.w400,
+                                  fontSize: 12,
+                                  color: Color(0xffC2C2C2),
+                                ),
                               ),
-                            ),
-                            SizedBox(width: 2),
-                            Text(
-                              "Teamleader",
-                              style: GoogleFonts.balooBhaijaan2(
-                                fontWeight: FontWeight.w500,
-                                fontSize: 12,
-                                color: Colors.black,
+                              SizedBox(width: 2),
+                              Text(
+                                ".",
+                                style: GoogleFonts.balooBhaijaan2(
+                                  fontWeight: FontWeight.w400,
+                                  fontSize: 14,
+                                  color: Color(0xffC2C2C2),
+                                ),
                               ),
-                            ),
-                          ],
-                        )
-                      ],
-                    ),
-                  ),
-                  SizedBox(
-                    width: 5,
-                  ),
-                  if (required)
-                    Padding(
-                      padding: const EdgeInsets.all(5.0),
-                      child: Container(
-                        width: 6,
-                        height: 6,
-                        decoration: BoxDecoration(
-                          color: Colorss.mainColor,
-                          shape: BoxShape.circle,
-                        ),
+                              SizedBox(width: 2),
+                              Text(
+                                "Teamleader",
+                                style: GoogleFonts.balooBhaijaan2(
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 12,
+                                  color: Colors.black,
+                                ),
+                              ),
+                            ],
+                          )
+                        ],
                       ),
-                    )
-                ],
-              ),
-            ],
+                    ),
+                    SizedBox(width: 5),
+                    if (required)
+                      Padding(
+                        padding: const EdgeInsets.all(5.0),
+                        child: Container(
+                          width: 6,
+                          height: 6,
+                          decoration: BoxDecoration(
+                            color: Colorss.mainColor,
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                      )
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
-      ),
+        /* if (!isLast) // Only show the divider if it's not the last item
+          Divider(
+            thickness: 1,
+            color: Colors.grey.shade300,
+            indent: 15,
+            endIndent: 15,
+          ),*/
+      ],
     );
   }
 }

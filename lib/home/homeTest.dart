@@ -5,6 +5,10 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../ FieldsMachine/setup/MainColors.dart';
 import '../ FieldsMachine/setup/background.dart';
+import '../MainHome/CustomFilter.dart';
+import '../onboarding/calender.dart';
+import '../onboarding/navgate.dart';
+import '../onboarding/notification.dart';
 import 'Attend2.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -38,197 +42,299 @@ class _AttendanceScreen5State extends State<AttendanceScreen5> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: Stack(
-        children: [
-          Positioned(
-              top: 0, left: 0, child: SvgPicture.asset("assets/top_shap.svg")),
-          Positioned(
-              top: 247,
-              right: 0,
-              child: Container(
-                child: SvgPicture.asset("assets/center_shap.svg"),
-              )),
-          Positioned(
-              top: 382,
-              left: 33,
-              child: Container(
-                child: SvgPicture.asset("assets/3right.svg"),
-              )),
-          Positioned(
-              top: 382,
-              right: 0,
-              child: Opacity(
-                opacity: 0.3,
-                child: Container(
-                  child: SvgPicture.asset(
-                    "assets/4center.svg",
-                  ),
-                ),
-              )),
-          Positioned(
-              bottom: 18,
-              left: 0,
-              child: Container(
-                child: SvgPicture.asset("assets/bottom_shap.svg"),
-              )),
-          SingleChildScrollView(
-            child: Padding(
+      body: CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            automaticallyImplyLeading: false,
+            forceMaterialTransparency: false,
+            shadowColor: Colors.white,
+            forceElevated: false,
+            toolbarHeight: 70,
+            floating: true,
+            snap: true,
+            backgroundColor: Colors.white,
+            elevation: 2,
+            flexibleSpace: Padding(
               padding: const EdgeInsetsDirectional.only(
-                  start: 20, top: 70, end: 20, bottom: 10),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                  bottom: 10, end: 20, start: 20, top: 40),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.center,
+                  Stack(
+                    clipBehavior: Clip.none,
                     children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              "اهلا ${userName} 👋 ",
-                              style: GoogleFonts.balooBhaijaan2(
-                                color: Color(0xFF9684E1),
-                                fontSize: 26,
-                                fontWeight: FontWeight.w800,
-                              ),
-                            ),
-                            SizedBox(height: 1),
-                            Text(
-                              'قم بتسجيل حضورك الان',
-                              style: GoogleFonts.balooBhaijaan2(
-                                fontWeight: FontWeight.w500,
-                                color: Color(0xff909090),
-                                fontSize: 20,
-                              ),
-                            ),
-                          ],
+                      Container(
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: Colors.white,
+                            width: 3,
+                          ),
+                          borderRadius: BorderRadius.all(Radius.circular(30)),
                         ),
-                      ),
-                      Stack(
-                        clipBehavior: Clip.none,
-                        children: [
-                          Container(
-                            decoration: BoxDecoration(
-                              border: Border.all(
-                                color: Colors.grey,
-                                width: 1.5,
-                              ),
-                              borderRadius:
-                              BorderRadius.all(Radius.circular(35)),
-                            ),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                border: Border.all(
-                                  color: Colors.white,
-                                  width: 3,
-                                ),
-                                borderRadius:
-                                BorderRadius.all(Radius.circular(30)),
-                              ),
-                              child: userProfilePicture.isNotEmpty
-                                  ? CircleAvatar(
-                                radius: 27,
+                        child: userProfilePicture.isNotEmpty
+                            ? CircleAvatar(
+                                radius: 25,
                                 backgroundImage:
-                                NetworkImage(userProfilePicture),
+                                    NetworkImage(userProfilePicture),
                               )
-                                  : Icon(Icons.person, size: 35),
-                            ),
-                          ),
-                          Positioned(
-                            bottom: 4,
-                            left: 4,
-                            child: Container(
-                              height: 14,
-                              width: 14,
-                              decoration: BoxDecoration(
-                                color: Color(0xff5eb6a1),
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                  color: Colors.white,
-                                  width: 2,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
+                            : Icon(Icons.person, size: 35),
                       ),
-                      SizedBox(width: 10),
                     ],
                   ),
                   SizedBox(
-                    height: 30,
+                    width: 15,
                   ),
-                  Text(
-                    "الحضور اليومي",
-                    style: GoogleFonts.cairo(
-                      color: Colors.black,
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "اهلا ${userName}  ",
+                          style: GoogleFonts.balooBhaijaan2(
+                            color: Colors.black,
+                            fontSize: 20,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        SizedBox(height: 1),
+                        Text(
+                          'قم بتسجيل حضورك الان',
+                          style: GoogleFonts.balooBhaijaan2(
+                            fontWeight: FontWeight.w400,
+                            color: Colorss.Secondtext2,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  const SizedBox(height: 20),
-                  GridView.builder(
-                    padding: const EdgeInsets.only(top: 10),
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    gridDelegate:
-                    const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      mainAxisSpacing: 10,
-                      crossAxisSpacing: 10,
-                      childAspectRatio: 1.4,
-                    ),
-                    itemCount: 4,
-                    itemBuilder: (context, index) {
-                      final List<Map<String, dynamic>> cards = [
-                        {
-                          "data": "10:20 صباحًا",
-                          "title": "الدخول",
-                          "subtitle": "في الموعد",
-                          "icon": FontAwesomeIcons.rightToBracket,
-                          "iconColor": Colors.blue,
-                        },
-                        {
-                          "data": "07:00 مساءً",
-                          "title": "الخروج",
-                          "subtitle": "الانصراف",
-                          "icon": FontAwesomeIcons.rightFromBracket,
-                          "iconColor": Colors.red,
-                        },
-                        {
-                          "data": "00:30 دقيقة",
-                          "title": "وقت الراحة",
-                          "subtitle": "متوسط",
-                          "icon": FontAwesomeIcons.clock,
-                          "iconColor": Colors.orange,
-                        },
-                        {
-                          "data": "28 يومًا",
-                          "title": "عدد الأيام",
-                          "subtitle": "أيام العمل",
-                          "icon": FontAwesomeIcons.calendarAlt,
-                          "iconColor": Colors.green,
-                        },
-                      ];
-                      final card = cards[index];
-                      return _buildAttendanceCard(
-                        card['data']!,
-                        card['title']!,
-                        card['subtitle']!,
-                        Colors.white,
-                        Colors.black,
-                        card['icon']!,
-                        card['iconColor']!,
-                      );
-                    },
-                  ),
-                  const SizedBox(height: 20),
-                  ActivityScreenContent(),
-                  const SizedBox(height: 100),
+                  SizedBox(width: 10),
+                  Container(
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(30),
+                          border: Border.all(color: Colorss.BorderColor)),
+                      child: Padding(
+                        padding: const EdgeInsets.all(15.0),
+                        child: Icon(Icons.notification_important_outlined),
+                      ))
                 ],
               ),
+            ),
+          ),
+          SliverToBoxAdapter(
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Padding(
+                padding: const EdgeInsets.only(top: 15.0, left: 15, right: 15),
+                child: Row(
+                  // mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    CustomNotificationWidget(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => HomeScreen(index2: 3),
+                          ),
+                        );
+                      },
+                      iconPath: "assets/SvgProfile/wallet-svgrepo-com.svg",
+                      // مسار الأيقونة
+                      label: 'المحفظه', // النص الذي يظهر أسفل الأيقونة
+                    ),
+                    SizedBox(
+                      width: 15,
+                    ),
+                    CustomNotificationWidget(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => HomeScreen(index2: 3),
+                          ),
+                        );
+                      },
+                      iconPath: "assets/SvgNotifi/wallet-svgrepo-com.svg",
+                      // مسار الأيقونة
+                      label: 'طلب سلفه', // النص الذي يظهر أسفل الأيقونة
+                    ),
+                    SizedBox(
+                      width: 15,
+                    ),
+                    CustomNotificationWidget(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => HomeScreen(index2: 3),
+                          ),
+                        );
+                      },
+                      iconPath:
+                          "assets/SvgProfile/wallet-receive-svgrepo-com2.svg",
+                      // مسار الأيقونة
+                      label: ' الرواتب', // النص الذي يظهر أسفل الأيقونة
+                    ),
+                    SizedBox(
+                      width: 15,
+                    ),
+                    CustomNotificationWidget(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => HomeScreen(index2: 3),
+                          ),
+                        );
+                      },
+                      iconPath:
+                          "assets/SvgProfile/wallet-minus-svgrepo-com.svg",
+                      // مسار الأيقونة
+                      label: 'الخصومات', // النص الذي يظهر أسفل الأيقونة
+                    ),
+                    SizedBox(
+                      width: 15,
+                    ),
+                    CustomNotificationWidget(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => HomeScreen(index2: 0),
+                          ),
+                        );
+                      },
+                      iconPath: "assets/SvgNavbar/Notifi.svg", // مسار الأيقونة
+                      label: 'الاشعارات', // النص الذي يظهر أسفل الأيقونة
+                    ),
+                    SizedBox(
+                      width: 15,
+                    ),
+                    CustomNotificationWidget(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => HomeScreen(index2: 0),
+                          ),
+                        );
+                      },
+                      iconPath:
+                          "assets/SvgNavbar/Calender.svg", // مسار الأيقونة
+                      label: 'المحفظه', // النص الذي يظهر أسفل الأيقونة
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          SliverToBoxAdapter(
+            child: Stack(
+              children: [
+                SingleChildScrollView(
+                  child: Padding(
+                    padding:
+                        const EdgeInsetsDirectional.only(top: 0, bottom: 10),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(
+                          height: 30,
+                        ),
+                        Container(
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(30),
+                            color: Color(0xfff8f8f8),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsetsDirectional.only(
+                                top: 20, bottom: 10, start: 20, end: 20),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "الحضور اليومي",
+                                  style: GoogleFonts.balooBhaijaan2(
+                                    color: Colors.black,
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const SizedBox(height: 20),
+                                GridView.builder(
+                                  padding: const EdgeInsets.only(top: 10),
+                                  shrinkWrap: true,
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  gridDelegate:
+                                      const SliverGridDelegateWithFixedCrossAxisCount(
+                                    crossAxisCount: 2,
+                                    mainAxisSpacing: 10,
+                                    crossAxisSpacing: 10,
+                                    childAspectRatio: 1.2,
+                                  ),
+                                  itemCount: 4,
+                                  itemBuilder: (context, index) {
+                                    final List<Map<String, dynamic>> cards = [
+                                      {
+                                        "data": "10:20 صباحًا",
+                                        "title": "الدخول",
+                                        "subtitle": "في الموعد",
+                                        "icon": FontAwesomeIcons.rightToBracket,
+                                        "iconColor":
+                                            Colorss.BackgroundContainer,
+                                      },
+                                      {
+                                        "data": "07:00 مساءً",
+                                        "title": "الخروج",
+                                        "subtitle": "الانصراف",
+                                        "icon":
+                                            FontAwesomeIcons.rightFromBracket,
+                                        "iconColor":
+                                            Colorss.BackgroundContainer,
+                                      },
+                                      {
+                                        "data": "00:30 دقيقة",
+                                        "title": "وقت الراحة",
+                                        "subtitle": "متوسط",
+                                        "icon": FontAwesomeIcons.clock,
+                                        "iconColor":
+                                            Colorss.BackgroundContainer,
+                                      },
+                                      {
+                                        "data": "28 يومًا",
+                                        "title": "عدد الأيام",
+                                        "subtitle": "أيام العمل",
+                                        "icon": FontAwesomeIcons.calendarAlt,
+                                        "iconColor":
+                                            Colorss.BackgroundContainer,
+                                      },
+                                    ];
+                                    final card = cards[index];
+                                    return _buildAttendanceCard(
+                                      card['data']!,
+                                      card['title']!,
+                                      card['subtitle']!,
+                                      Colors.white,
+                                      Colors.black,
+                                      card['icon']!,
+                                      card['iconColor']!,
+                                    );
+                                  },
+                                ),
+                                const SizedBox(height: 20),
+                                ActivityScreenContent(),
+                                const SizedBox(height: 100),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         ],
@@ -242,24 +348,17 @@ class _AttendanceScreen5State extends State<AttendanceScreen5> {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(15),
         color: bgColor,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.2),
-            blurRadius: 6,
-            offset: const Offset(0, 4),
-          ),
-        ],
       ),
       child: Padding(
-        padding: const EdgeInsets.all(10.0),
+        padding: const EdgeInsets.all(15.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
                 Container(
-                  width: 25,
-                  height: 25,
+                  width: 30,
+                  height: 30,
                   decoration: BoxDecoration(
                     color: iconColor.withOpacity(0.2),
                     borderRadius: BorderRadius.circular(10),
@@ -267,16 +366,17 @@ class _AttendanceScreen5State extends State<AttendanceScreen5> {
                   child: Icon(
                     icon,
                     color: iconColor,
-                    size: 18,
+                    size: 13,
+                    weight: 0.1,
                   ),
                 ),
                 const SizedBox(width: 10),
                 Text(
                   title,
-                  style: GoogleFonts.cairo(
+                  style: GoogleFonts.balooBhaijaan2(
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
-                    color: textColor,
+                    color: Colorss.Secondtext2,
                   ),
                 ),
               ],
@@ -284,8 +384,8 @@ class _AttendanceScreen5State extends State<AttendanceScreen5> {
             const SizedBox(height: 10),
             Text(
               data,
-              style: GoogleFonts.cairo(
-                fontSize: 20,
+              style: GoogleFonts.balooBhaijaan2(
+                fontSize: 18,
                 fontWeight: FontWeight.bold,
                 color: textColor,
               ),
@@ -293,10 +393,10 @@ class _AttendanceScreen5State extends State<AttendanceScreen5> {
             const SizedBox(height: 5),
             Text(
               subtitle,
-              style: GoogleFonts.cairo(
+              style: GoogleFonts.balooBhaijaan2(
                 fontSize: 14,
-                fontWeight: FontWeight.normal,
-                color: textColor,
+                fontWeight: FontWeight.w500,
+                color: Colorss.Secondtext2,
               ),
             ),
           ],
@@ -317,9 +417,9 @@ class ActivityScreenContent extends StatelessWidget {
           children: [
             Text(
               "نشاطك",
-              style: GoogleFonts.cairo(
+              style: GoogleFonts.balooBhaijaan2(
                 fontSize: 20,
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.w800,
                 color: Colors.black,
               ),
             ),
@@ -334,10 +434,10 @@ class ActivityScreenContent extends StatelessWidget {
               },
               child: Text(
                 "عرض الكل",
-                style: GoogleFonts.cairo(
+                style: GoogleFonts.balooBhaijaan2(
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
-                  color: Colors.blue,
+                  color: Colorss.BackgroundContainer,
                 ),
               ),
             ),
@@ -350,7 +450,7 @@ class ActivityScreenContent extends StatelessWidget {
           time: "10:00 صباحًا",
           date: "17 أبريل 2023",
           status: "في الموعد",
-          iconColor: Colors.blue,
+          iconColor: Colorss.BackgroundContainer,
         ),
         const SizedBox(height: 10),
         _buildActivityItem(
@@ -359,7 +459,7 @@ class ActivityScreenContent extends StatelessWidget {
           time: "12:30 مساءً",
           date: "17 أبريل 2023",
           status: "في الموعد",
-          iconColor: Colors.orange,
+          iconColor: Colorss.BackgroundContainer,
         ),
       ],
     );
@@ -378,21 +478,21 @@ class ActivityScreenContent extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(15),
-        boxShadow: [
+        /* boxShadow: [
           BoxShadow(
             color: Colors.grey.withOpacity(0.2),
             blurRadius: 8,
             offset: const Offset(0, 3),
           ),
-        ],
+        ],*/
       ),
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Row(
           children: [
             Container(
-              width: 40,
-              height: 40,
+              width: 30,
+              height: 30,
               decoration: BoxDecoration(
                 color: iconColor.withOpacity(0.2),
                 borderRadius: BorderRadius.circular(10),
@@ -400,6 +500,7 @@ class ActivityScreenContent extends StatelessWidget {
               child: Icon(
                 icon,
                 color: iconColor,
+                size: 13,
               ),
             ),
             const SizedBox(width: 10),
@@ -409,7 +510,7 @@ class ActivityScreenContent extends StatelessWidget {
                 children: [
                   Text(
                     title,
-                    style: GoogleFonts.cairo(
+                    style: GoogleFonts.balooBhaijaan2(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                       color: Colors.black,
@@ -417,7 +518,7 @@ class ActivityScreenContent extends StatelessWidget {
                   ),
                   Text(
                     date,
-                    style: GoogleFonts.cairo(
+                    style: GoogleFonts.balooBhaijaan2(
                       fontSize: 14,
                       fontWeight: FontWeight.normal,
                       color: Colors.grey,
@@ -431,7 +532,7 @@ class ActivityScreenContent extends StatelessWidget {
               children: [
                 Text(
                   time,
-                  style: GoogleFonts.cairo(
+                  style: GoogleFonts.balooBhaijaan2(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
                     color: Colors.black,
@@ -439,7 +540,7 @@ class ActivityScreenContent extends StatelessWidget {
                 ),
                 Text(
                   status,
-                  style: GoogleFonts.cairo(
+                  style: GoogleFonts.balooBhaijaan2(
                     fontSize: 14,
                     fontWeight: FontWeight.normal,
                     color: Colors.grey,

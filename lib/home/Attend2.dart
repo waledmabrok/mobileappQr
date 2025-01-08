@@ -49,7 +49,6 @@ class ActivityScreen extends StatelessWidget {
               ),
             ),
           ),
-
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -84,7 +83,7 @@ class ActivityScreen extends StatelessWidget {
                 time: "10:00 صباحًا",
                 date: "17 أبريل 2023",
                 status: "في الموعد",
-                iconColor: Colors.blue,
+                iconColor: Color(0xff73abfd),
               ),
               const SizedBox(height: 10),
               _buildActivityItem(
@@ -128,11 +127,10 @@ class ActivityScreen extends StatelessWidget {
         child: Row(
           children: [
             Container(
-
               width: 40,
               height: 40,
               decoration: BoxDecoration(
-                color: iconColor.withOpacity(0.2),
+                color: Color(0xffe9f2fe),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Icon(

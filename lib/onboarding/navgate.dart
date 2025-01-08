@@ -9,7 +9,7 @@ import 'package:wfi_details/onboarding/profile.dart';
 import '../ FieldsMachine/setup/MainColors.dart';
 import '../home/homeTest.dart';
 import 'Profile/ProfileMain.dart';
-import 'Profile/Wallet.dart';
+import 'Profile/Wallet/Wallet.dart';
 import 'calender.dart';
 import 'home1.dart';
 import 'notification.dart';
@@ -27,7 +27,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final _advancedDrawerController = AdvancedDrawerController();
-  int _selectedIndex = 0;
+  int _selectedIndex = 2;
   late List<Widget> _screens;
   String userName = '';
   String useremail = '';
@@ -50,9 +50,9 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     _loadUserData();
     _screens = [
+      AttendanceScreen5(),
       TasksScreen(),
       AttendancePage(filter: widget.filter),
-      AttendanceScreen5(),
       AttendanceScreen(),
       ProfilePage(),
     ];
@@ -268,77 +268,72 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
       child: Scaffold(
-        floatingActionButton: Padding(
-          padding: const EdgeInsets.only(bottom: 60.0, left: 20),
-          child: GestureDetector(
-            onTap: () {
-              setState(() {
-                _selectedIndex = 2; // الانتقال إلى الشاشة الرئيسية (index 2)
-              });
-            },
-            child: Container(
-              width: 56,
-              height: 56,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: LinearGradient(
-                  colors: [Color(0xFF487FDB), Color(0xFF9684E1)],
-                  stops: [0.1667, 0.6756],
-                  begin: Alignment.topRight,
-                  end: Alignment.bottomLeft,
-                ),
+        extendBody: true,
+        floatingActionButton: GestureDetector(
+          onTap: () {
+            setState(() {
+              _selectedIndex = 0; // الانتقال إلى الشاشة الرئيسية (index 2)
+            });
+          },
+          child: Container(
+            width: 56,
+            height: 56,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: LinearGradient(
+                colors: [Color(0xFF487FDB), Color(0xFF9684E1)],
+                stops: [0.1667, 0.6756],
+                begin: Alignment.topRight,
+                end: Alignment.bottomLeft,
               ),
-              child: Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: SvgPicture.asset(
-                  "assets/SvgNavbar/Home.svg",
-                  color: Colors.white,
-                ),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: SvgPicture.asset(
+                "assets/SvgNavbar/Home.svg",
+                color: Colors.white,
               ),
             ),
           ),
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-        backgroundColor: Colors.white,
-        body: Stack(
-          children: [
-            Positioned.fill(
-                child: SvgPicture.asset("assets/SvgNavbar/background.svg")),
-            IndexedStack(
-              index: _selectedIndex,
-              children: _screens,
-            ),
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: ClipRRect(
-                borderRadius: BorderRadius.vertical(top: Radius.circular(10)),
-                child: BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      border: Border(
-                          top: BorderSide(color: Color(0xffEFECEF), width: 2)),
-                      color: Colors.white.withOpacity(0.6),
-                    ),
-                    padding: EdgeInsets.symmetric(vertical: 15, horizontal: 30),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        _buildNavItem(
-                            'assets/SvgNavbar/Calender.svg', 'المتابعه', 1),
-                        _buildNavItem(
-                            'assets/SvgNavbar/Notifi.svg', 'الإشعارات', 0),
-                        const SizedBox(width: 50),
-                        _buildNavItem('assets/time.svg', 'الحضور', 3),
-                        _buildNavItem(
-                            'assets/SvgNavbar/profile.svg', 'الملف الشخصي', 4),
-                      ],
-                    ),
-                  ),
+        floatingActionButtonAnimator: FloatingActionButtonAnimator.scaling,
+        backgroundColor: Colors.transparent,
+        body: IndexedStack(
+          index: _selectedIndex,
+          children: _screens,
+        ),
+        bottomNavigationBar: SafeArea(
+          child: Container(
+            decoration: BoxDecoration(
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.1), // Shadow color
+                  spreadRadius: 0, // Spread of shadow
+                  blurRadius: 4, // Blur effect
+                  offset: const Offset(0, -2), // Position of shadow
                 ),
+              ],
+            ), // Height of the bottom navigation bar
+            child: BottomAppBar(
+              shape: const CircularNotchedRectangle(),
+              notchMargin: 12.0,
+              //   elevation: 0,
+              color: Colors.white,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _buildNavItem('assets/SvgNavbar/Notifi.svg', 'الإشعارات', 1),
+                  _buildNavItem('assets/SvgNavbar/Calender.svg', 'المتابعه', 2),
+                  const SizedBox(width: 50),
+                  _buildNavItem('assets/time.svg', 'الحضور', 3),
+                  _buildNavItem(
+                      'assets/SvgNavbar/profile.svg', 'الملف الشخصي', 4),
+                ],
               ),
             ),
-          ],
+          ),
         ),
       ),
     );
@@ -364,7 +359,7 @@ class _HomeScreenState extends State<HomeScreen> {
               semanticsLabel: label,
             ),
           ),
-          SizedBox(height: 5),
+          /* SizedBox(height: 5),
           Text(
             label,
             style: GoogleFonts.balooBhaijaan2(
@@ -373,7 +368,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   isActive ? const Color(0xFF3D48AB) : const Color(0xFFA49494),
               fontWeight: FontWeight.w700,
             ),
-          ),
+          ),*/
         ],
       ),
     );

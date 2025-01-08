@@ -29,11 +29,13 @@ class _CustomPasswordState extends State<CustomPassword> {
   late FocusNode _focusNode;
   bool _isFocused = false;
   Color _iconColor = Colorss.icons;
+
   void _toggleVisibility() {
     setState(() {
       _obscureText = !_obscureText;
     });
   }
+
   @override
   void initState() {
     super.initState();
@@ -45,16 +47,17 @@ class _CustomPasswordState extends State<CustomPassword> {
       });
     });
   }
+
   @override
   void dispose() {
-    _focusNode.dispose(); // تأكد من التخلص من الـ FocusNode عند التخلص من الويدجت
+    _focusNode.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final effectiveValidator = widget.validator ??
-            (value) {
+        (value) {
           if (value == null || value.isEmpty) {
             return 'من فضلك ادخل ${widget.hintText}';
           }
@@ -62,72 +65,66 @@ class _CustomPasswordState extends State<CustomPassword> {
         };
 
     return Container(
+      height: 65,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(8),
-        boxShadow: _isFocused
-            ? [
-          BoxShadow(
-            color: Colorss.mainColor.withOpacity(0.4),
-            offset: Offset(0, 4),
-            blurRadius: 8,
-          ),
-        ]
-            : [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            offset: Offset(0, 2),
-            blurRadius: 4,
-          ),
-        ],
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: _isFocused
+              ? Colorss.mainColor
+              : Colors.grey, // تغيير اللون بناءً على التركيز
+          width: 1,
+        ),
       ),
-      child: TextFormField(
-        controller: widget.controller,
-        obscureText: _obscureText,
-        focusNode: _focusNode,
-        decoration: InputDecoration(
-          hintText: widget.hintText,
-          hintStyle: GoogleFonts.balooBhaijaan2(
-            color: Colorss.SecondText,
+      child: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(4.0),
+          child: TextFormField(
+            controller: widget.controller,
+            obscureText: _obscureText,
+            focusNode: _focusNode,
+            decoration: InputDecoration(
+              // hintText: widget.hintText,
+              hintStyle: GoogleFonts.balooBhaijaan2(
+                  color: Colorss.SecondText, fontSize: 15),
+              labelText: widget.hintText,
+              labelStyle: GoogleFonts.balooBhaijaan2(
+                  color: _isFocused ? Colorss.mainColor : Colorss.SecondText,
+                  fontSize: 18),
+              floatingLabelBehavior: FloatingLabelBehavior.auto,
+              // يجعل الـ hintText يطفو فوق الحقل عند الكتابة
+              border: InputBorder.none,
+              // إزالة الحدود
+              focusedBorder: InputBorder.none,
+              // إزالة الحدود عند التركيز
+              enabledBorder: InputBorder.none,
+              // إزالة الحدود عند التمكين
 
-            fontSize: 20
-          ),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8),
-            borderSide: BorderSide(color: Color(0x13859de4)),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8),
-            borderSide: BorderSide(color: Colors.blue, width: 1),
-            // You can replace this with your custom color
-          ),suffixIconColor: Colorss.mainColor,
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8),
-            borderSide: BorderSide(color: Colors.grey, width: 0.5),
-          ),
-          contentPadding: EdgeInsets.symmetric(horizontal: 16),
-          filled: true,
-          fillColor: Colors.white,
-          // Prefix icon appears if isRequired is true
-          prefixIcon: widget.isRequired
-              ? Icon(
-            Icons.lock,
-            color: _iconColor, // لون الأيقونة بناءً على حالة التركيز
-          )
-              : null,
-          suffixIcon: IconButton(
-            icon: Icon(
-              _obscureText ? Icons.visibility : Icons.visibility_off,
-              color: _iconColor, // لون الأيقونة بناءً على حالة التركيز
+              filled: true,
+              fillColor: Colors.transparent,
+              // اجعل خلفية الحقل شفافة
+              // Prefix icon appears if isRequired is true
+              prefixIcon: widget.isRequired
+                  ? Icon(
+                      Icons.lock,
+                      color: _iconColor,
+                      size: 25, // لون الأيقونة بناءً على حالة التركيز
+                    )
+                  : null,
+              suffixIcon: IconButton(
+                icon: Icon(
+                  _obscureText ? Icons.visibility : Icons.visibility_off,
+                  color: _iconColor, // لون الأيقونة بناءً على حالة التركيز
+                ),
+                onPressed: _toggleVisibility,
+              ),
             ),
-            onPressed: _toggleVisibility,
+            validator: effectiveValidator,
           ),
         ),
-        validator: effectiveValidator,
       ),
     );
   }
 }
-
 
 ///Hint use
 

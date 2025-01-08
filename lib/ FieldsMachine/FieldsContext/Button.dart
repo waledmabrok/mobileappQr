@@ -18,7 +18,7 @@ class CustomButton extends StatelessWidget {
       begin: Alignment.topRight,
       end: Alignment.bottomLeft,
     ),
-    this.borderRadius = 10.0,
+    this.borderRadius = 20.0,
   }) : super(key: key);
 
   @override
@@ -27,12 +27,13 @@ class CustomButton extends StatelessWidget {
       width: double.infinity,
       child: Container(
         decoration: BoxDecoration(
-          gradient: gradient,
+          // gradient: gradient,
+          color: Color(0xFF7585ec),
           borderRadius: BorderRadius.circular(borderRadius),
         ),
         child: ElevatedButton(
           style: ElevatedButton.styleFrom(
-            padding: EdgeInsets.symmetric(vertical: 16),
+            /*     padding: EdgeInsets.symmetric(vertical: 5),*/
             backgroundColor: Colors.transparent,
             shadowColor: Colors.transparent,
             shape: RoundedRectangleBorder(
@@ -42,16 +43,16 @@ class CustomButton extends StatelessWidget {
           onPressed: isLoading ? null : onPressed,
           child: isLoading
               ? CircularProgressIndicator(
-            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-          )
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                )
               : Text(
-            text,
-            style: GoogleFonts.balooBhaijaan2(
-              fontSize: 20,
-              fontWeight: FontWeight.w600,
-              color: Colors.white,
-            ),
-          ),
+                  text,
+                  style: GoogleFonts.balooBhaijaan2(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                  ),
+                ),
         ),
       ),
     );

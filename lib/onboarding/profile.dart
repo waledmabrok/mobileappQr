@@ -210,7 +210,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ? Center(child: _buildSkeleton())
           : Stack(
               children: [
-                BackgroundWidget2(),
                 SafeArea(
                   child: SingleChildScrollView(
                     child: Column(
@@ -224,22 +223,29 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             child: Row(
                               children: [
                                 // Ellipse with Icon (Arrow Left)
-                                Container(
-                                  width: 32,
-                                  height: 32,
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: Color(
-                                        0xFFE1E0F3), // Ellipse background color
-                                  ),
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(right: 5.0),
-                                    child: Center(
-                                      child: Icon(
-                                        Icons.arrow_back_ios,
-                                        // You can replace this with another icon or image
-                                        size: 16,
-                                        color: Color(0xff7A5AF8),
+                                InkWell(
+                                  onTap: () {
+                                    Navigator.pop(
+                                        context); // هذا يرجع إلى الشاشة السابقة
+                                  },
+                                  child: Container(
+                                    width: 32,
+                                    height: 32,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: Color(
+                                          0xFFE1E0F3), // Ellipse background color
+                                    ),
+                                    child: Padding(
+                                      padding:
+                                          const EdgeInsets.only(right: 5.0),
+                                      child: Center(
+                                        child: Icon(
+                                          Icons.arrow_back_ios,
+                                          // You can replace this with another icon or image
+                                          size: 16,
+                                          color: Color(0xff7A5AF8),
+                                        ),
                                       ),
                                     ),
                                   ),
@@ -276,92 +282,63 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 ),
                                 child: Column(
                                   children: [
-                                    // Title
-                                    /*     Text(
-                                "معلوماتك الشخصيه",
-                                style: GoogleFonts.balooBhaijaan2(
-
-                                  fontWeight: FontWeight.w800,
-                                  fontSize: 17,
-                                  color: Colors.black,
-                                ),
-                                textAlign: TextAlign.start,
-                              ),
-                              SizedBox(height: 8),
-                              Text(
-                                "هنا يمكنك تعديل بياناتك",
-                                style: GoogleFonts.balooBhaijaan2(
-
-                                  fontWeight: FontWeight.w400,
-                                  fontSize: 12,
-                                  color: Color(0xFF667085),
-                                ),
-                              ),
-                              SizedBox(height: 16),*/
                                     // Photo Upload Section
                                     Stack(
                                       clipBehavior: Clip.none,
                                       children: [
                                         // Circle Image
                                         Container(
+                                          width: 110,
+                                          height: 110,
                                           decoration: BoxDecoration(
                                             borderRadius:
-                                                BorderRadius.circular(14),
+                                                BorderRadius.circular(100),
                                             border: Border.all(
-                                                color: Colors.grey, width: 2),
-                                          ),
-                                          child: Container(
-                                            width: 100,
-                                            height: 100,
-                                            decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(12),
-                                              border: Border.all(
-                                                  color: Colors.white,
-                                                  width: 3),
-                                              image: DecorationImage(
-                                                image: profileImage != null
-                                                    ? FileImage(
-                                                        profileImage!) // إذا كانت الصورة من ملف محلي
-                                                    : _profileImageUrl !=
-                                                                null &&
-                                                            _profileImageUrl!
-                                                                .isNotEmpty
-                                                        ? CachedNetworkImageProvider(
-                                                            _profileImageUrl!) // إذا كانت الصورة من رابط URL
-                                                        : AssetImage(
-                                                                'assets/images/emptyimage.jpg')
-                                                            as ImageProvider,
-                                                // إذا كانت الصورة افتراضية
-                                                fit: BoxFit.cover,
-
-                                                /*  image: AssetImage('assets/your_photo.png'),
-                                                                                fit: BoxFit.cover,*/
-                                              ),
+                                                color: Colors.white, width: 1),
+                                            image: DecorationImage(
+                                              image: profileImage != null
+                                                  ? FileImage(profileImage!)
+                                                  : _profileImageUrl != null &&
+                                                          _profileImageUrl!
+                                                              .isNotEmpty
+                                                      ? CachedNetworkImageProvider(
+                                                          _profileImageUrl!)
+                                                      : AssetImage(
+                                                              'assets/images/emptyimage.jpg')
+                                                          as ImageProvider,
+                                              fit: BoxFit.cover,
                                             ),
                                           ),
                                         ),
                                         // Ellipse 22 (absolute positioning)
                                         Positioned(
-                                          top: -10,
-                                          right: -10,
+                                          bottom: -5,
+                                          right: -5,
                                           child: InkWell(
                                             onTap: _pickImage,
                                             child: Container(
-                                              width: 32,
-                                              height: 32,
                                               decoration: BoxDecoration(
-                                                shape: BoxShape.circle,
-                                                color: Color(0xFF7A5AF8),
-                                                border: Border.all(
-                                                    color: Colors.white,
-                                                    width: 3),
+                                                borderRadius: BorderRadius.all(
+                                                    Radius.circular(25)),
+                                                color: Colors.white,
                                               ),
-                                              child: Padding(
-                                                padding:
-                                                    const EdgeInsets.all(4.0),
-                                                child: SvgPicture.asset(
-                                                    'assets/SvgProfile/update.svg'),
+                                              child: Container(
+                                                width: 40,
+                                                height: 40,
+                                                decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.all(
+                                                          Radius.circular(25)),
+                                                  color: Color(0xFF7585ec),
+                                                  border: Border.all(
+                                                      color: Colors.white,
+                                                      width: 3),
+                                                ),
+                                                child: Icon(
+                                                  Icons.camera_alt_outlined,
+                                                  color: Colors.white,
+                                                  size: 20,
+                                                ),
                                               ),
                                             ),
                                           ),

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../setup/MainColors.dart';
+
 class CustomButton extends StatelessWidget {
   final String text;
   final VoidCallback onPressed;
@@ -28,7 +30,7 @@ class CustomButton extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           // gradient: gradient,
-          color: Color(0xFF7585ec),
+          color: Colorss.mainColor,
           borderRadius: BorderRadius.circular(borderRadius),
         ),
         child: ElevatedButton(

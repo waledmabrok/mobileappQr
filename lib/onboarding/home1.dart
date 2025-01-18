@@ -1691,34 +1691,6 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
 
             ///image background
 
-            Positioned(
-                top: 0,
-                left: 0,
-                child: SvgPicture.asset("assets/top_shap.svg")),
-            Positioned(
-                top: 247,
-                right: 0,
-                child: Container(
-                  child: SvgPicture.asset("assets/center_shap.svg"),
-                )),
-            Positioned(
-                top: 382,
-                left: 33,
-                child: Container(
-                  child: SvgPicture.asset("assets/3right.svg"),
-                )),
-            Positioned(
-                top: 382,
-                right: 0,
-                child: Opacity(
-                  opacity: 0.3,
-                  child: Container(
-                    child: SvgPicture.asset(
-                      "assets/4center.svg",
-                    ),
-                  ),
-                )),
-
             /////////time and click button///////////////////////////////////////=====================================
             Positioned(
               left: 0,
@@ -1924,6 +1896,9 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                                   : "00:00",
                         ),
                       ],
+                    ),
+                    SizedBox(
+                      height: 110,
                     ),
                   ],
                 ),

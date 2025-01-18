@@ -25,14 +25,21 @@ class HomeScreen extends StatefulWidget {
   _HomeScreenState createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen>
+    with SingleTickerProviderStateMixin {
   final _advancedDrawerController = AdvancedDrawerController();
-  int _selectedIndex = 2;
+  int _selectedIndex = 3;
   late List<Widget> _screens;
   String userName = '';
   String useremail = '';
   String userProfilePicture = '';
   String position = "";
+  late AnimationController _controller;
+  bool _isSheetOpen = false;
+  final GlobalKey _buttonKey = GlobalKey();
+
+// تعريف متغير لتحديد حالة الشيت
+  bool _isSheetVisible = false;
 
   @override
   Future<void> _loadUserData() async {
@@ -48,16 +55,350 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 300),
+    );
     _loadUserData();
     _screens = [
       AttendanceScreen5(),
       TasksScreen(),
       AttendancePage(filter: widget.filter),
-      AttendanceScreen(),
+      AttendanceScreen5(),
+      // AttendanceScreen(),
       ProfilePage(),
     ];
     _selectedIndex = widget.index2;
   }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _showAnimatedBottomSheetFromButton(BuildContext context, GlobalKey key) {
+    final RenderBox renderBox =
+        key.currentContext!.findRenderObject() as RenderBox;
+    final Offset offset = renderBox.localToGlobal(Offset.zero);
+    final Size buttonSize = renderBox.size;
+
+    showGeneralDialog(
+      context: context,
+      barrierDismissible: true,
+      barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
+      barrierColor: Colors.black54,
+      transitionDuration: const Duration(milliseconds: 100),
+      pageBuilder: (context, animation, secondaryAnimation) {
+        double screenWidth = MediaQuery.of(context).size.width;
+        double screenHeight = MediaQuery.of(context).size.height;
+        double textFontSize = screenWidth * 0.037;
+        double lineHeight = textFontSize * 1.2;
+        double verticalMargin = screenHeight * 0.01;
+
+        return WillPopScope(
+            onWillPop: () async {
+              Navigator.pop(context);
+              FocusScope.of(context).unfocus();
+              return true;
+            },
+            child: SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.only(top: 130.0),
+                child: Center(
+                  child: Material(
+                    borderRadius: BorderRadius.circular(20),
+                    elevation: 5,
+                    child: Container(
+                      width: screenWidth * 0.8,
+                      height: screenHeight * 0.42,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.1),
+                            spreadRadius: 2,
+                            blurRadius: 5,
+                            offset: const Offset(0, 3),
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        children: [
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                              _controller.reverse(); // عكس الأنميشن
+                              setState(() {
+                                _isSheetVisible = false; // إخفاء الشيت
+                              });
+                            },
+                            child: Container(
+                              color: Colors.black.withOpacity(0.0),
+                            ),
+                          ),
+                          Container(
+                            padding: const EdgeInsets.all(16.0),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                /*  Center(
+                            child: Container(
+                              width: 40,
+                              height: 5,
+                              decoration: BoxDecoration(
+                                color: Colors.grey.shade300,
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                          ),*/
+                                const SizedBox(height: 20),
+                                _buildOptionItem(
+                                  context,
+                                  title: "تسجيل الحضور",
+                                  icon: Icons.check_circle_outline,
+                                  onTap: () {
+                                    Navigator.pop(context);
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            AttendanceScreen(),
+                                      ),
+                                    );
+                                    _controller.reverse();
+                                    setState(() {
+                                      _isSheetVisible = false; // إغلاق الشيت
+                                    });
+                                  },
+                                ),
+                                _buildOptionItem(
+                                  context,
+                                  title: "طلب إجازة",
+                                  icon: Icons.beach_access,
+                                  onTap: () {
+                                    Navigator.pop(context);
+                                    Navigator.pushNamed(
+                                        context, '/leave-request');
+                                    _controller.reverse();
+                                    setState(() {
+                                      _isSheetVisible = false; // إغلاق الشيت
+                                    });
+                                  },
+                                ),
+                                _buildOptionItem(
+                                  context,
+                                  title: "إذن انصراف",
+                                  icon: Icons.exit_to_app,
+                                  onTap: () {
+                                    Navigator.pop(context);
+                                    Navigator.pushNamed(
+                                        context, '/exit-permission');
+                                    _controller.reverse();
+                                    setState(() {
+                                      _isSheetVisible = false; // إغلاق الشيت
+                                    });
+                                  },
+                                ),
+                                _buildOptionItem(
+                                  isLast: true,
+                                  context,
+                                  title: "طلب سلفة",
+                                  icon: Icons.attach_money,
+                                  onTap: () {
+                                    Navigator.pop(context);
+                                    Navigator.pushNamed(
+                                        context, '/loan-request');
+                                    _controller.reverse();
+                                    setState(() {
+                                      _isSheetVisible = false; // إغلاق الشيت
+                                    });
+                                  },
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ));
+      },
+      transitionBuilder: (context, animation, secondaryAnimation, child) {
+        double screenWidth = MediaQuery.of(context).size.width;
+        double screenHeight = MediaQuery.of(context).size.height;
+        return SlideTransition(
+          position: Tween<Offset>(
+            begin: Offset(
+                (offset.dx + buttonSize.width / 2) / screenWidth * 2 - 1,
+                (offset.dy + buttonSize.height / 2) / screenHeight * 2 - 1),
+            end: Offset.zero,
+          ).animate(
+            CurvedAnimation(
+              parent: animation,
+              curve: Curves.easeOutQuad,
+            ),
+          ),
+          child: ScaleTransition(
+            scale: Tween<double>(begin: 0.1, end: 1.0).animate(
+              CurvedAnimation(
+                parent: animation,
+                curve: Curves.easeOutQuad,
+              ),
+            ),
+            child: FadeTransition(
+              opacity: animation,
+              child: child,
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void _toggleSheet(BuildContext context) {
+    if (_isSheetVisible) {
+      // إذا كان الشيت ظاهرًا، قم بإغلاقه
+      Navigator.pop(context);
+      _controller.reverse(); // عكس الأنميشن
+    } else {
+      // إذا لم يكن الشيت ظاهرًا، قم بفتحه
+      //   _showSheet(context);
+    }
+    _isSheetVisible = !_isSheetVisible; // تغيير حالة الشيت
+  }
+
+/*  void _showSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return Stack(
+              children: [
+                GestureDetector(
+                  onTap: () {
+                    Navigator.pop(context); // إغلاق الشيت عند الضغط على الخلفية
+                    _controller.reverse(); // عكس الأنميشن
+                    setState(() {
+                      _isSheetVisible = false; // إخفاء الشيت
+                    });
+                  },
+                  child: Container(
+                    color: Colors.black.withOpacity(0.0),
+                  ),
+                ),
+                AnimatedPositioned(
+                  duration: Duration(milliseconds: 20),
+                  // وقت الحركة
+                  bottom: _isSheetVisible ? 150 : 150,
+                  // تحرك الشيت من الزر للأعلى
+                  left: 0,
+                  right: 0,
+                  child: AnimatedOpacity(
+                    opacity: _isSheetVisible
+                        ? 1.0
+                        : 0.0, // تأثير الشفافية (Fade In / Fade Out)
+                    duration: Duration(milliseconds: 30), // وقت الشفافية
+                    child: FractionallySizedBox(
+                      widthFactor: 0.8, // العرض النسبي للشيت
+                      child: Container(
+                        padding: const EdgeInsets.all(16.0),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const SizedBox(height: 10),
+                            */ /*  Center(
+                              child: Container(
+                                width: 40,
+                                height: 5,
+                                decoration: BoxDecoration(
+                                  color: Colors.grey.shade300,
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                              ),
+                            ),*/ /*
+                            const SizedBox(height: 20),
+                            _buildOptionItem(
+                              context,
+                              title: "تسجيل الحضور",
+                              icon: Icons.check_circle_outline,
+                              onTap: () {
+                                Navigator.pop(context);
+                                Navigator.pushNamed(context, '/attendance');
+                                _controller.reverse();
+                                setState(() {
+                                  _isSheetVisible = false; // إغلاق الشيت
+                                });
+                              },
+                            ),
+                            _buildOptionItem(
+                              context,
+                              title: "طلب إجازة",
+                              icon: Icons.beach_access,
+                              onTap: () {
+                                Navigator.pop(context);
+                                Navigator.pushNamed(context, '/leave-request');
+                                _controller.reverse();
+                                setState(() {
+                                  _isSheetVisible = false; // إغلاق الشيت
+                                });
+                              },
+                            ),
+                            _buildOptionItem(
+                              context,
+                              title: "إذن انصراف",
+                              icon: Icons.exit_to_app,
+                              onTap: () {
+                                Navigator.pop(context);
+                                Navigator.pushNamed(
+                                    context, '/exit-permission');
+                                _controller.reverse();
+                                setState(() {
+                                  _isSheetVisible = false; // إغلاق الشيت
+                                });
+                              },
+                            ),
+                            _buildOptionItem(
+                              isLast: true,
+                              context,
+                              title: "طلب سلفة",
+                              icon: Icons.attach_money,
+                              onTap: () {
+                                Navigator.pop(context);
+                                Navigator.pushNamed(context, '/loan-request');
+                                _controller.reverse();
+                                setState(() {
+                                  _isSheetVisible = false; // إغلاق الشيت
+                                });
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }*/
 
   void _onItemTapped(int index) {
     if (index == 4) {
@@ -270,28 +611,41 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Scaffold(
         extendBody: true,
         floatingActionButton: GestureDetector(
+          //   backgroundColor: Colors.transparent,
+          key: _buttonKey,
           onTap: () {
-            setState(() {
-              _selectedIndex = 0; // الانتقال إلى الشاشة الرئيسية (index 2)
-            });
+            if (_controller.isCompleted) {
+              // إذا كان الأنميشن قد انتهى (الدوران اكتمل)
+              _controller.reverse(); // العودة إلى الوضع الأصلي
+            } else {
+              // إذا كان الأنميشن لم يكتمل
+              _controller.forward(); // تشغيل الأنميشن (الدوران)
+            }
+            _showAnimatedBottomSheetFromButton(
+                context, _buttonKey); // عرض الشيت السفلي
           },
-          child: Container(
-            width: 56,
-            height: 56,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: LinearGradient(
-                colors: [Color(0xFF487FDB), Color(0xFF9684E1)],
-                stops: [0.1667, 0.6756],
-                begin: Alignment.topRight,
-                end: Alignment.bottomLeft,
+          child: AnimatedBuilder(
+            animation: _controller,
+            builder: (_, child) {
+              // يدور الزر عند كل نقرة
+              return Transform.rotate(
+                angle: _controller.value * 2 * 3.1415927, // دوران 360 درجة
+                child: child,
+              );
+            },
+            child: Container(
+              width: 56,
+              height: 56,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colorss.mainColor, // اللون الأساسي
               ),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: SvgPicture.asset(
-                "assets/SvgNavbar/Home.svg",
-                color: Colors.white,
+              child: Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: SvgPicture.asset(
+                  "assets/SvgNavbar/plus-svgrepo-com.svg",
+                  color: Colors.white,
+                ),
               ),
             ),
           ),
@@ -305,31 +659,36 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         bottomNavigationBar: SafeArea(
           child: Container(
+            height: 70,
             decoration: BoxDecoration(
               boxShadow: [
                 BoxShadow(
-                  color: Colors.grey.withOpacity(0.1), // Shadow color
-                  spreadRadius: 0, // Spread of shadow
-                  blurRadius: 4, // Blur effect
-                  offset: const Offset(0, -2), // Position of shadow
+                  color: Colors.grey.withOpacity(0.1), // لون الظل
+                  spreadRadius: 0, // انتشار الظل
+                  blurRadius: 4, // درجة التمويه
+                  offset: const Offset(0, -2), // موضع الظل
                 ),
               ],
-            ), // Height of the bottom navigation bar
+            ),
             child: BottomAppBar(
+              padding: EdgeInsets.all(0),
               shape: const CircularNotchedRectangle(),
               notchMargin: 12.0,
-              //   elevation: 0,
               color: Colors.white,
               child: Row(
+                //   mainAxisAlignment: MainAxisAlignment.,
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
+                // crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  _buildNavItem('assets/SvgNavbar/Notifi.svg', 'الإشعارات', 1),
-                  _buildNavItem('assets/SvgNavbar/Calender.svg', 'المتابعه', 2),
-                  const SizedBox(width: 50),
-                  _buildNavItem('assets/time.svg', 'الحضور', 3),
                   _buildNavItem(
-                      'assets/SvgNavbar/profile.svg', 'الملف الشخصي', 4),
+                      'assets/SvgNavbar/home-2-svgrepo-com.svg', 'الحضور', 3),
+
+                  _buildNavItem(
+                      'assets/SvgNavbar/Calender.svg', 'الاحصائيات', 2),
+                  const SizedBox(width: 50), // الفراغ حول زر الفاب
+                  _buildNavItem('assets/SvgNavbar/Notifi.svg', 'المحفظة', 1),
+                  _buildNavItem('assets/SvgNavbar/profile.svg', 'الاعدادات', 4),
                 ],
               ),
             ),
@@ -343,34 +702,98 @@ class _HomeScreenState extends State<HomeScreen> {
     bool isActive = _selectedIndex == index;
 
     return InkWell(
-      onTap: () => _onItemTapped(index),
-      borderRadius: BorderRadius.circular(30),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            padding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-            child: SvgPicture.asset(
-              iconPath,
-              width: 24,
-              height: 24,
-              color:
-                  isActive ? const Color(0xFF3D48AB) : const Color(0xFFA49494),
-              semanticsLabel: label,
+        overlayColor: MaterialStateProperty.all(Colors.white),
+        onTap: () => _onItemTapped(index),
+        child: Stack(
+          alignment: AlignmentDirectional.topCenter,
+          children: [
+            if (isActive)
+              Stack(
+                alignment: AlignmentDirectional.topCenter,
+                children: [
+                  ClipRRect(
+                    child: AnimatedContainer(
+                      duration: Duration(milliseconds: 250),
+                      decoration: BoxDecoration(
+                        color: Colorss.mainColor.withOpacity(0.7),
+                      ),
+                      width: 25,
+                      height: 3,
+                    ),
+                  ),
+                  ClipRect(
+                    child: AnimatedContainer(
+                      duration: Duration(milliseconds: 250),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            Colorss.mainColor.withOpacity(0.1),
+                            Colorss.mainColor.withOpacity(0.0),
+                          ],
+                        ),
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(70),
+                          topRight: Radius.circular(70),
+                          bottomLeft: Radius.circular(100),
+                          bottomRight: Radius.circular(100),
+                        ),
+                      ),
+                      width: 40,
+                      height: 50,
+                    ),
+                  ),
+                ],
+              ),
+            ClipRect(
+              child: Align(
+                child: Container(
+                  padding: EdgeInsets.symmetric(vertical: 10, horizontal: 5),
+                  child: SvgPicture.asset(
+                    iconPath,
+                    width: 40,
+                    height: 25,
+                    color: isActive
+                        ? const Color(0xFF3D48AB)
+                        : const Color(0xFFA49494),
+                    semanticsLabel: label,
+                  ),
+                ),
+              ),
             ),
-          ),
-          /* SizedBox(height: 5),
-          Text(
-            label,
-            style: GoogleFonts.balooBhaijaan2(
-              fontSize: 11,
-              color:
-                  isActive ? const Color(0xFF3D48AB) : const Color(0xFFA49494),
-              fontWeight: FontWeight.w700,
-            ),
-          ),*/
-        ],
-      ),
-    );
+          ],
+        ));
   }
+}
+
+// عنصر فردي للخيارات
+Widget _buildOptionItem(
+  BuildContext context, {
+  required String title,
+  required IconData icon,
+  required VoidCallback onTap,
+  bool isLast = false, // إضافة متغير لتحديد ما إذا كان هذا العنصر الأخير
+}) {
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.center,
+    mainAxisAlignment: MainAxisAlignment.center,
+    children: [
+      ListTile(
+        leading: Icon(icon, color: Colorss.mainColor, size: 24),
+        title: Text(
+          title,
+          style: const TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        onTap: onTap,
+      ),
+      if (!isLast) // إذا لم يكن العنصر الأخير، أضف الخط
+        const Divider(
+          thickness: 0.5,
+        ),
+    ],
+  );
 }

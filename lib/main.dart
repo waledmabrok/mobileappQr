@@ -31,11 +31,13 @@ class MyApp extends StatelessWidget {
         Locale('ar', 'AE'),
       ],
       theme: ThemeData(
+        scaffoldBackgroundColor: Colors.white,
+        primaryColor: Colors.white,
         primarySwatch: Colors.blue,
         textSelectionTheme: TextSelectionThemeData(
           cursorColor: Colors.blue, // لون المؤشر
-          selectionColor: Colors.blue.withOpacity(0.4), // لون النص المحدد
-          selectionHandleColor: Colors.blue, // لون مقبض التحديد
+          selectionColor: Colors.blue.withOpacity(0.4),
+          selectionHandleColor: Colors.blue,
         ),
       ),
     );

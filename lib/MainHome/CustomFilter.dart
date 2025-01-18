@@ -5,13 +5,13 @@ import 'package:flutter_svg/flutter_svg.dart';
 class CustomNotificationWidget extends StatelessWidget {
   final VoidCallback onTap;
   final String iconPath;
-  final String label;
+  final String? label;
 
   const CustomNotificationWidget({
     Key? key,
     required this.onTap,
     required this.iconPath,
-    required this.label,
+    this.label,
   }) : super(key: key);
 
   @override
@@ -20,12 +20,14 @@ class CustomNotificationWidget extends StatelessWidget {
       onTap: onTap,
       child: Container(
         width: 80,
-        height: 90,
+        height: 75,
         decoration: BoxDecoration(
-          border: Border.all(
-            color: const Color(0xffe9e9ea),
-            width: 0.50,
-          ),
+          border: label != null && label!.isNotEmpty
+              ? Border.all(
+                  color: const Color(0xffe9e9ea),
+                  width: 0.50,
+                )
+              : null,
           borderRadius: BorderRadius.circular(10.0),
         ),
         child: Column(
@@ -36,19 +38,21 @@ class CustomNotificationWidget extends StatelessWidget {
               iconPath,
               width: 24,
               height: 24,
-              color: const Color(0xFF3D48AB),
+              color: Colors.black,
             ),
-            const SizedBox(height: 5),
-            Center(
-              child: Text(
-                label,
-                style: GoogleFonts.balooBhaijaan2(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.black,
+            if (label != null && label!.isNotEmpty) // تحقق من وجود نص
+              const SizedBox(height: 10),
+            if (label != null && label!.isNotEmpty)
+              Center(
+                child: Text(
+                  label!,
+                  style: GoogleFonts.balooBhaijaan2(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w400,
+                    color: Colors.black,
+                  ),
                 ),
               ),
-            ),
           ],
         ),
       ),

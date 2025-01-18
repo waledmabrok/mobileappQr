@@ -22,7 +22,12 @@ class AttendanceColumn extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        ShaderMask(
+        Icon(
+          icon,
+          size: screenWidth * 0.042,
+          color: Colorss.mainColor,
+        ),
+        /*  ShaderMask(
           shaderCallback: (bounds) => LinearGradient(
             colors: [
               Color(0xFF487FDB),
@@ -32,12 +37,8 @@ class AttendanceColumn extends StatelessWidget {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ).createShader(bounds),
-          child: Icon(
-            icon,
-            size: screenWidth * 0.042,
-            color: Colors.white,
-          ),
-        ),
+          child:
+        ),*/
         const SizedBox(height: 2),
         Text(
           label,

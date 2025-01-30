@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../setup/MainColors.dart';
+
+import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:google_fonts/google_fonts.dart';
+
 class AttendanceCard1 extends StatelessWidget {
   final String data;
   final String title;
@@ -9,6 +15,7 @@ class AttendanceCard1 extends StatelessWidget {
   final Color textColor;
   final IconData icon;
   final Color iconColor;
+  final String svgIconPath;
 
   const AttendanceCard1({
     Key? key,
@@ -19,6 +26,7 @@ class AttendanceCard1 extends StatelessWidget {
     required this.textColor,
     required this.icon,
     required this.iconColor,
+    required this.svgIconPath,
   }) : super(key: key);
 
   @override
@@ -39,13 +47,25 @@ class AttendanceCard1 extends StatelessWidget {
                   width: 30,
                   height: 30,
                   decoration: BoxDecoration(
-                    color: Colors.blue.withOpacity(0.2),
+                    color: Colorss.mainColor.withOpacity(0.2),
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: Icon(
+                  child: /*Icon(
                     icon,
-                    color: Colors.blue,
+                    color: Colorss.mainColor,
                     size: 15,
+                  ),*/
+                      Padding(
+                    padding: const EdgeInsets.all(6.0),
+                    child: SvgPicture.asset(
+                      svgIconPath,
+                      colorFilter: ColorFilter.mode(
+                        Colorss.mainColor, // لون الأيقونة
+                        BlendMode.srcIn,
+                      ),
+                      width: 15,
+                      height: 15,
+                    ),
                   ),
                 ),
                 const SizedBox(width: 7),

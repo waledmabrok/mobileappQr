@@ -53,9 +53,10 @@ class AttendanceColumn extends StatelessWidget {
         Text(
           clockIn,
           style: TextStyle(
-              fontSize: screenWidth * 0.03,
-              fontWeight: FontWeight.bold,
-              color: Colors.black),
+            fontSize: screenWidth * 0.03,
+            fontWeight: FontWeight.bold,
+            color: Theme.of(context).colorScheme.onPrimary,
+          ),
         ),
       ],
     );

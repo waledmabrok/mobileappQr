@@ -205,7 +205,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
       body: isLoading
           ? Center(child: _buildSkeleton())
           : Stack(
@@ -261,7 +260,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     style: GoogleFonts.balooBhaijaan2(
                                       fontWeight: FontWeight.w600,
                                       fontSize: 18,
-                                      color: Color(0xFF101828),
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onPrimary,
                                     ),
                                   ),
                                 ),

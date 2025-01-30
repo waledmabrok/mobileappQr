@@ -7,9 +7,14 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wfi_details/onboarding/profile.dart';
 import '../ FieldsMachine/setup/MainColors.dart';
+import '../CustomNavbar/Drawer.dart';
+import '../Request permission/Request_permission.dart';
 import '../home/homeTest.dart';
 import 'Profile/ProfileMain.dart';
 import 'Profile/Wallet/Wallet.dart';
+import 'Profile/custom section.dart';
+import 'Request_money/Request_money_2.dart';
+import 'Summary/Sammary1.dart';
 import 'calender.dart';
 import 'home1.dart';
 import 'notification.dart';
@@ -17,8 +22,9 @@ import 'notification.dart';
 class HomeScreen extends StatefulWidget {
   final int index2;
   final String filter;
+  static const routeName = "/Navbar";
 
-  const HomeScreen({Key? key, required this.index2, this.filter = 'All'})
+  const HomeScreen({Key? key, this.index2 = 2, this.filter = 'All'})
       : super(key: key);
 
   @override
@@ -30,45 +36,30 @@ class _HomeScreenState extends State<HomeScreen>
   final _advancedDrawerController = AdvancedDrawerController();
   int _selectedIndex = 3;
   late List<Widget> _screens;
-  String userName = '';
-  String useremail = '';
-  String userProfilePicture = '';
-  String position = "";
   late AnimationController _controller;
-  bool _isSheetOpen = false;
   final GlobalKey _buttonKey = GlobalKey();
-
-// تعريف متغير لتحديد حالة الشيت
+  late int index2;
   bool _isSheetVisible = false;
 
   @override
-  Future<void> _loadUserData() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    setState(() {
-      userName = prefs.getString('user_name') ?? 'غير معروف';
-      userProfilePicture = prefs.getString('user_profile_picture') ?? '';
-      useremail = prefs.getString('user_email') ?? '';
-      position = prefs.getString('user_position') ?? '';
-    });
-  }
-
   @override
   void initState() {
     super.initState();
+    _selectedIndex = widget.index2;
+    index2 = widget.index2;
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 300),
     );
-    _loadUserData();
+
     _screens = [
       AttendanceScreen5(),
       TasksScreen(),
-      AttendancePage(filter: widget.filter),
-      AttendanceScreen5(),
-      // AttendanceScreen(),
+      AttendancePage(
+        filter: widget.filter,
+      ),
       ProfilePage(),
     ];
-    _selectedIndex = widget.index2;
   }
 
   @override
@@ -111,9 +102,11 @@ class _HomeScreenState extends State<HomeScreen>
                     elevation: 5,
                     child: Container(
                       width: screenWidth * 0.8,
-                      height: screenHeight * 0.42,
+                      height: screenHeight > 900
+                          ? screenHeight * 0.42
+                          : screenHeight * 0.38,
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: Theme.of(context).colorScheme.background,
                         borderRadius: BorderRadius.circular(20),
                         boxShadow: [
                           BoxShadow(
@@ -129,9 +122,9 @@ class _HomeScreenState extends State<HomeScreen>
                           GestureDetector(
                             onTap: () {
                               Navigator.pop(context);
-                              _controller.reverse(); // عكس الأنميشن
+                              _controller.reverse();
                               setState(() {
-                                _isSheetVisible = false; // إخفاء الشيت
+                                _isSheetVisible = false;
                               });
                             },
                             child: Container(
@@ -141,22 +134,12 @@ class _HomeScreenState extends State<HomeScreen>
                           Container(
                             padding: const EdgeInsets.all(16.0),
                             decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: Theme.of(context).colorScheme.background,
                               borderRadius: BorderRadius.circular(20),
                             ),
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                /*  Center(
-                            child: Container(
-                              width: 40,
-                              height: 5,
-                              decoration: BoxDecoration(
-                                color: Colors.grey.shade300,
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                            ),
-                          ),*/
                                 const SizedBox(height: 20),
                                 _buildOptionItem(
                                   context,
@@ -173,7 +156,7 @@ class _HomeScreenState extends State<HomeScreen>
                                     );
                                     _controller.reverse();
                                     setState(() {
-                                      _isSheetVisible = false; // إغلاق الشيت
+                                      _isSheetVisible = false;
                                     });
                                   },
                                 ),
@@ -183,11 +166,16 @@ class _HomeScreenState extends State<HomeScreen>
                                   icon: Icons.beach_access,
                                   onTap: () {
                                     Navigator.pop(context);
-                                    Navigator.pushNamed(
-                                        context, '/leave-request');
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            LeaveRequestPage(),
+                                      ),
+                                    );
                                     _controller.reverse();
                                     setState(() {
-                                      _isSheetVisible = false; // إغلاق الشيت
+                                      _isSheetVisible = false;
                                     });
                                   },
                                 ),
@@ -197,11 +185,16 @@ class _HomeScreenState extends State<HomeScreen>
                                   icon: Icons.exit_to_app,
                                   onTap: () {
                                     Navigator.pop(context);
-                                    Navigator.pushNamed(
-                                        context, '/exit-permission');
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            PermissionRequestPage(),
+                                      ),
+                                    );
                                     _controller.reverse();
                                     setState(() {
-                                      _isSheetVisible = false; // إغلاق الشيت
+                                      _isSheetVisible = false;
                                     });
                                   },
                                 ),
@@ -212,11 +205,15 @@ class _HomeScreenState extends State<HomeScreen>
                                   icon: Icons.attach_money,
                                   onTap: () {
                                     Navigator.pop(context);
-                                    Navigator.pushNamed(
-                                        context, '/loan-request');
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => LoanRequestPage(),
+                                      ),
+                                    );
                                     _controller.reverse();
                                     setState(() {
-                                      _isSheetVisible = false; // إغلاق الشيت
+                                      _isSheetVisible = false;
                                     });
                                   },
                                 ),
@@ -263,145 +260,107 @@ class _HomeScreenState extends State<HomeScreen>
     );
   }
 
-  void _toggleSheet(BuildContext context) {
-    if (_isSheetVisible) {
-      // إذا كان الشيت ظاهرًا، قم بإغلاقه
-      Navigator.pop(context);
-      _controller.reverse(); // عكس الأنميشن
+  Future<bool> _onWillPop() async {
+    if (Navigator.of(context).canPop()) {
+      Navigator.of(context).pop();
+      return Future.value(false);
     } else {
-      // إذا لم يكن الشيت ظاهرًا، قم بفتحه
-      //   _showSheet(context);
-    }
-    _isSheetVisible = !_isSheetVisible; // تغيير حالة الشيت
-  }
-
-/*  void _showSheet(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (BuildContext context) {
-        return StatefulBuilder(
-          builder: (context, setState) {
-            return Stack(
-              children: [
-                GestureDetector(
-                  onTap: () {
-                    Navigator.pop(context); // إغلاق الشيت عند الضغط على الخلفية
-                    _controller.reverse(); // عكس الأنميشن
-                    setState(() {
-                      _isSheetVisible = false; // إخفاء الشيت
-                    });
-                  },
-                  child: Container(
-                    color: Colors.black.withOpacity(0.0),
+      return (await showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(15),
+              ),
+              backgroundColor: Colors.white,
+              title: Center(
+                child: Text(
+                  "تأكيد الخروج",
+                  style: GoogleFonts.balooBhaijaan2(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w600,
+                    color: Colorss.MainText,
                   ),
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
                 ),
-                AnimatedPositioned(
-                  duration: Duration(milliseconds: 20),
-                  // وقت الحركة
-                  bottom: _isSheetVisible ? 150 : 150,
-                  // تحرك الشيت من الزر للأعلى
-                  left: 0,
-                  right: 0,
-                  child: AnimatedOpacity(
-                    opacity: _isSheetVisible
-                        ? 1.0
-                        : 0.0, // تأثير الشفافية (Fade In / Fade Out)
-                    duration: Duration(milliseconds: 30), // وقت الشفافية
-                    child: FractionallySizedBox(
-                      widthFactor: 0.8, // العرض النسبي للشيت
-                      child: Container(
-                        padding: const EdgeInsets.all(16.0),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(20),
+              ),
+              content: Text(
+                "هل أنت متأكد أنك تريد الخروج؟",
+                style: GoogleFonts.balooBhaijaan2(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w500,
+                  color: Colorss.SecondText,
+                ),
+              ),
+              actions: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop(false); // لا تغلق التطبيق
+                        },
+                        style: TextButton.styleFrom(
+                          foregroundColor: Colorss.mainColor,
+                          side: BorderSide(color: Colorss.mainColor),
+                          backgroundColor: Colors.transparent,
+                          padding: EdgeInsets.symmetric(vertical: 12.0),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8.0),
+                          ),
                         ),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const SizedBox(height: 10),
-                            */ /*  Center(
-                              child: Container(
-                                width: 40,
-                                height: 5,
-                                decoration: BoxDecoration(
-                                  color: Colors.grey.shade300,
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                              ),
-                            ),*/ /*
-                            const SizedBox(height: 20),
-                            _buildOptionItem(
-                              context,
-                              title: "تسجيل الحضور",
-                              icon: Icons.check_circle_outline,
-                              onTap: () {
-                                Navigator.pop(context);
-                                Navigator.pushNamed(context, '/attendance');
-                                _controller.reverse();
-                                setState(() {
-                                  _isSheetVisible = false; // إغلاق الشيت
-                                });
-                              },
-                            ),
-                            _buildOptionItem(
-                              context,
-                              title: "طلب إجازة",
-                              icon: Icons.beach_access,
-                              onTap: () {
-                                Navigator.pop(context);
-                                Navigator.pushNamed(context, '/leave-request');
-                                _controller.reverse();
-                                setState(() {
-                                  _isSheetVisible = false; // إغلاق الشيت
-                                });
-                              },
-                            ),
-                            _buildOptionItem(
-                              context,
-                              title: "إذن انصراف",
-                              icon: Icons.exit_to_app,
-                              onTap: () {
-                                Navigator.pop(context);
-                                Navigator.pushNamed(
-                                    context, '/exit-permission');
-                                _controller.reverse();
-                                setState(() {
-                                  _isSheetVisible = false; // إغلاق الشيت
-                                });
-                              },
-                            ),
-                            _buildOptionItem(
-                              isLast: true,
-                              context,
-                              title: "طلب سلفة",
-                              icon: Icons.attach_money,
-                              onTap: () {
-                                Navigator.pop(context);
-                                Navigator.pushNamed(context, '/loan-request');
-                                _controller.reverse();
-                                setState(() {
-                                  _isSheetVisible = false; // إغلاق الشيت
-                                });
-                              },
-                            ),
-                          ],
+                        child: Text(
+                          "لا",
+                          style: GoogleFonts.balooBhaijaan2(
+                            fontSize: 16.0,
+                          ),
                         ),
                       ),
                     ),
-                  ),
+                    SizedBox(width: 16.0),
+                    Expanded(
+                      child: TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop(true); // اغلق التطبيق
+                        },
+                        style: TextButton.styleFrom(
+                          foregroundColor: Colors.white,
+                          backgroundColor: Colorss.mainColor,
+                          padding: EdgeInsets.symmetric(vertical: 12.0),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8.0),
+                          ),
+                        ),
+                        child: Text(
+                          "نعم",
+                          style: GoogleFonts.balooBhaijaan2(
+                            fontSize: 16.0,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ],
-            );
-          },
-        );
-      },
-    );
-  }*/
+            ),
+          )) ??
+          false;
+    }
+  }
+
+  void _toggleSheet(BuildContext context) {
+    if (_isSheetVisible) {
+      Navigator.pop(context);
+      _controller.reverse();
+    } else {
+      //   _showSheet(context);
+    }
+    _isSheetVisible = !_isSheetVisible;
+  }
 
   void _onItemTapped(int index) {
-    if (index == 4) {
+    if (index == 5) {
       // Trigger the drawer or menu opening action here
       _handleMenuButtonPressed();
     } else {
@@ -418,196 +377,8 @@ class _HomeScreenState extends State<HomeScreen>
 
   @override
   Widget build(BuildContext context) {
-    return AdvancedDrawer(
+    return CustomAdvancedDrawer(
       controller: _advancedDrawerController,
-      backdrop: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              Colors.indigo,
-              Colors.indigo,
-            ],
-          ),
-        ),
-      ),
-      animationCurve: Curves.easeInOut,
-      animationDuration: const Duration(milliseconds: 300),
-      animateChildDecoration: true,
-      rtlOpening: true,
-      childDecoration: const BoxDecoration(
-        borderRadius: BorderRadius.all(Radius.circular(25)),
-      ),
-      drawer: SafeArea(
-        child: Container(
-          child: ListTileTheme(
-            textColor: Colors.white,
-            iconColor: Colors.white,
-            child: Column(
-              mainAxisSize: MainAxisSize.max,
-              children: [
-                Column(
-                  children: [
-                    Container(
-                      width: 120,
-                      height: 120,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: Colors.white, width: 2),
-                        image: DecorationImage(
-                          image: NetworkImage(userProfilePicture.isNotEmpty
-                              ? userProfilePicture
-                              : 'image.png'),
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                    ),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    Container(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Container(
-                                width: 144,
-                                height: 22,
-                                decoration: BoxDecoration(
-                                  color: Colors.transparent,
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                child: Center(
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      SvgPicture.asset(
-                                        "assets/checkdone.svg",
-                                        width: 24,
-                                        height: 24,
-                                      ),
-                                      SizedBox(
-                                        width: 5,
-                                      ),
-                                      Text(
-                                        userName,
-                                        style: GoogleFonts.balooBhaijaan2(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 22,
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-
-                          const SizedBox(height: 8),
-
-                          //  النصية للإيميل
-                          Container(
-                            width: 144,
-                            height: 22,
-                            decoration: BoxDecoration(
-                              color: Colors.transparent,
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Center(
-                              child: Text(
-                                useremail,
-                                style: GoogleFonts.balooBhaijaan2(
-                                  fontWeight: FontWeight.normal,
-                                  fontSize: 18,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                ListTile(
-                  onTap: () {
-                    _advancedDrawerController.toggleDrawer();
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => ProfileScreen()),
-                    ).then((value) {
-                      // إغلاق الـ Drawer بعد الانتقال إلى الصفحة
-                      _advancedDrawerController.hideDrawer();
-                    });
-                  },
-                  leading: Icon(
-                    Icons.person,
-                  ),
-                  title: Text(
-                    'الحساب',
-                    style: GoogleFonts.balooBhaijaan2(),
-                  ),
-                ),
-                ListTile(
-                  onTap: () {
-                    _advancedDrawerController.toggleDrawer();
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => Wallet()),
-                    ).then((value) {
-                      // إغلاق الـ Drawer بعد الانتقال إلى الصفحة
-                      _advancedDrawerController.hideDrawer();
-                    });
-                  },
-                  leading: Icon(
-                    Icons.wallet,
-                  ),
-                  title: Text(
-                    'المحفظه',
-                    style: GoogleFonts.balooBhaijaan2(),
-                  ),
-                ),
-                ListTile(
-                  onTap: () {},
-                  leading: Icon(Icons.settings),
-                  title: Text(
-                    'الاعدادات',
-                    style: GoogleFonts.balooBhaijaan2(),
-                  ),
-                ),
-                ListTile(
-                  onTap: () => _onItemTapped(0),
-                  leading: Icon(
-                    Icons.logout,
-                    color: Colors.red,
-                  ),
-                  title: Text(
-                    'تسجيل خروج',
-                    style: GoogleFonts.balooBhaijaan2(color: Colors.red),
-                  ),
-                ),
-                Spacer(),
-                DefaultTextStyle(
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.white54,
-                  ),
-                  child: Container(
-                    margin: const EdgeInsets.symmetric(
-                      vertical: 16.0,
-                    ),
-                    child: Text('Yourcolor.net'),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
       child: Scaffold(
         extendBody: true,
         floatingActionButton: GestureDetector(
@@ -615,21 +386,17 @@ class _HomeScreenState extends State<HomeScreen>
           key: _buttonKey,
           onTap: () {
             if (_controller.isCompleted) {
-              // إذا كان الأنميشن قد انتهى (الدوران اكتمل)
-              _controller.reverse(); // العودة إلى الوضع الأصلي
+              _controller.reverse();
             } else {
-              // إذا كان الأنميشن لم يكتمل
-              _controller.forward(); // تشغيل الأنميشن (الدوران)
+              _controller.forward();
             }
-            _showAnimatedBottomSheetFromButton(
-                context, _buttonKey); // عرض الشيت السفلي
+            _showAnimatedBottomSheetFromButton(context, _buttonKey);
           },
           child: AnimatedBuilder(
             animation: _controller,
             builder: (_, child) {
-              // يدور الزر عند كل نقرة
               return Transform.rotate(
-                angle: _controller.value * 2 * 3.1415927, // دوران 360 درجة
+                angle: _controller.value * 2 * 3.1415927,
                 child: child,
               );
             },
@@ -638,7 +405,7 @@ class _HomeScreenState extends State<HomeScreen>
               height: 56,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: Colorss.mainColor, // اللون الأساسي
+                color: Colorss.mainColor,
               ),
               child: Padding(
                 padding: const EdgeInsets.all(10.0),
@@ -653,20 +420,18 @@ class _HomeScreenState extends State<HomeScreen>
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
         floatingActionButtonAnimator: FloatingActionButtonAnimator.scaling,
         backgroundColor: Colors.transparent,
-        body: IndexedStack(
-          index: _selectedIndex,
-          children: _screens,
-        ),
+        body: WillPopScope(
+            onWillPop: _onWillPop, child: _screens[_selectedIndex]),
         bottomNavigationBar: SafeArea(
           child: Container(
             height: 70,
             decoration: BoxDecoration(
               boxShadow: [
                 BoxShadow(
-                  color: Colors.grey.withOpacity(0.1), // لون الظل
-                  spreadRadius: 0, // انتشار الظل
-                  blurRadius: 4, // درجة التمويه
-                  offset: const Offset(0, -2), // موضع الظل
+                  color: Colors.grey.withOpacity(0.1),
+                  spreadRadius: 0,
+                  blurRadius: 4,
+                  offset: const Offset(0, -2),
                 ),
               ],
             ),
@@ -674,7 +439,7 @@ class _HomeScreenState extends State<HomeScreen>
               padding: EdgeInsets.all(0),
               shape: const CircularNotchedRectangle(),
               notchMargin: 12.0,
-              color: Colors.white,
+              color: Theme.of(context).colorScheme.background,
               child: Row(
                 //   mainAxisAlignment: MainAxisAlignment.,
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -682,13 +447,12 @@ class _HomeScreenState extends State<HomeScreen>
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   _buildNavItem(
-                      'assets/SvgNavbar/home-2-svgrepo-com.svg', 'الحضور', 3),
-
+                      'assets/SvgNavbar/home-2-svgrepo-com.svg', 'الحضور', 0),
                   _buildNavItem(
                       'assets/SvgNavbar/Calender.svg', 'الاحصائيات', 2),
-                  const SizedBox(width: 50), // الفراغ حول زر الفاب
+                  const SizedBox(width: 50),
                   _buildNavItem('assets/SvgNavbar/Notifi.svg', 'المحفظة', 1),
-                  _buildNavItem('assets/SvgNavbar/profile.svg', 'الاعدادات', 4),
+                  _buildNavItem('assets/SvgNavbar/profile.svg', 'الاعدادات', 3),
                 ],
               ),
             ),
@@ -702,7 +466,7 @@ class _HomeScreenState extends State<HomeScreen>
     bool isActive = _selectedIndex == index;
 
     return InkWell(
-        overlayColor: MaterialStateProperty.all(Colors.white),
+        overlayColor: MaterialStateProperty.all(Colors.transparent),
         onTap: () => _onItemTapped(index),
         child: Stack(
           alignment: AlignmentDirectional.topCenter,
@@ -754,9 +518,8 @@ class _HomeScreenState extends State<HomeScreen>
                     iconPath,
                     width: 40,
                     height: 25,
-                    color: isActive
-                        ? const Color(0xFF3D48AB)
-                        : const Color(0xFFA49494),
+                    color:
+                        isActive ? Colorss.mainColor : const Color(0xFFA49494),
                     semanticsLabel: label,
                   ),
                 ),
@@ -767,13 +530,12 @@ class _HomeScreenState extends State<HomeScreen>
   }
 }
 
-// عنصر فردي للخيارات
 Widget _buildOptionItem(
   BuildContext context, {
   required String title,
   required IconData icon,
   required VoidCallback onTap,
-  bool isLast = false, // إضافة متغير لتحديد ما إذا كان هذا العنصر الأخير
+  bool isLast = false,
 }) {
   return Column(
     crossAxisAlignment: CrossAxisAlignment.center,
@@ -783,16 +545,17 @@ Widget _buildOptionItem(
         leading: Icon(icon, color: Colorss.mainColor, size: 24),
         title: Text(
           title,
-          style: const TextStyle(
+          style: GoogleFonts.balooBhaijaan2(
             fontSize: 16,
             fontWeight: FontWeight.w500,
           ),
         ),
         onTap: onTap,
       ),
-      if (!isLast) // إذا لم يكن العنصر الأخير، أضف الخط
+      if (!isLast)
         const Divider(
           thickness: 0.5,
+          color: Colors.grey,
         ),
     ],
   );

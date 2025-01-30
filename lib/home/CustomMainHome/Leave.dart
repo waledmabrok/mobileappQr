@@ -4,10 +4,10 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../ FieldsMachine/setup/MainColors.dart';
 
 class LeaveCard extends StatelessWidget {
-  final String requestType; // نوع الطلب (إجازة، سلفة، إذن خروج)
-  final String requestTitle; // العنوان (مثلاً: طلب إجازة + التاريخ)
-  final String status; // الحالة (بانتظار المراجعة، مرفوض، مقبول)
-  final Map<String, String> details; // التفاصيل المختلفة حسب النوع
+  final String requestType;
+  final String requestTitle;
+  final String status;
+  final Map<String, String> details;
 
   LeaveCard({
     required this.requestType,
@@ -23,48 +23,67 @@ class LeaveCard extends StatelessWidget {
         // Header Row
 
         Container(
-          padding: EdgeInsets.all(16.0),
+          padding: EdgeInsets.all(20.0),
           margin: EdgeInsets.only(bottom: 10),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: Theme.of(context).colorScheme.background,
             borderRadius: BorderRadius.circular(12.0),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              // العنوان والحالة
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    requestTitle,
-                    style: GoogleFonts.balooBhaijaan2(
-                      color: Colors.black,
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold,
-                    ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Text(
+                        "طلب",
+                        style: GoogleFonts.balooBhaijaan2(
+                          color: Colors.grey,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      SizedBox(
+                        height: 7,
+                      ),
+                      Text(
+                        requestTitle,
+                        style: GoogleFonts.balooBhaijaan2(
+                          color: Theme.of(context).colorScheme.onPrimary,
+                          fontSize: 17,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
                   ),
                   _buildStatusLabel(status), // الحالة
                 ],
               ),
-              SizedBox(height: 10),
-              Divider(thickness: 1, color: Colors.grey[300]),
-              SizedBox(height: 8),
+              SizedBox(height: 7),
+              Divider(thickness: 0.5, color: Colors.grey[300]),
+              SizedBox(height: 7),
 
               // التفاصيل
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   _buildDetailColumn(
+                    context,
                     details['detail1Label'] ?? '',
                     details['detail1Value'] ?? '',
                   ),
                   _buildDetailColumn(
+                    context,
                     details['detail2Label'] ?? '',
                     details['detail2Value'] ?? '',
                   ),
                   _buildDetailColumn(
-                    "الموافقة بواسطة",
+                    context,
+                    "المسئول",
                     status == "المراجعة" ? '-' : (details['approvedBy'] ?? ''),
                   ),
                 ],
@@ -76,7 +95,6 @@ class LeaveCard extends StatelessWidget {
     );
   }
 
-  // بناء حالة الطلب
   Widget _buildStatusLabel(String status) {
     Color bgColor;
     Color textColor;
@@ -100,10 +118,10 @@ class LeaveCard extends StatelessWidget {
     }
 
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       decoration: BoxDecoration(
         color: bgColor,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(10),
       ),
       child: Text(
         status,
@@ -116,8 +134,7 @@ class LeaveCard extends StatelessWidget {
     );
   }
 
-  // بناء تفاصيل الأعمدة
-  Widget _buildDetailColumn(String label, String value) {
+  Widget _buildDetailColumn(BuildContext context, String label, String value) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -129,11 +146,11 @@ class LeaveCard extends StatelessWidget {
             fontWeight: FontWeight.w500,
           ),
         ),
-        SizedBox(height: 4),
+        SizedBox(height: 10),
         Text(
           value,
           style: GoogleFonts.balooBhaijaan2(
-            color: Colors.black,
+            color: Theme.of(context).colorScheme.onPrimary,
             fontSize: 13,
             fontWeight: FontWeight.bold,
           ),

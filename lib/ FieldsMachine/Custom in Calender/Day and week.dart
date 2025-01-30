@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 
 class DayAndWeekdayColumn extends StatelessWidget {
@@ -28,8 +29,8 @@ class DayAndWeekdayColumn extends StatelessWidget {
             Text(
               weekday,
               /*.length > 3 ? weekday.substring(0, 3) : weekday,*/
-              style: const TextStyle(
-                fontWeight: FontWeight.w500,
+              style: GoogleFonts.balooBhaijaan2(
+                fontWeight: FontWeight.w700,
                 fontSize: 15,
                 //  color: Color(0xff8c8c8c),
               ),
@@ -40,7 +41,7 @@ class DayAndWeekdayColumn extends StatelessWidget {
               children: [
                 Text(
                   '$day',
-                  style: const TextStyle(
+                  style: GoogleFonts.balooBhaijaan2(
                     fontWeight: FontWeight.bold,
                     fontSize: 15,
                   ),

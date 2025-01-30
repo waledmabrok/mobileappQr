@@ -44,6 +44,7 @@ class _AttendancePageState extends State<AttendancePage> {
   bool Casualleave = false;
   bool Permissions = false;
   bool SickLeave = false;
+  bool Delays = false;
   int? employeeId;
   StreamController<DateTime> _dateStreamController =
       StreamController<DateTime>.broadcast();
@@ -53,8 +54,6 @@ class _AttendancePageState extends State<AttendancePage> {
     super.initState();
     _loadAttendanceData();
     selectedDate = DateTime(0);
-/*    selectedMonth = DateFormat('MMMM yyyy').format(selectedDate);
-    selectedYear = selectedDate.year;*/
     _getUserId();
     attendanceData = Future.value([]);
     // Delay applying the initial filter to give data time to load
@@ -77,6 +76,10 @@ class _AttendancePageState extends State<AttendancePage> {
       isFullDaySelected = filter == 'كل الايام';
       isEarlyLeaveSelected = filter == 'الخروج المبكر';
       isAbsentSelected = filter == 'الغياب';
+      SickLeave = filter == "الاجازات";
+      Regularholidays = filter == 'الاجازات الاعتيادية';
+      Permissions = filter == 'الاذونات';
+      Delays = filter == 'التاخيرات';
     });
   }
 
@@ -87,8 +90,7 @@ class _AttendancePageState extends State<AttendancePage> {
 
     if (storedUserId != null) {
       setState(() {
-        employeeId = int.parse(
-            storedUserId); // Assuming userId is a string, convert it to int
+        employeeId = int.parse(storedUserId);
       });
       _loadAttendanceData();
     } else {
@@ -106,24 +108,6 @@ class _AttendancePageState extends State<AttendancePage> {
     } else {
       print('Employee ID is null');
     }
-  }
-
-  void _previousMonth() {
-    setState(() {
-      selectedDate = DateTime(selectedDate.year, selectedDate.month - 1, 1);
-      selectedYear = selectedDate.year;
-      selectedMonth = DateFormat('MMMM yyyy').format(selectedDate);
-      _loadAttendanceData();
-    });
-  }
-
-  void _nextMonth() {
-    setState(() {
-      selectedDate = DateTime(selectedDate.year, selectedDate.month + 1, 1);
-      selectedYear = selectedDate.year;
-      selectedMonth = DateFormat('MMMM yyyy').format(selectedDate);
-      _loadAttendanceData();
-    });
   }
 
   Future<void> _selectMonth(BuildContext context) async {
@@ -178,7 +162,6 @@ class _AttendancePageState extends State<AttendancePage> {
                           isSwapEnabled = value;
 
                           if (isSwapEnabled) {
-                            // عند التبديل إلى الوضع النشط، تعيين التاريخ الحالي
                             int tempSelectedMonth = selectedDate.month == 0
                                 ? DateTime.now().month
                                 : selectedDate.month;
@@ -188,9 +171,7 @@ class _AttendancePageState extends State<AttendancePage> {
 
                             selectedDate = DateTime(0);
                           } else {
-                            // عند إيقاف التبديل، تعيين التاريخ إلى فارغ
-                            selectedDate = DateTime(
-                                0); // أو يمكن تعيينه إلى null إذا كنت تفضل
+                            selectedDate = DateTime(0);
                           }
 
                           _dateStreamController.add(selectedDate);
@@ -211,7 +192,6 @@ class _AttendancePageState extends State<AttendancePage> {
                   height: 200,
                   child: Row(
                     children: [
-                      // اختيار الشهر
                       Expanded(
                         child: CupertinoPicker(
                           itemExtent: 40,
@@ -230,7 +210,6 @@ class _AttendancePageState extends State<AttendancePage> {
                           }),
                         ),
                       ),
-                      // اختيار السنة
                       Expanded(
                         child: CupertinoPicker(
                           itemExtent: 40,
@@ -321,9 +300,15 @@ class _AttendancePageState extends State<AttendancePage> {
   }
 
   Stream<List<Attendance>> get _attendanceStream {
+    if (employeeId == null) {
+      return Stream.value([]); // Return an empty list if employeeId is null
+    }
     return Stream.fromFuture(
-      AttendanceService()
-          .fetchAttendance(employeeId!, selectedDate.month, selectedDate.year),
+      AttendanceService().fetchAttendance(
+        employeeId!,
+        selectedDate.month,
+        selectedDate.year,
+      ),
     );
   }
 
@@ -334,7 +319,7 @@ class _AttendancePageState extends State<AttendancePage> {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
       ),
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).colorScheme.background,
       builder: (context) {
         return Padding(
           padding: const EdgeInsets.all(16.0),
@@ -347,7 +332,6 @@ class _AttendancePageState extends State<AttendancePage> {
               ),
               Divider(),
               SizedBox(height: 8),
-              // عرض بيانات اليوم داخل ListView
               Expanded(
                 child: ListView.separated(
                   shrinkWrap: true,
@@ -371,19 +355,25 @@ class _AttendancePageState extends State<AttendancePage> {
   }
 
   @override
+  void dispose() {
+    if (mounted) {}
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).colorScheme.background,
       appBar: AppBar(
         automaticallyImplyLeading: false,
         toolbarHeight: 20,
         // Adjust toolbar height as needed
-        backgroundColor: Colors.white,
+        backgroundColor: Theme.of(context).colorScheme.background,
         forceMaterialTransparency: true,
         elevation: 0,
       ),
       body: Container(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.background,
         child: Column(
           children: [
             // Month Navigation
@@ -394,12 +384,22 @@ class _AttendancePageState extends State<AttendancePage> {
                   children: [
                     Row(
                       children: [
-                        Text(
-                          'سجل',
-                          style: GoogleFonts.balooBhaijaan2(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
+                        Row(
+                          children: [
+                            if (Navigator.canPop(context))
+                              IconButton(
+                                icon:
+                                    Icon(Icons.arrow_back, color: Colors.black),
+                                onPressed: () => Navigator.pop(context),
+                              ),
+                            Text(
+                              'سجل',
+                              style: GoogleFonts.balooBhaijaan2(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
                         ),
                         SizedBox(
                           width: 10,
@@ -407,7 +407,7 @@ class _AttendancePageState extends State<AttendancePage> {
                         Text(
                           selectedDate.month != 0 && selectedDate.year != 0
                               ? '${selectedDate.month} - ${selectedDate.year}'
-                              : '', // إخفاء النص إذا لم يتم تحديد التاريخ
+                              : '',
                           style: GoogleFonts.balooBhaijaan2(
                             fontSize: 16,
                             color: Colors.grey,
@@ -422,7 +422,7 @@ class _AttendancePageState extends State<AttendancePage> {
                       child: Icon(
                         Icons.calendar_today_outlined,
                         size: 25,
-                        color: Colors.black,
+                        color: Theme.of(context).colorScheme.onPrimary,
                       ),
                     ),
                   ],
@@ -430,12 +430,14 @@ class _AttendancePageState extends State<AttendancePage> {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.all(15.0),
+              padding: const EdgeInsets.all(10.0),
               child: PreferredSize(
-                preferredSize: Size.fromHeight(40.0),
+                preferredSize: Size.fromHeight(50.0),
                 child: Container(
                   width: double.infinity,
-                  color: Colors.white, // Set the background color to white
+                  color: Theme.of(context)
+                      .colorScheme
+                      .background, // Set the background color to white
                   child: Column(
                     children: [
                       SingleChildScrollView(
@@ -498,50 +500,12 @@ class _AttendancePageState extends State<AttendancePage> {
                               },
                               required: false,
                             ),
+
                             FilterChipWidget(
-                              label: 'الاجازات الاعتيادية',
-                              isSelected: Regularholidays,
-                              onSelected: () {
-                                _updateSelectedFilter(
-                                    filter: "الاجازات الاعتيادية");
-                                setState(() {
-                                  isAll = false;
-                                  isFullDaySelected = false;
-                                  isEarlyLeaveSelected = false;
-                                  isAbsentSelected = false;
-                                  Regularholidays = true;
-                                  Casualleave = false;
-                                  Permissions = false;
-                                  SickLeave = false;
-                                });
-                              },
-                              required: false,
-                            ),
-                            FilterChipWidget(
-                              label: 'الاجازات العارضة',
-                              isSelected: Casualleave,
-                              onSelected: () {
-                                _updateSelectedFilter(
-                                    filter: "الاجازات العارضة");
-                                setState(() {
-                                  isAll = false;
-                                  isFullDaySelected = false;
-                                  isEarlyLeaveSelected = false;
-                                  isAbsentSelected = false;
-                                  Casualleave = true;
-                                  Regularholidays = false;
-                                  Permissions = false;
-                                  SickLeave = false;
-                                });
-                              },
-                              required: false,
-                            ),
-                            FilterChipWidget(
-                              label: 'الاجازات المرضية',
+                              label: 'الاجازات',
                               isSelected: SickLeave,
                               onSelected: () {
-                                _updateSelectedFilter(
-                                    filter: "الاجازات المرضية");
+                                _updateSelectedFilter(filter: "الاجازات");
                                 setState(() {
                                   isAll = false;
                                   isFullDaySelected = false;
@@ -551,6 +515,25 @@ class _AttendancePageState extends State<AttendancePage> {
                                   Casualleave = false;
                                   Regularholidays = false;
                                   Permissions = false;
+                                });
+                              },
+                              required: false,
+                            ),
+                            FilterChipWidget(
+                              label: 'التاخيرات',
+                              isSelected: Delays,
+                              onSelected: () {
+                                _updateSelectedFilter(filter: "التاخيرات");
+                                setState(() {
+                                  isAll = false;
+                                  isFullDaySelected = false;
+                                  isEarlyLeaveSelected = false;
+                                  isAbsentSelected = false;
+                                  SickLeave = false;
+                                  Casualleave = false;
+                                  Regularholidays = false;
+                                  Permissions = false;
+                                  Delays = true;
                                 });
                               },
                               required: false,
@@ -595,16 +578,15 @@ class _AttendancePageState extends State<AttendancePage> {
                     alignment: Alignment.center,
                     //  height: MediaQuery.of(context).size.height * 0.5,
                     width: double.infinity,
-                    // تحديد عرض الشاشة بالكامل
+
                     color: Colors.white,
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Image.asset(
                           'assets/Calender/Menstrual_calendar.gif',
-                          width: double.infinity, // تحديد عرض الصورة بالكامل
-                          fit: BoxFit
-                              .contain, // يضمن أن الصورة تأخذ الحجم المناسب داخل الحاوية
+                          width: double.infinity,
+                          fit: BoxFit.contain,
                         ),
                       ],
                     ),
@@ -632,7 +614,7 @@ class _AttendancePageState extends State<AttendancePage> {
 
                   return Expanded(
                     child: ListView.builder(
-                      padding: EdgeInsets.all(0),
+                      padding: EdgeInsets.only(bottom: 90),
                       itemCount: filteredData.length,
                       itemBuilder: (context, index) {
                         final data = filteredData[index];
@@ -703,13 +685,15 @@ class AttendanceCard extends StatelessWidget {
           horizontal: screenWidth * 0.04, vertical: screenWidth * 0.02),
       child: GestureDetector(
         onTap: () {
-          _showDetailsPopup(context); // فتح النافذة المنبثقة عند الضغط
+          _showDetailsPopup(context);
         },
         child: Container(
           decoration: BoxDecoration(
-              color: Colors.white,
+              color: Theme.of(context).colorScheme.background,
               borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: Colorss.BorderColor)),
+              border: Border.all(
+                color: Theme.of(context).colorScheme.inverseSurface,
+              )),
           child: Padding(
             padding: EdgeInsets.only(
                 top: screenWidth * 0.037,
@@ -725,10 +709,7 @@ class AttendanceCard extends StatelessWidget {
                     DayAndWeekdayColumn(day: day, weekday: weekday),
                   ],
                 ),
-                SizedBox(
-                    height: screenWidth *
-                        0.03), // تباعد بين الصف العلوي والعناصر الأخرى
-                // الصف الأوسط: العناصر (الحضور والتفاصيل)
+                SizedBox(height: screenWidth * 0.03),
                 Container(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10),
@@ -761,25 +742,21 @@ class AttendanceCard extends StatelessWidget {
     );
   }
 
-  // دالة لعرض النافذة المنبثقة
   void _showDetailsPopup(BuildContext context) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      // لجعل حجم الشيت قابل للتعديل
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-            top: Radius.circular(20)), // جعل الحواف العلوية مستديرة
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).colorScheme.background,
       builder: (BuildContext context) {
         return Padding(
-          padding: EdgeInsets.all(16), // إضافة مسافات داخل الشيت
+          padding: EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              // زر إغلاق (علامة "إكس") على الجهة اليسرى
               Row(
                 children: [
                   Align(
@@ -789,7 +766,7 @@ class AttendanceCard extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
-                        color: Colors.black87,
+                        color: Theme.of(context).colorScheme.onPrimary,
                       ),
                     ),
                   ),
@@ -797,10 +774,12 @@ class AttendanceCard extends StatelessWidget {
                   Align(
                     alignment: Alignment.topLeft,
                     child: IconButton(
-                      icon: Icon(Icons.close, color: Colors.black87),
+                      icon: Icon(
+                        Icons.close,
+                        color: Theme.of(context).colorScheme.onPrimary,
+                      ),
                       onPressed: () {
-                        Navigator.of(context)
-                            .pop(); // إغلاق الشيت عند الضغط على الرمز
+                        Navigator.of(context).pop();
                       },
                     ),
                   ),
@@ -814,7 +793,7 @@ class AttendanceCard extends StatelessWidget {
               _buildPopupRow('الانصراف:', clockOut),
               _buildPopupRow('المدة الكلية:', totalHours),
               _buildPopupRow('الحالة:', status),
-              SizedBox(height: 20), // مسافة إضافية قبل الزر
+              SizedBox(height: 20),
             ],
           ),
         );
@@ -822,7 +801,6 @@ class AttendanceCard extends StatelessWidget {
     );
   }
 
-  // دالة مساعدة لبناء صف في النافذة المنبثقة
   Widget _buildPopupRow(String label, String value) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4.0),
@@ -867,7 +845,7 @@ class FilterChipWidget extends StatelessWidget {
                 Stack(
                   children: [
                     Lottie.asset(
-                      'assets/SvgNotifi/Animation - 1736014220484.json',
+                      'assets/SvgNotifi/Animation-1736014220484.json',
                       width: 20,
                       height: 20,
                       fit: BoxFit.cover,
@@ -890,9 +868,8 @@ class FilterChipWidget extends StatelessWidget {
                   color: isSelected
                       ? Colors.white
                       : (required
-                          ? Colors.black
-                          : Colors
-                              .grey), // تغيير اللون هنا بناءً على `isSelected` و `required`
+                          ? Theme.of(context).colorScheme.onPrimary
+                          : Colors.grey),
                 ),
               ),
             ],
@@ -900,12 +877,14 @@ class FilterChipWidget extends StatelessWidget {
           selected: isSelected,
           onSelected: (_) => onSelected(),
           selectedColor: Colorss.mainColor,
-          backgroundColor:
-              isSelected ? Colors.lightBlue.shade100 : Colors.white,
+          backgroundColor: isSelected
+              ? Colorss.mainColor.withOpacity(0.3)
+              : Theme.of(context).colorScheme.background,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(30.0),
             side: BorderSide(
-              color: isSelected ? Colors.lightBlue.shade100 : Colors.grey,
+              color:
+                  isSelected ? Colorss.mainColor.withOpacity(0.3) : Colors.grey,
               width: 0.5,
             ),
           ),

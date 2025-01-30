@@ -74,46 +74,10 @@ class _TasksScreenState extends State<TasksScreen>
         notifications.where((notification) => !notification['isRead']).toList();
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).colorScheme.background,
       body: Stack(
         children: [
           // Positioning Widgets for Background (as in your original code)
-          Positioned(
-            top: 0,
-            left: 0,
-            child: SvgPicture.asset("assets/top_shap.svg"),
-          ),
-          Positioned(
-            top: 247,
-            right: 0,
-            child: Container(
-              child: SvgPicture.asset("assets/center_shap.svg"),
-            ),
-          ),
-          Positioned(
-            bottom: 18,
-            left: 0,
-            child: Container(
-              child: SvgPicture.asset("assets/bottom_shap.svg"),
-            ),
-          ),
-          Positioned(
-            top: 382,
-            left: 33,
-            child: Container(
-              child: SvgPicture.asset("assets/3right.svg"),
-            ),
-          ),
-          Positioned(
-            top: 382,
-            right: 0,
-            child: Opacity(
-              opacity: 0.3,
-              child: Container(
-                child: SvgPicture.asset("assets/4center.svg"),
-              ),
-            ),
-          ),
 
           // Header Section
           Padding(
@@ -137,7 +101,7 @@ class _TasksScreenState extends State<TasksScreen>
                       fontSize: 32,
                       height: 51 / 32,
                       letterSpacing: 0.03,
-                      color: Colors.black,
+                      color: Theme.of(context).colorScheme.onPrimary,
                     ),
                   ),
                 ],
@@ -279,9 +243,9 @@ class _TasksScreenState extends State<TasksScreen>
             padding: const EdgeInsets.only(top: 115.0),
             child: Container(
               decoration: BoxDecoration(
-                color: Colors.white,
+                //  color: Theme.of(context).colorScheme.background,
                 borderRadius: BorderRadius.circular(30),
-                border: Border.all(color: Colors.white),
+                // border: Border.all(color: Colors.white),
               ),
               width: double.infinity,
               child: DefaultTabController(
@@ -299,9 +263,9 @@ class _TasksScreenState extends State<TasksScreen>
                     labelColor: Colors.white,
                     unselectedLabelColor: Colors.grey,
                     tabAlignment: TabAlignment.start,
-                    indicatorSize: TabBarIndicatorSize.label,
-                    indicator: BoxDecoration(color: Colors.white),
-                    indicatorColor: Colors.white,
+                    //  indicatorSize: TabBarIndicatorSize.label,
+                    indicator: BoxDecoration(color: Colors.transparent),
+                    // indicatorColor: Colors.white,
                     onTap: (index) {
                       setState(() {
                         _tabController.index = index;
@@ -431,7 +395,7 @@ class NotificationCard extends StatelessWidget {
       children: [
         Container(
           decoration: BoxDecoration(
-            gradient: required
+            /* gradient: required
                 ? LinearGradient(
                     colors: [
                       Color(0xffF2F8FF),
@@ -440,14 +404,16 @@ class NotificationCard extends StatelessWidget {
                     begin: Alignment.topRight,
                     end: Alignment.bottomLeft,
                   )
-                : null,
-            color: required ? null : Colors.white.withOpacity(0.8),
+                : null,*/
+            color: required
+                ? null
+                : Theme.of(context).colorScheme.background.withOpacity(0.8),
             //  borderRadius: BorderRadius.circular(6),
             border: isLast
                 ? null
                 : Border(
                     bottom: BorderSide(
-                      color: Colorss.BorderColor,
+                      color: Theme.of(context).colorScheme.inverseSurface,
                       width: 1,
                     ),
                   ),
@@ -548,14 +514,18 @@ class NotificationCard extends StatelessWidget {
                                             fontWeight: FontWeight.w600,
                                             fontSize: 14,
                                             height: 1.5,
-                                            color: Colors.black,
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .onPrimary,
                                           )
                                         : GoogleFonts.balooBhaijaan2(
                                             fontWeight: FontWeight.w400,
                                             fontSize: 14,
                                             height: 1.5,
-                                            color:
-                                                Colors.black.withOpacity(0.8),
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .onPrimary
+                                                .withOpacity(0.8),
                                           ),
                                   );
                                 }).toList(),
@@ -591,7 +561,8 @@ class NotificationCard extends StatelessWidget {
                                 style: GoogleFonts.balooBhaijaan2(
                                   fontWeight: FontWeight.w500,
                                   fontSize: 12,
-                                  color: Colors.black,
+                                  color:
+                                      Theme.of(context).colorScheme.onPrimary,
                                 ),
                               ),
                             ],
@@ -618,13 +589,6 @@ class NotificationCard extends StatelessWidget {
             ),
           ),
         ),
-        /* if (!isLast) // Only show the divider if it's not the last item
-          Divider(
-            thickness: 1,
-            color: Colors.grey.shade300,
-            indent: 15,
-            endIndent: 15,
-          ),*/
       ],
     );
   }

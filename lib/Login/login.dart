@@ -13,6 +13,8 @@ import 'package:network_info_plus/network_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginPage extends StatefulWidget {
+  static const routeName = "/";
+
   @override
   State<LoginPage> createState() => _LoginPageState();
 }
@@ -166,29 +168,10 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
       child: Consumer<LoginController>(
         builder: (context, controller, _) {
           return Scaffold(
-            backgroundColor: Colors.white,
+            //    backgroundColor: Colors.white,
             resizeToAvoidBottomInset: false,
             body: Stack(
               children: [
-                /*  Positioned(
-                  top: 0,
-                  left: 0,
-                  child: SvgPicture.asset("assets/top_shap.svg"),
-                ),
-                Positioned(
-                  top: 247,
-                  right: 0,
-                  child: Container(
-                    child: SvgPicture.asset("assets/center_shap.svg"),
-                  ),
-                ),
-                Positioned(
-                  bottom: 18,
-                  left: 0,
-                  child: Container(
-                    child: SvgPicture.asset("assets/bottom_shap.svg"),
-                  ),
-                ),*/
                 Positioned(
                     bottom: 0,
                     left: 0,

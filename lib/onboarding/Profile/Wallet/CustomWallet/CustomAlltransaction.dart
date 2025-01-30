@@ -45,6 +45,7 @@ class ActivityItem extends StatelessWidget {
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Image.asset(
+                  color: Theme.of(context).colorScheme.onPrimary,
                   imagePath,
                   width: 10,
                   height: 10,
@@ -61,7 +62,7 @@ class ActivityItem extends StatelessWidget {
                     style: GoogleFonts.balooBhaijaan2(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
-                      color: Colors.black,
+                      color: Theme.of(context).colorScheme.onPrimary,
                     ),
                   ),
                   Text(
@@ -83,7 +84,7 @@ class ActivityItem extends StatelessWidget {
                   style: GoogleFonts.balooBhaijaan2(
                     fontSize: 18,
                     fontWeight: FontWeight.w600,
-                    color: Colors.black,
+                    color: Theme.of(context).colorScheme.onPrimary,
                   ),
                 ),
                 Container(

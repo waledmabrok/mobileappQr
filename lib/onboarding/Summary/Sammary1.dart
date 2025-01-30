@@ -9,8 +9,11 @@ import 'package:intl/intl.dart';
 import '../../ FieldsMachine/FieldsContext/Button.dart';
 import '../../ FieldsMachine/FieldsContext/Text.dart';
 import '../../ FieldsMachine/setup/MainColors.dart';
+import '../Requests_Main/Requests.dart';
 
 class LeaveRequestPage extends StatefulWidget {
+  static const routeName = "/request_summary";
+
   @override
   _LeaveRequestPageState createState() => _LeaveRequestPageState();
 }
@@ -74,30 +77,50 @@ class _LeaveRequestPageState extends State<LeaveRequestPage> {
   }
 
   // Function to handle leave request submission
+
   void _submitLeaveRequest() {
-    if (startDate != null &&
-        endDate != null &&
-        selectedReason != null &&
-        selectedLeaveType != null) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text('طلب الإجازة قيد الانتظار!'),
-      ));
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text('يرجى ملء جميع الحقول'),
-      ));
-    }
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        backgroundColor: Colors.green,
+        // تغيير لون الخلفية
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10), // تحديد قيمة الحافة الدائرية
+        ),
+        behavior: SnackBarBehavior.floating,
+        // جعل SnackBar يطفو فوق المحتوى
+
+        content: Text(
+          "الطلب قيد الانتظار وجاري الموافقة عليه من قبل الإدارة.",
+          style: GoogleFonts.balooBhaijaan2(),
+        ),
+        action: SnackBarAction(
+          label: "عرض الطلبات",
+          textColor: Colors.black,
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => RequestsMain(
+                  selectedTab: 'الاجازات',
+                ),
+              ),
+            );
+          },
+        ),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      // backgroundColor: Colors.white,
       appBar: AppBar(
         forceMaterialTransparency: true,
         title: Text(
           'طلب إجازة',
-          style: GoogleFonts.balooBhaijaan2(color: Colors.black, fontSize: 25),
+          style: GoogleFonts.balooBhaijaan2(
+              color: Theme.of(context).colorScheme.onPrimary, fontSize: 25),
         ),
         backgroundColor: Colors.white,
         elevation: 0,
@@ -125,7 +148,7 @@ class _LeaveRequestPageState extends State<LeaveRequestPage> {
                           EdgeInsets.symmetric(vertical: 15, horizontal: 10),
                       decoration: BoxDecoration(
                         border: Border.all(color: Colorss.BorderColor),
-                        color: Colors.white,
+                        color: Theme.of(context).colorScheme.surfaceVariant,
                         borderRadius: BorderRadius.circular(8),
                         /*  boxShadow: [
                           BoxShadow(color: Colors.black12, blurRadius: 6)
@@ -136,7 +159,8 @@ class _LeaveRequestPageState extends State<LeaveRequestPage> {
                             ? 'اختيار تاريخ البداية'
                             : DateFormat('yyyy-MM-dd').format(startDate!),
                         style: GoogleFonts.balooBhaijaan2(
-                            fontSize: 16, color: Colors.black54),
+                            fontSize: 16,
+                            color: Theme.of(context).colorScheme.onPrimary),
                       ),
                     ),
                   ),
@@ -150,7 +174,7 @@ class _LeaveRequestPageState extends State<LeaveRequestPage> {
                           EdgeInsets.symmetric(vertical: 15, horizontal: 10),
                       decoration: BoxDecoration(
                         border: Border.all(color: Colorss.BorderColor),
-                        color: Colors.white,
+                        color: Theme.of(context).colorScheme.surfaceVariant,
                         borderRadius: BorderRadius.circular(8),
                         /* boxShadow: [
                           BoxShadow(color: Colors.black12, blurRadius: 6)
@@ -161,25 +185,13 @@ class _LeaveRequestPageState extends State<LeaveRequestPage> {
                             ? 'اختيار تاريخ النهاية'
                             : DateFormat('yyyy-MM-dd').format(endDate!),
                         style: GoogleFonts.balooBhaijaan2(
-                            fontSize: 16, color: Colors.black54),
+                            fontSize: 16,
+                            color: Theme.of(context).colorScheme.onPrimary),
                       ),
                     ),
                   ),
                 ),
               ],
-            ),
-            SizedBox(height: 20),
-            Text(
-              'تحديد سبب الإجازة',
-              style: GoogleFonts.balooBhaijaan2(
-                  fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 10),
-            SizedBox(
-              height: 100,
-              child: CustomText(
-                hintText: "سبب الاجازه",
-              ),
             ),
             SizedBox(height: 20),
             Text(
@@ -204,14 +216,14 @@ class _LeaveRequestPageState extends State<LeaveRequestPage> {
                       style: GoogleFonts.balooBhaijaan2(
                         color: selectedLeaveType == 'اعتيادية'
                             ? Colors.white
-                            : Colors.black,
+                            : Theme.of(context).colorScheme.onPrimary,
                       ),
                     ),
                     style: ElevatedButton.styleFrom(
-                      shadowColor: Colors.transparent,
+                      shadowColor: Theme.of(context).colorScheme.surfaceVariant,
                       backgroundColor: selectedLeaveType == 'اعتيادية'
                           ? Colorss.mainColor
-                          : Colors.white,
+                          : Theme.of(context).colorScheme.surfaceVariant,
                       padding: EdgeInsets.symmetric(vertical: 15),
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8)),
@@ -233,14 +245,14 @@ class _LeaveRequestPageState extends State<LeaveRequestPage> {
                       style: GoogleFonts.balooBhaijaan2(
                         color: selectedLeaveType == 'عارضة'
                             ? Colors.white
-                            : Colors.black,
+                            : Theme.of(context).colorScheme.onPrimary,
                       ),
                     ),
                     style: ElevatedButton.styleFrom(
-                      shadowColor: Colors.transparent,
+                      shadowColor: Theme.of(context).colorScheme.surfaceVariant,
                       backgroundColor: selectedLeaveType == 'عارضة'
                           ? Colorss.mainColor
-                          : Colors.white,
+                          : Theme.of(context).colorScheme.surfaceVariant,
                       padding: EdgeInsets.symmetric(vertical: 15),
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8)),
@@ -262,14 +274,14 @@ class _LeaveRequestPageState extends State<LeaveRequestPage> {
                       style: GoogleFonts.balooBhaijaan2(
                         color: selectedLeaveType == 'مرضية'
                             ? Colors.white
-                            : Colors.black,
+                            : Theme.of(context).colorScheme.onPrimary,
                       ),
                     ),
                     style: ElevatedButton.styleFrom(
-                      shadowColor: Colors.transparent,
+                      shadowColor: Theme.of(context).colorScheme.surfaceVariant,
                       backgroundColor: selectedLeaveType == 'مرضية'
                           ? Colorss.mainColor
-                          : Colors.white,
+                          : Theme.of(context).colorScheme.surfaceVariant,
                       padding: EdgeInsets.symmetric(vertical: 15),
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8)),
@@ -277,6 +289,19 @@ class _LeaveRequestPageState extends State<LeaveRequestPage> {
                   ),
                 ),
               ],
+            ),
+            SizedBox(height: 20),
+            Text(
+              'تحديد سبب الإجازة',
+              style: GoogleFonts.balooBhaijaan2(
+                  fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 10),
+            SizedBox(
+              height: 100,
+              child: CustomText(
+                hintText: "سبب الاجازه",
+              ),
             ),
             SizedBox(height: 30),
             SingleChildScrollView(
@@ -293,7 +318,7 @@ class _LeaveRequestPageState extends State<LeaveRequestPage> {
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(color: Colors.grey.shade300),
-                      color: Colors.grey.shade100,
+                      color: Theme.of(context).colorScheme.surfaceVariant,
                     ),
                     child: Column(
                       children: [
@@ -307,14 +332,15 @@ class _LeaveRequestPageState extends State<LeaveRequestPage> {
                             padding: const EdgeInsets.all(12),
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(8),
-                              color: Colors.white,
+                              color:
+                                  Theme.of(context).colorScheme.surfaceVariant,
                             ),
                             child: Row(
                               children: [
                                 Expanded(
                                   child: Text(
                                     faq["question"]!,
-                                    style: const TextStyle(
+                                    style: GoogleFonts.balooBhaijaan2(
                                       fontSize: 18,
                                       fontWeight: FontWeight.w500,
                                       height: 1.9,
@@ -325,8 +351,9 @@ class _LeaveRequestPageState extends State<LeaveRequestPage> {
                                   isExpanded
                                       ? Icons.keyboard_arrow_up_rounded
                                       : Icons.keyboard_arrow_down_rounded,
-                                  color:
-                                      isExpanded ? Colors.blue : Colors.black,
+                                  color: isExpanded
+                                      ? Colorss.mainColor
+                                      : Theme.of(context).colorScheme.onPrimary,
                                   size: 20,
                                 ),
                               ],
@@ -338,9 +365,9 @@ class _LeaveRequestPageState extends State<LeaveRequestPage> {
                             padding: const EdgeInsets.all(12),
                             child: Text(
                               faq["answer"]!,
-                              style: const TextStyle(
+                              style: GoogleFonts.balooBhaijaan2(
                                 fontSize: 16,
-                                color: Colors.black54,
+                                color: Theme.of(context).colorScheme.onPrimary,
                                 fontWeight: FontWeight.w500,
                                 height: 1.9,
                               ),
@@ -355,7 +382,8 @@ class _LeaveRequestPageState extends State<LeaveRequestPage> {
             Padding(
               padding: const EdgeInsets.only(
                   left: 40.0, right: 40, top: 20, bottom: 10),
-              child: CustomButton(text: 'تقديم الطلب', onPressed: () {}),
+              child: CustomButton(
+                  text: 'تقديم الطلب', onPressed: _submitLeaveRequest),
             ),
           ],
         ),

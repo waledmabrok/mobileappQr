@@ -143,8 +143,10 @@ class CustomText extends StatefulWidget {
   final String? Function(String?)? validator;
   final bool isRequired;
   final bool iconLeft;
-
   final IconData? prefixIcon;
+  final bool isDropdown;
+  final List<String>? items;
+  final ValueChanged<String?>? onChanged;
 
   CustomText({
     this.controller,
@@ -153,6 +155,9 @@ class CustomText extends StatefulWidget {
     this.isRequired = false,
     this.iconLeft = false,
     this.prefixIcon,
+    this.isDropdown = false,
+    this.items,
+    this.onChanged,
   });
 
   @override
@@ -186,20 +191,78 @@ class _CustomTextState extends State<CustomText> {
   Widget build(BuildContext context) {
     final effectiveValidator = widget.validator ??
         (value) {
-          /*if (value == null || value.isEmpty) {
-        return 'من فضلك أدخل ${widget.hintText}';
-      }*/
           return null;
         };
+
+    if (widget.isDropdown) {
+      return Container(
+        height: 65,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: _isFocused ? Colorss.mainColor : Colors.grey,
+            width: 1,
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(4.0),
+          child: Center(
+            child: DropdownButtonFormField<String>(
+              value: widget.controller?.text.isEmpty ?? true
+                  ? null
+                  : widget.controller?.text,
+              // قيمة مبدئية صحيحة
+              decoration: InputDecoration(
+                labelText: widget.hintText,
+                labelStyle: GoogleFonts.balooBhaijaan2(
+                  fontSize: 18,
+                  color: _isFocused ? Colorss.mainColor : Colorss.SecondText,
+                ),
+                hintStyle: GoogleFonts.balooBhaijaan2(
+                  fontSize: 15,
+                  color: Colorss.SecondText,
+                ),
+                border: InputBorder.none,
+                errorBorder: InputBorder.none,
+                focusedBorder: InputBorder.none,
+                enabledBorder: InputBorder.none,
+                filled: true,
+                fillColor: Colors.transparent,
+                prefixIcon: widget.isRequired
+                    ? Icon(
+                        widget.prefixIcon ?? Icons.person,
+                        color: _iconColor,
+                        size: 25,
+                      )
+                    : null,
+                suffixIcon: widget.iconLeft
+                    ? Icon(
+                        Icons.person,
+                        color: _iconColor,
+                        size: 25,
+                      )
+                    : null,
+              ),
+              items: widget.items?.map((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(value),
+                );
+              }).toList(),
+              onChanged: widget.onChanged,
+              validator: effectiveValidator,
+            ),
+          ),
+        ),
+      );
+    }
 
     return Container(
       height: 65,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: _isFocused
-              ? Colorss.mainColor
-              : Colors.grey, // تغيير اللون بناءً على التركيز
+          color: _isFocused ? Colorss.mainColor : Colors.grey,
           width: 1,
         ),
       ),
@@ -213,28 +276,19 @@ class _CustomTextState extends State<CustomText> {
               labelText: widget.hintText,
               labelStyle: GoogleFonts.balooBhaijaan2(
                 fontSize: 18,
-                color: _isFocused
-                    ? Colorss.mainColor
-                    : Colorss.SecondText, // تغيير اللون عند التركيز
+                color: _isFocused ? Colorss.mainColor : Colorss.SecondText,
               ),
-
               hintStyle: GoogleFonts.balooBhaijaan2(
                 fontSize: 15,
                 color: Colorss.SecondText,
               ),
               floatingLabelBehavior: FloatingLabelBehavior.auto,
               border: InputBorder.none,
-              // إزالة الحدود من الـ TextFormField
               errorBorder: InputBorder.none,
-              // إزالة الحدود في حالة الخطأ
               focusedBorder: InputBorder.none,
-              // إزالة الحدود عند التركيز
               enabledBorder: InputBorder.none,
-              // إزالة الحدود عند التفعيل
-
               filled: true,
               fillColor: Colors.transparent,
-              // جعل الخلفية شفافة داخل الحقل
               prefixIcon: widget.isRequired
                   ? Icon(
                       widget.prefixIcon ?? Icons.person,

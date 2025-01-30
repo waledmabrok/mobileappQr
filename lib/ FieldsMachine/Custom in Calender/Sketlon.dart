@@ -15,55 +15,48 @@ class SkeletonCard extends StatelessWidget {
           horizontal: screenWidth * 0.01,
         ),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).colorScheme.background,
           borderRadius: BorderRadius.circular(12),
-          boxShadow: [
+          /*  boxShadow: [
             BoxShadow(
               color: Colors.grey.withOpacity(0.2),
               blurRadius: 8,
               offset: Offset(0, 4), // shadow position
             ),
-          ],
+          ],*/
         ),
         child: Column(
           children: [
-            // أول Container مع محتوى بلون وردي
-            _buildSkeletonContent(screenWidth, Colors.blue.shade100),
-            SizedBox(height: 10),  // المسافة بين العناصر
-
-            // ثاني Container مع محتوى بلون ريديس (أحمر)
-            _buildSkeletonContent(screenWidth, Colors.blue.shade100),
-            SizedBox(height: 10),  // المسافة بين العناصر
-
-            // ثالث Container مع محتوى بلون وردي أكثر عمقاً
-            _buildSkeletonContent(screenWidth, Colors.blue.shade200),
-            SizedBox(height: 10),  // المسافة بين العناصر
-
-            // رابع Container مع محتوى بلون ريديس (أحمر)
-            _buildSkeletonContent(screenWidth, Colors.blue.shade300),
-
+            _buildSkeletonContent(context, screenWidth, Colors.blue.shade100),
+            SizedBox(height: 10),
+            _buildSkeletonContent(context, screenWidth, Colors.blue.shade100),
+            SizedBox(height: 10),
+            _buildSkeletonContent(context, screenWidth, Colors.blue.shade200),
+            SizedBox(height: 10),
+            _buildSkeletonContent(context, screenWidth, Colors.blue.shade300),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildSkeletonContent(double screenWidth, Color color) {
+  Widget _buildSkeletonContent(
+      BuildContext context, double screenWidth, Color color) {
     return Container(
       margin: EdgeInsets.symmetric(
         vertical: screenWidth * 0.01,
         horizontal: screenWidth * 0.01,
       ),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.background,
         borderRadius: BorderRadius.circular(12),
-        boxShadow: [
+        /*   boxShadow: [
           BoxShadow(
             color: Colors.grey.withOpacity(0.1),
             blurRadius: 6,
             offset: Offset(0, 2), // shadow position
           ),
-        ],
+        ],*/
       ),
       child: Column(
         children: [
@@ -113,8 +106,8 @@ class SkeletonCard extends StatelessWidget {
                     width: 60,
                     height: 20,
                     decoration: BoxDecoration(
-                      color: color, // اللون الذي تم تحديده
-                      borderRadius: BorderRadius.circular(25), // تحديد نصف الحجم لجعل الحافة دائرية
+                      color: color,
+                      borderRadius: BorderRadius.circular(25),
                     ),
                   ),
                 ],
@@ -124,7 +117,7 @@ class SkeletonCard extends StatelessWidget {
           SizedBox(
             height: screenWidth * 0.05,
           ),
-          const Divider(),
+          //const Divider(),
         ],
       ),
     );

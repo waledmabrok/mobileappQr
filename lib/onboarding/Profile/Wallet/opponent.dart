@@ -8,6 +8,8 @@ import '../../navgate.dart';
 import 'CustomWallet/ListDiscount.dart';
 
 class DiscountsPage extends StatefulWidget {
+  static const routeName = "/Discounts_Page";
+
   @override
   State<DiscountsPage> createState() => _DiscountsPageState();
 }

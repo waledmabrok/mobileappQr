@@ -44,8 +44,9 @@ class _ProfilePageState extends State<ProfilePage> {
       return Future.value(false);
     } else {
       return (await showDialog(
-            context: context,
-            builder: (context) => AlertDialog(
+        context: context,
+        builder: (context) =>
+            AlertDialog(
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(15),
               ),
@@ -122,7 +123,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
               ],
             ),
-          )) ??
+      )) ??
           false;
     }
   }
@@ -131,226 +132,255 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) {
     var themeProvider = Provider.of<ThemeProvider>(context);
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.primary,
-      body: Stack(
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(top: 170.0),
-            child: Container(
-              decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.surfaceVariant,
-                  borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(15),
-                      topRight: Radius.circular(15))),
-              child: Padding(
-                padding: const EdgeInsets.only(top: 140.0),
-                child: Column(
-                  children: [
-                    CustomFrameWidget(
-                      showThemeSwitch: true,
-                      title: "الحساب",
-                      options: [
-                        OptionItem(
-                          icon: Icons.person,
-                          label: "معلومات شخصيه",
-                          color: const Color(0xFF7A5AF8),
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => ProfileScreen()),
-                            );
-                          },
-                        ),
-                        OptionItem(
-                          icon: Icons.wallet,
-                          label: "المحفظه",
-                          color: const Color(0xFF7A5AF8),
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) => Wallet()),
-                            );
-                          },
-                        ),
-                      ],
-                    ),
-                    CustomFrameWidget(
-                      title: "الاعدادات",
-                      options: [
-                        OptionItem(
-                          icon: Icons.lock,
-                          label: "تغير الباسورد",
-                          color: const Color(0xFF7A5AF8),
-                          onTap: () {
-                            Navigator.pushNamed(context, "/change_password");
-                          },
-                        ),
-                        /*      OptionItem(
-                          icon: Icons.settings,
-                          label: "اعدادات",
-                          color: const Color(0xFF7A5AF8),
-                          onTap: () {
-                            Navigator.pushNamed(context, "/darkMode");
-                          },
-                        ),*/
-                        /*  OptionItem(
-                          icon: Icons.help_outline,
-                          label: "المساعده",
-                          color: const Color(0xFF7A5AF8),
-                          onTap: () {
-                            print("FAQ and Help clicked");
-                          },
-                        ),*/
-                        OptionItem(
-                          icon: Icons.logout,
-                          label: "تسجيل خروج",
-                          color: const Color(0xFFF14E4E),
-                          onTap: _onWillPop,
-                          // Navigator.of(context).pop(true);
-                        ),
-                      ],
-                    ),
-                  ],
+      backgroundColor: Theme
+          .of(context)
+          .colorScheme
+          .primary,
+      body: SingleChildScrollView(
+        child: Stack(
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(top: 170.0),
+              child: Container(
+                //hight to hide background
+                height: 800,
+                decoration: BoxDecoration(
+                    color: Theme
+                        .of(context)
+                        .colorScheme
+                        .surfaceVariant,
+                    borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(15),
+                        topRight: Radius.circular(15))),
+                child: Padding(
+                  padding: const EdgeInsets.only(
+                      top: 140.0, left: 10, right: 10),
+                  child: Column(
+                    children: [
+                      CustomFrameWidget(
+                        showThemeSwitch: true,
+                        title: "الحساب",
+                        options: [
+                          OptionItem(
+                            icon: Icons.person,
+                            label: "معلومات شخصيه",
+                            color: Colors.black,
+                            color2:
+                            Theme
+                                .of(context)
+                                .colorScheme
+                                .inverseSurface,
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => ProfileScreen()),
+                              );
+                            },
+                          ),
+                          OptionItem(
+                            icon: Icons.wallet,
+                            label: "المحفظه",
+                            color: Colors.black,
+                            color2:
+                            Theme
+                                .of(context)
+                                .colorScheme
+                                .inverseSurface,
+                            // color: const Color(0xFF7A5AF8),
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => Wallet()),
+                              );
+                            },
+                          ),
+                        ],
+                      ),
+                      CustomFrameWidget(
+                        title: "الاعدادات",
+                        options: [
+                          OptionItem(
+                            icon: Icons.lock,
+                            label: "تغير الباسورد",
+                            color: Colors.black,
+                            color2:
+                            Theme
+                                .of(context)
+                                .colorScheme
+                                .inverseSurface,
+                            //  color: const Color(0xFF7A5AF8),
+                            onTap: () {
+                              Navigator.pushNamed(context, "/change_password");
+                            },
+                          ),
+                          OptionItem(
+                            icon: Icons.logout,
+                            label: "تسجيل خروج",
+                            color2: Colors.red.withOpacity(0.2),
+                            color: const Color(0xFFF14E4E),
+                            onTap: _onWillPop,
+                            // Navigator.of(context).pop(true);
+                          ),
+                        ],
+                      ),
+                      SizedBox(
+                        height: 110,
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
-          ),
-          Positioned(
-            top: 20, // نفس قيمة الـ CSS top: 116px;
-            left: MediaQuery.of(context).size.width / 2 -
-                120 / 2, // نفس القيمة left: calc(50% - 120px / 2);
-            child: Column(
-              children: [
-                SizedBox(
-                  height: 30,
-                ),
-                Text(
-                  "My Profile",
-                  style: GoogleFonts.balooBhaijaan2(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 24,
-                    color: Colors.white,
-                    letterSpacing: -0.5,
+            Positioned(
+              top: 20,
+              left: MediaQuery
+                  .of(context)
+                  .size
+                  .width / 2 - 120 / 2,
+              child: Column(
+                children: [
+                  SizedBox(
+                    height: 30,
                   ),
-                ),
-                SizedBox(
-                  height: 25,
-                ),
-                Container(
-                  width: 120,
-                  height: 120,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.white, width: 2),
-                    image: userProfilePicture.isNotEmpty
-                        ? DecorationImage(
-                            image: NetworkImage(userProfilePicture),
-                            fit: BoxFit.cover,
-                          )
-                        : null,
+                  Text(
+                    "My Profile",
+                    style: GoogleFonts.balooBhaijaan2(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 27,
+                      color: Colors.white,
+                      letterSpacing: -0.5,
+                    ),
                   ),
-                ),
-              ],
+                  SizedBox(
+                    height: 25,
+                  ),
+                  Container(
+                    width: 120,
+                    height: 120,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(100),
+                      border: Border.all(color: Colors.white, width: 3),
+                      image: userProfilePicture.isNotEmpty
+                          ? DecorationImage(
+                        image: NetworkImage(userProfilePicture),
+                        fit: BoxFit.cover,
+                      )
+                          : null,
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-          SizedBox(
-            height: 10,
-          ),
-          Positioned(
-            top: 248,
-            left: MediaQuery.of(context).size.width / 2 - 144 / 2,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Container(
-                      width: 144,
-                      height: 22,
-                      decoration: BoxDecoration(
-                        color: Colors.transparent,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Center(
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            SvgPicture.asset(
-                              "assets/checkdone.svg",
-                              width: 24,
-                              height: 24,
-                            ),
-                            SizedBox(
-                              width: 5,
-                            ),
-                            Text(
-                              userName,
-                              style: GoogleFonts.balooBhaijaan2(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 22,
-                                color: Theme.of(context).colorScheme.onPrimary,
+            SizedBox(
+              height: 10,
+            ),
+            Positioned(
+              top: 248,
+              left: MediaQuery
+                  .of(context)
+                  .size
+                  .width / 2 - 144 / 2,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        width: 144,
+                        height: 25,
+                        decoration: BoxDecoration(
+                          color: Colors.transparent,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Center(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              SvgPicture.asset(
+                                "assets/checkdone.svg",
+                                width: 24,
+                                height: 24,
                               ),
-                            ),
-                          ],
+                              SizedBox(
+                                width: 5,
+                              ),
+                              Text(
+                                userName,
+                                style: GoogleFonts.balooBhaijaan2(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 25,
+                                  color:
+                                  Theme
+                                      .of(context)
+                                      .colorScheme
+                                      .onPrimary,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 4),
+
+                  //  النصية للإيميل
+                  Container(
+                    width: 144,
+                    height: 22,
+                    decoration: BoxDecoration(
+                      color: Colors.transparent,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Center(
+                      child: Text(
+                        useremail,
+                        style: GoogleFonts.balooBhaijaan2(
+                          fontWeight: FontWeight.normal,
+                          fontSize: 18,
+                          color: Colors.grey,
                         ),
                       ),
                     ),
-                  ],
-                ),
-
-                const SizedBox(height: 8),
-
-                //  النصية للإيميل
-                Container(
-                  width: 144,
-                  height: 22,
-                  decoration: BoxDecoration(
-                    color: Colors.transparent,
-                    borderRadius: BorderRadius.circular(12),
                   ),
-                  child: Center(
-                    child: Text(
-                      useremail,
-                      style: GoogleFonts.balooBhaijaan2(
-                        fontWeight: FontWeight.normal,
-                        fontSize: 18,
-                        color: Colors.grey,
-                      ),
+                ],
+              ),
+            ),
+            Positioned(
+              top: 300, // نفس قيمة top: 274px;
+              left: MediaQuery
+                  .of(context)
+                  .size
+                  .width / 2 -
+                  156 / 2, // نفس القيمة left: calc(50% - 156px / 2);
+              child: Container(
+                width: 156,
+                height: 16,
+                decoration: BoxDecoration(
+                  color: Colors.transparent,
+                ),
+                child: Center(
+                  child: Text(
+                    position,
+                    style: GoogleFonts.balooBhaijaan2(
+                      fontWeight: FontWeight.w500,
+                      fontSize: 15,
+                      color: Color(0xFF7A5AF8),
+                      letterSpacing: -0.5,
                     ),
                   ),
                 ),
-              ],
-            ),
-          ),
-          Positioned(
-            top: 300, // نفس قيمة top: 274px;
-            left: MediaQuery.of(context).size.width / 2 -
-                156 / 2, // نفس القيمة left: calc(50% - 156px / 2);
-            child: Container(
-              width: 156,
-              height: 16,
-              decoration: BoxDecoration(
-                color: Colors.transparent,
-              ),
-              child: Center(
-                child: Text(
-                  position,
-                  style: GoogleFonts.balooBhaijaan2(
-                    fontWeight: FontWeight.w500,
-                    fontSize: 15,
-                    color: Color(0xFF7A5AF8),
-                    letterSpacing: -0.5,
-                  ),
-                ),
               ),
             ),
-          ),
-          SizedBox(
-            height: 40,
-          )
-        ],
+            SizedBox(
+              height: 20,
+            )
+          ],
+        ),
       ),
     );
   }

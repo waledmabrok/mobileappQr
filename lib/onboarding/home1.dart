@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:ui' as flutter;
+import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -18,6 +19,7 @@ import 'package:swipeable_button_view/swipeable_button_view.dart';
 
 import '../ FieldsMachine/CustomSnackBar/Snackbar.dart';
 import '../ FieldsMachine/setup/MainColors.dart';
+import '../CustomNavbar/Drawer.dart';
 import '../CustomNavbar/customnav.dart';
 import 'package:geocoding/geocoding.dart';
 
@@ -39,6 +41,8 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
   Duration elapsedTime = Duration.zero;
   String userName = '';
   String userProfilePicture = '';
+  final _advancedDrawerController = AdvancedDrawerController();
+  bool _isRequestingPermission = false;
 
   /// Variables for location and Wi-Fi checking
   static const targetLatitude = 30.580996;
@@ -69,7 +73,6 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
   @override
   void initState() {
     super.initState();
-
     _loadUserData();
     _checkLocationPermission();
     _startBackgroundTasks();
@@ -113,15 +116,62 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
 
   // Check if location permission is granted
   void _checkLocationPermission() async {
-    PermissionStatus status = await Permission.location.request();
+    // التحقق من حالة الإذن الحالية
+    PermissionStatus status = await Permission.location.status;
+
     if (status.isGranted) {
       setState(() {
         isLocationPermissionGranted = true;
       });
-      print('Location permission granted');
-    } else {
-      print('Location permission denied');
+      print('تم منح إذن الموقع بالفعل');
+      return;
     }
+
+    if (status.isDenied || status.isLimited) {
+      // طلب الإذن إذا لم يكن ممنوحًا
+      PermissionStatus newStatus = await Permission.location.request();
+
+      if (newStatus.isGranted) {
+        setState(() {
+          isLocationPermissionGranted = true;
+        });
+        print('تم منح إذن الموقع');
+      } else {
+        _showLocationDialog();
+      }
+    } else if (status.isPermanentlyDenied) {
+      // إذا تم رفض الإذن بشكل دائم، عرض تنبيه للمستخدم
+      _showLocationDialog();
+    }
+  }
+
+// دالة لإظهار رسالة تنبيه للمستخدم
+  void _showLocationDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("إذن الموقع مطلوب"),
+          content: Text(
+              "يجب عليك تفعيل الموقع لاستخدام هذه الميزة. يمكنك تفعيل الإذن من إعدادات التطبيق."),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text("إلغاء"),
+            ),
+            TextButton(
+              onPressed: () {
+                openAppSettings(); // فتح إعدادات التطبيق
+                Navigator.of(context).pop();
+              },
+              child: Text("فتح الإعدادات"),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   // Start background tasks for checking location and wifi
@@ -140,6 +190,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
     Geolocator.getPositionStream(
       locationSettings: LocationSettings(accuracy: LocationAccuracy.high),
     ).listen((Position position) async {
+      if (!mounted) return;
       double distance = Geolocator.distanceBetween(
         targetLatitude,
         targetLongitude,
@@ -147,14 +198,14 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
         position.longitude,
       );
 
-      print('المسافة الحالية: $distance متر');
+      //   print('المسافة الحالية: $distance متر');
 
       if (distance <= allowedDistance) {
-        print('الجهاز داخل النطاق المسموح به');
+        //   print('الجهاز داخل النطاق المسموح به');
 
         Map<String, String> location =
             await getCityAndCountry(position.latitude, position.longitude);
-
+        if (!mounted) return;
         setState(() {
           city = location['city'] ?? 'مدينة غير معروفة';
           country = location['country'] ?? 'دولة غير معروفة';
@@ -192,7 +243,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
 
     try {
       String? wifiName = await info.getWifiName();
-      print('Connected Wifi: $wifiName');
+      // print('Connected Wifi: $wifiName');
 
       if (wifiName != null &&
           wifiName.toLowerCase() == requiredWifiName.toLowerCase()) {
@@ -353,7 +404,8 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                                                 Text(
                                                   'دا مش حسابك الشخصي',
                                                   textAlign: TextAlign.center,
-                                                  style: GoogleFonts.cairo(
+                                                  style: GoogleFonts
+                                                      .balooBhaijaan2(
                                                     color: Colors.white,
                                                     fontSize: 20,
                                                     fontWeight: FontWeight.bold,
@@ -406,7 +458,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                                                             textAlign: TextAlign
                                                                 .center,
                                                             style: GoogleFonts
-                                                                .cairo(
+                                                                .balooBhaijaan2(
                                                               fontWeight:
                                                                   FontWeight
                                                                       .bold,
@@ -467,7 +519,8 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                                               Text(
                                                 'دا مش حسابك الشخصي',
                                                 textAlign: TextAlign.center,
-                                                style: GoogleFonts.cairo(
+                                                style:
+                                                    GoogleFonts.balooBhaijaan2(
                                                   color: Colors.white,
                                                   fontSize: 20,
                                                   fontWeight: FontWeight.bold,
@@ -517,8 +570,8 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                                                           'العمل من المنزل',
                                                           textAlign:
                                                               TextAlign.center,
-                                                          style:
-                                                              GoogleFonts.cairo(
+                                                          style: GoogleFonts
+                                                              .balooBhaijaan2(
                                                             fontWeight:
                                                                 FontWeight.bold,
                                                             color: Colors.white,
@@ -704,7 +757,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                     Text(
                       'خارج نطاق الشركه',
                       textAlign: TextAlign.center,
-                      style: GoogleFonts.cairo(
+                      style: GoogleFonts.balooBhaijaan2(
                         color: Colors.white,
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
@@ -750,7 +803,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                               Text(
                                 'العمل من المنزل',
                                 textAlign: TextAlign.center,
-                                style: GoogleFonts.cairo(
+                                style: GoogleFonts.balooBhaijaan2(
                                   fontWeight: FontWeight.bold,
                                   color: Colors.white,
                                   fontSize: 14,
@@ -803,7 +856,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
         SnackBar(
           content: Text(
             'لا يوجد اتصال بالإنترنت. يرجى التحقق من الاتصال وإعادة المحاولة.',
-            style: GoogleFonts.cairo(color: Colors.white),
+            style: GoogleFonts.balooBhaijaan2(color: Colors.white),
           ),
           backgroundColor: Colors.red,
         ),
@@ -844,7 +897,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                       Text(
                         'هل أنت متأكد من أنك ترغب في تسجيل الانصراف؟',
                         textAlign: TextAlign.center,
-                        style: GoogleFonts.cairo(
+                        style: GoogleFonts.balooBhaijaan2(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
                           fontSize: 18,
@@ -906,7 +959,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
 
   Future<bool> _sendCheckOutRequest() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? userId = prefs.getString('user_id'); // قراءة الـ user_id
+    String? userId = prefs.getString('user_id');
 
     if (userId == null) {
       print('لم يتم العثور على user_id في SharedPreferences');
@@ -935,7 +988,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
       }
     } catch (e) {
       print('حدث خطأ أثناء إرسال طلب الانصراف: $e');
-      return false; // حدث خطأ أثناء الإرسال
+      return false;
     }
   }
 
@@ -979,9 +1032,9 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                   },
                   onFinish: () async {
                     print("Starting check-out process...");
-                    await _processCheckOut(); // تسجيل الانصراف
+                    await _processCheckOut();
                     print("Check-out completed. Closing sheet...");
-                    Navigator.pop(context); // إغلاق الشيت
+                    Navigator.pop(context);
                   },
                 ),
               ),
@@ -1005,356 +1058,368 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
-    return Scaffold(
-      // backgroundColor: Colors.white,
-      body: SingleChildScrollView(
-        child: Stack(
-          children: [
-            Container(
-              height: screenHeight,
-              child: Column(
-                children: [
-                  Column(
-                    children: [
-                      // Stack in AppBar
-                      Stack(
-                        children: [
-                          Container(
-                            height: 250,
-                            decoration: BoxDecoration(
-                              color: Colors.transparent,
-                              borderRadius: BorderRadius.only(),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(
-                              top: 00,
-                            ),
-                            child: Column(
-                              children: [
-                                SizedBox(height: 50),
-                                Padding(
-                                  padding: EdgeInsetsDirectional.only(
-                                      start: 20, end: 20, top: 20),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      Expanded(
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              " ${userName}  ",
-                                              style: GoogleFonts.balooBhaijaan2(
-                                                color: Theme.of(context)
-                                                    .colorScheme
-                                                    .onPrimary,
-                                                fontSize: 26,
-                                                fontWeight: FontWeight.w800,
-                                              ),
-                                            ),
-                                            SizedBox(height: 1),
-                                            Text(
-                                              'قم بتسجيل حضورك الان',
-                                              style: GoogleFonts.balooBhaijaan2(
-                                                fontWeight: FontWeight.w500,
-                                                color: Color(0xff909090),
-                                                fontSize: 20,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      Stack(
-                                        clipBehavior: Clip.none,
-                                        children: [
-                                          Container(
-                                            decoration: BoxDecoration(
-                                              border: Border.all(
-                                                color: Colors.grey,
-                                                width: 1.5,
-                                              ),
-                                              borderRadius: BorderRadius.all(
-                                                  Radius.circular(35)),
-                                            ),
-                                            child: Container(
-                                              decoration: BoxDecoration(
-                                                border: Border.all(
-                                                  color: Colors.white,
-                                                  width: 3,
-                                                ),
-                                                borderRadius: BorderRadius.all(
-                                                    Radius.circular(30)),
-                                              ),
-                                              child:
-                                                  userProfilePicture.isNotEmpty
-                                                      ? CircleAvatar(
-                                                          radius: 27,
-                                                          backgroundImage:
-                                                              NetworkImage(
-                                                                  userProfilePicture),
-                                                        )
-                                                      : Icon(Icons.person,
-                                                          size: 35),
-                                            ),
-                                          ),
-                                          Positioned(
-                                            bottom: 4,
-                                            left: 4,
-                                            child: Container(
-                                              height: 14,
-                                              width: 14,
-                                              decoration: BoxDecoration(
-                                                color: Color(0xff5eb6a1),
-                                                shape: BoxShape.circle,
-                                                border: Border.all(
-                                                  color: Colors.white,
-                                                  width: 2,
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      SizedBox(width: 10),
-                                    ],
-                                  ),
-                                )
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                  SizedBox(
-                    height: 330,
-                  ),
-                  SizedBox(
-                    height: 100,
-                  )
-                ],
-              ),
-            ),
-
-            ///image background
-
-            /////////time and click button///////////////////////////////////////=====================================
-            Positioned(
-              left: 0,
-              right: 0,
-              top: 140,
-              child: Container(
-                margin: EdgeInsets.symmetric(horizontal: 20),
-                padding: EdgeInsets.all(15),
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.0),
-                  borderRadius: BorderRadius.circular(15),
-                ),
+    return CustomAdvancedDrawer(
+      controller: _advancedDrawerController,
+      child: Scaffold(
+        // backgroundColor: Colors.white,
+        body: SingleChildScrollView(
+          child: Stack(
+            children: [
+              Container(
+                height: screenHeight,
                 child: Column(
                   children: [
-                    SizedBox(height: 5),
-                    Text(
-                      DateFormat('hh:mm a', 'en').format(DateTime.now()),
-                      style: GoogleFonts.balooBhaijaan2(
-                          color: Color(0xff67686E),
-                          fontSize: 40,
-                          fontWeight: FontWeight.w800),
-                    ),
-                    SizedBox(height: 5),
-                    Text(
-                      DateFormat('EEEE , dd  MMMM ', 'ar')
-                          .format(DateTime.now()),
-                      style: GoogleFonts.balooBhaijaan2(
-                          color: Color(0xff909090),
-                          fontSize: 20,
-                          fontWeight: FontWeight.w500),
-                    ),
-                    SizedBox(height: 25),
-                    Stack(
+                    Column(
                       children: [
-                        Center(
-                          child: GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                _handleAttendance();
-                              });
-                            },
-                            child: Container(
-                              width: 248,
-                              height: 248,
+                        // Stack in AppBar
+                        Stack(
+                          children: [
+                            Container(
+                              height: 250,
                               decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                gradient: LinearGradient(
-                                  begin: Alignment.topCenter,
-                                  end: Alignment.bottomCenter,
-                                  colors: [
-                                    Color.fromRGBO(232, 228, 255, 0.6),
-                                    Color.fromRGBO(231, 237, 255, 0.6),
-                                  ],
-                                ),
+                                color: Colors.transparent,
+                                borderRadius: BorderRadius.only(),
                               ),
                             ),
-                          ),
-                        ),
-                        Positioned(
-                          left: 15,
-                          top: 15,
-                          right: 15,
-                          bottom: 15,
-                          child: GestureDetector(
-                            onTap: () async {
-                              bool attendanceSuccessful =
-                                  await _handleAttendance();
-                              setState(() {
-                                if (attendanceSuccessful) {
-                                  isCheckedIn = true;
-                                  _startTimer();
-                                } else {
-                                  isCheckedIn = false;
-                                }
-                              });
-                              if (attendanceSuccessful) {
-                                _processAttendance();
-                              } else {}
-                            },
-                            child: Dismissible(
-                              key: Key('attendance_button'),
-                              direction: DismissDirection.none,
-                              onDismissed: (direction) {
-                                if (isSwipeVisible) {
-                                  _showSwipeableBottomSheet(context);
-                                }
-                              },
-                              child: Container(
-                                width: 218,
-                                height: 218,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  gradient: LinearGradient(
-                                    colors: isCheckedIn
-                                        ? [Color(0xFF487FDB), Color(0xFF9684E1)]
-                                        : [
-                                            Color(0xff992f92),
-                                            Color(0xffe02f73),
-                                            Color(0xffe02f73)
-                                          ],
-                                    stops: isCheckedIn
-                                        ? [0.1667, 0.6756]
-                                        : [0.0, 0.5, 1.0],
-                                    begin: isCheckedIn
-                                        ? Alignment.topRight
-                                        : Alignment.topCenter,
-                                    end: isCheckedIn
-                                        ? Alignment.bottomLeft
-                                        : Alignment.bottomCenter,
-                                  ),
-                                  /* boxShadow: [
-                                    BoxShadow(
-                                      color: Color(0xFF9684E1).withOpacity(0.7),
-                                      offset: Offset(-10, 24),
-                                      blurRadius: 34,
-                                      spreadRadius: -16,
-                                    ),
-                                  ],*/
-                                ),
-                                child: Center(
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      SvgPicture.asset(
-                                        "assets/clickin.svg",
-                                        height: 81,
-                                        width: 64,
-                                      ),
-                                      SizedBox(height: 10),
-                                      Text(
-                                        buttonText,
-                                        style: GoogleFonts.balooBhaijaan2(
-                                          color: Colors.white,
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.w700,
+                            Padding(
+                              padding: const EdgeInsets.only(
+                                top: 00,
+                              ),
+                              child: Column(
+                                children: [
+                                  SizedBox(height: 50),
+                                  Padding(
+                                    padding: EdgeInsetsDirectional.only(
+                                        start: 20, end: 20, top: 20),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                " ${userName}  ",
+                                                style:
+                                                    GoogleFonts.balooBhaijaan2(
+                                                  color: Theme.of(context)
+                                                      .colorScheme
+                                                      .onPrimary,
+                                                  fontSize: 26,
+                                                  fontWeight: FontWeight.w800,
+                                                ),
+                                              ),
+                                              SizedBox(height: 1),
+                                              Text(
+                                                'قم بتسجيل حضورك الان',
+                                                style:
+                                                    GoogleFonts.balooBhaijaan2(
+                                                  fontWeight: FontWeight.w500,
+                                                  color: Color(0xff909090),
+                                                  fontSize: 20,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
                                         ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
+                                        Stack(
+                                          clipBehavior: Clip.none,
+                                          children: [
+                                            Container(
+                                              decoration: BoxDecoration(
+                                                border: Border.all(
+                                                  color: Colors.grey,
+                                                  width: 1.5,
+                                                ),
+                                                borderRadius: BorderRadius.all(
+                                                    Radius.circular(35)),
+                                              ),
+                                              child: Container(
+                                                decoration: BoxDecoration(
+                                                  border: Border.all(
+                                                    color: Colors.white,
+                                                    width: 3,
+                                                  ),
+                                                  borderRadius:
+                                                      BorderRadius.all(
+                                                          Radius.circular(30)),
+                                                ),
+                                                child: userProfilePicture
+                                                        .isNotEmpty
+                                                    ? CircleAvatar(
+                                                        radius: 27,
+                                                        backgroundImage:
+                                                            NetworkImage(
+                                                                userProfilePicture),
+                                                      )
+                                                    : Icon(Icons.person,
+                                                        size: 35),
+                                              ),
+                                            ),
+                                            Positioned(
+                                              bottom: 4,
+                                              left: 4,
+                                              child: Container(
+                                                height: 14,
+                                                width: 14,
+                                                decoration: BoxDecoration(
+                                                  color: Color(0xff5eb6a1),
+                                                  shape: BoxShape.circle,
+                                                  border: Border.all(
+                                                    color: Colors.white,
+                                                    width: 2,
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        SizedBox(width: 10),
+                                      ],
+                                    ),
+                                  )
+                                ],
                               ),
                             ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 20),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.location_on,
-                            color: Color(0xff67686E), size: 14),
-                        SizedBox(width: 4),
-                        Text(
-                          '$city',
-                          style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                              color: Color(0xff909090)),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 60),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        _buildInfoCard(
-                          icon: FontAwesomeIcons.clockFour,
-                          time: startTime != null
-                              ? DateFormat('hh:mm:ss a', 'ar')
-                                  .format(startTime!)
-                              : '00:00:00',
-                          label: 'تسجيل حضور',
-                        ),
-                        _buildInfoCard(
-                          icon: FontAwesomeIcons.clockRotateLeft,
-                          label: 'تسجيل انصراف',
-                          time: endTime != null
-                              ? DateFormat('hh:mm:ss a', 'ar').format(endTime!)
-                              : '00:00:00',
-                        ),
-                        _buildInfoCard(
-                          icon: Icons.check_circle,
-                          label: 'المدة الكلية',
-                          time: isCheckedIn
-                              ? formatDuration(elapsedTime)
-                              : startTime != null && endTime != null
-                                  ? formatDuration(
-                                      endTime!.difference(startTime!))
-                                  : "00:00",
+                          ],
                         ),
                       ],
                     ),
                     SizedBox(
-                      height: 110,
+                      height: 330,
                     ),
+                    SizedBox(
+                      height: 100,
+                    )
                   ],
                 ),
               ),
-            ),
-            Positioned(
-              right: 0,
-              left: 0,
-              bottom: 0,
-              child: SizedBox(
-                height: 70,
-                child: CustomBottomNavBar(
-                  selectedIndex: 4,
-                  onItemTapped: (p0) {},
+
+              ///image background
+
+              /////////time and click button///////////////////////////////////////=====================================
+              Positioned(
+                left: 0,
+                right: 0,
+                top: 140,
+                child: Container(
+                  margin: EdgeInsets.symmetric(horizontal: 20),
+                  padding: EdgeInsets.all(15),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.0),
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  child: Column(
+                    children: [
+                      SizedBox(height: 5),
+                      Text(
+                        DateFormat('hh:mm a', 'en').format(DateTime.now()),
+                        style: GoogleFonts.balooBhaijaan2(
+                            color: Color(0xff67686E),
+                            fontSize: 40,
+                            fontWeight: FontWeight.w800),
+                      ),
+                      SizedBox(height: 5),
+                      Text(
+                        DateFormat('EEEE , dd  MMMM ', 'ar')
+                            .format(DateTime.now()),
+                        style: GoogleFonts.balooBhaijaan2(
+                            color: Color(0xff909090),
+                            fontSize: 20,
+                            fontWeight: FontWeight.w500),
+                      ),
+                      SizedBox(height: 25),
+                      Stack(
+                        children: [
+                          Center(
+                            child: GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  _handleAttendance();
+                                });
+                              },
+                              child: Container(
+                                width: 248,
+                                height: 248,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  gradient: LinearGradient(
+                                    begin: Alignment.topCenter,
+                                    end: Alignment.bottomCenter,
+                                    colors: [
+                                      Color.fromRGBO(232, 228, 255, 0.6),
+                                      Color.fromRGBO(231, 237, 255, 0.6),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          Positioned(
+                            left: 15,
+                            top: 15,
+                            right: 15,
+                            bottom: 15,
+                            child: GestureDetector(
+                              onTap: () async {
+                                bool attendanceSuccessful =
+                                    await _handleAttendance();
+                                setState(() {
+                                  if (attendanceSuccessful) {
+                                    isCheckedIn = true;
+                                    _startTimer();
+                                  } else {
+                                    isCheckedIn = false;
+                                  }
+                                });
+                                if (attendanceSuccessful) {
+                                  _processAttendance();
+                                } else {}
+                              },
+                              child: Dismissible(
+                                key: Key('attendance_button'),
+                                direction: DismissDirection.none,
+                                onDismissed: (direction) {
+                                  if (isSwipeVisible) {
+                                    _showSwipeableBottomSheet(context);
+                                  }
+                                },
+                                child: Container(
+                                  width: 218,
+                                  height: 218,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    gradient: LinearGradient(
+                                      colors: isCheckedIn
+                                          ? [
+                                              Color(0xFF487FDB),
+                                              Color(0xFF9684E1)
+                                            ]
+                                          : [
+                                              Color(0xff992f92),
+                                              Color(0xffe02f73),
+                                              Color(0xffe02f73)
+                                            ],
+                                      stops: isCheckedIn
+                                          ? [0.1667, 0.6756]
+                                          : [0.0, 0.5, 1.0],
+                                      begin: isCheckedIn
+                                          ? Alignment.topRight
+                                          : Alignment.topCenter,
+                                      end: isCheckedIn
+                                          ? Alignment.bottomLeft
+                                          : Alignment.bottomCenter,
+                                    ),
+                                    /* boxShadow: [
+                                      BoxShadow(
+                                        color: Color(0xFF9684E1).withOpacity(0.7),
+                                        offset: Offset(-10, 24),
+                                        blurRadius: 34,
+                                        spreadRadius: -16,
+                                      ),
+                                    ],*/
+                                  ),
+                                  child: Center(
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        SvgPicture.asset(
+                                          "assets/clickin.svg",
+                                          height: 81,
+                                          width: 64,
+                                        ),
+                                        SizedBox(height: 10),
+                                        Text(
+                                          buttonText,
+                                          style: GoogleFonts.balooBhaijaan2(
+                                            color: Colors.white,
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.w700,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 20),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.location_on,
+                              color: Color(0xff67686E), size: 14),
+                          SizedBox(width: 4),
+                          Text(
+                            '$city',
+                            style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xff909090)),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 60),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          _buildInfoCard(
+                            icon: FontAwesomeIcons.clockFour,
+                            time: startTime != null
+                                ? DateFormat('hh:mm:ss a', 'ar')
+                                    .format(startTime!)
+                                : '00:00:00',
+                            label: 'تسجيل حضور',
+                          ),
+                          _buildInfoCard(
+                            icon: FontAwesomeIcons.clockRotateLeft,
+                            label: 'تسجيل انصراف',
+                            time: endTime != null
+                                ? DateFormat('hh:mm:ss a', 'ar')
+                                    .format(endTime!)
+                                : '00:00:00',
+                          ),
+                          _buildInfoCard(
+                            icon: Icons.check_circle,
+                            label: 'المدة الكلية',
+                            time: isCheckedIn
+                                ? formatDuration(elapsedTime)
+                                : startTime != null && endTime != null
+                                    ? formatDuration(
+                                        endTime!.difference(startTime!))
+                                    : "00:00",
+                          ),
+                        ],
+                      ),
+                      SizedBox(
+                        height: 110,
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            )
-          ],
+              Positioned(
+                right: 0,
+                left: 0,
+                bottom: 0,
+                child: SizedBox(
+                  height: 70,
+                  child: CustomBottomNavBar(
+                    selectedIndex: 4,
+                    onItemTapped: (p0) {},
+                  ),
+                ),
+              )
+            ],
+          ),
         ),
       ),
     );
@@ -1371,12 +1436,13 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
         ),
         SizedBox(height: 5),
         Text(time,
-            style: GoogleFonts.cairo(
+            style: GoogleFonts.balooBhaijaan2(
                 color: Theme.of(context).colorScheme.onPrimary,
                 fontWeight: FontWeight.bold)),
         SizedBox(height: 5),
         Text(label,
-            style: GoogleFonts.cairo(color: Colors.grey[400], fontSize: 13)),
+            style: GoogleFonts.balooBhaijaan2(
+                color: Colors.grey[400], fontSize: 13)),
       ],
     );
   }
@@ -1433,7 +1499,7 @@ Widget _buildAttendanceCard(String number, String title, Color bgColor,
                     children: [
                       Text(
                         number,
-                        style: GoogleFonts.cairo(
+                        style: GoogleFonts.balooBhaijaan2(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                           color: lineColor,
@@ -1441,7 +1507,7 @@ Widget _buildAttendanceCard(String number, String title, Color bgColor,
                       ),
                       Text(
                         title,
-                        style: GoogleFonts.cairo(
+                        style: GoogleFonts.balooBhaijaan2(
                           fontSize: 14,
                           fontWeight: FontWeight.w500,
                           color: Colors.black,

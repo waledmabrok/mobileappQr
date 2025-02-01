@@ -25,6 +25,7 @@ class _LoanRequestPageState extends State<LoanRequestPage> {
   String paymentMethod = "كاش";
   int? installmentMonths;
   double? monthlyPayment;
+  double previousAmount = 0.0; // لحفظ القيمة السابقة للمبلغ
   final List<int> suggestedAmounts = [100, 200, 300, 500, 1000];
 
   void _selectDate(BuildContext context) async {
@@ -49,6 +50,11 @@ class _LoanRequestPageState extends State<LoanRequestPage> {
       setState(() {
         monthlyPayment = amount / installmentMonths!;
       });
+    } else {
+      setState(() {
+        monthlyPayment =
+        null; // إعادة تعيين الأقساط إذا كانت البيانات غير مكتملة أو غير صحيحة
+      });
     }
   }
 
@@ -56,13 +62,10 @@ class _LoanRequestPageState extends State<LoanRequestPage> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         backgroundColor: Colors.green,
-        // تغيير لون الخلفية
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10), // تحديد قيمة الحافة الدائرية
+          borderRadius: BorderRadius.circular(10),
         ),
         behavior: SnackBarBehavior.floating,
-        // جعل SnackBar يطفو فوق المحتوى
-
         content: Text(
           "الطلب قيد الانتظار وجاري الموافقة عليه من قبل الإدارة.",
           style: GoogleFonts.balooBhaijaan2(),
@@ -94,12 +97,15 @@ class _LoanRequestPageState extends State<LoanRequestPage> {
           backgroundColor: Colors.white,
         ),
         body: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(20.0),
           child: Stack(
             children: [
               SingleChildScrollView(
                 child: Container(
-                  height: MediaQuery.of(context).size.height,
+                  height: MediaQuery
+                      .of(context)
+                      .size
+                      .height,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -119,6 +125,10 @@ class _LoanRequestPageState extends State<LoanRequestPage> {
                                   onPressed: () {
                                     setState(() {
                                       amountController.text = amount.toString();
+                                      previousAmount = amount
+                                          .toDouble(); // تحديث المبلغ السابق
+                                      monthlyPayment =
+                                      null; // إعادة تعيين الأقساط عند التغيير
                                     });
                                   },
                                   child: Text("${amount} ج.م",
@@ -132,8 +142,29 @@ class _LoanRequestPageState extends State<LoanRequestPage> {
                             ),
                             SizedBox(height: 10),
                             CustomText(
-                                controller: amountController,
-                                hintText: " أدخل مبلغًا "),
+                              controller: amountController,
+                              hintText: "أدخل مبلغًا",
+                              onChanged: (value) {
+                                setState(() {
+                                  if (value!.isNotEmpty) {
+                                    previousAmount =
+                                        double.tryParse(value) ?? 0.0;
+                                    monthlyPayment =
+                                    null; // مسح الأقساط القديمة
+                                  }
+
+                                  // حساب الأقساط إذا كانت طريقة الدفع "قسط" والشهور محددة
+                                  if (paymentMethod == "قسط" &&
+                                      installmentMonths != null &&
+                                      installmentMonths! > 0) {
+                                    _calculateInstallments(); // حساب الأقساط من جديد
+                                  } else {
+                                    monthlyPayment =
+                                    null; // إعادة تعيين الأقساط إذا لم تتوفر الشروط
+                                  }
+                                });
+                              },
+                            ),
                             SizedBox(height: 16),
                             GestureDetector(
                               onTap: () => _selectDate(context),
@@ -141,7 +172,8 @@ class _LoanRequestPageState extends State<LoanRequestPage> {
                                 icon: Icons.date_range,
                                 text: selectedDate == null
                                     ? ' اختر تاريخ السلفه'
-                                    : '${selectedDate!.day}/${selectedDate!.month}/${selectedDate!.year}',
+                                    : '${selectedDate!.day}/${selectedDate!
+                                    .month}/${selectedDate!.year}',
                               ),
                             ),
                             SizedBox(height: 16),
@@ -151,7 +183,7 @@ class _LoanRequestPageState extends State<LoanRequestPage> {
                             SizedBox(height: 16),
                             CustomText(
                               controller:
-                                  TextEditingController(text: paymentMethod),
+                              TextEditingController(text: paymentMethod),
                               hintText: "أسلوب السداد",
                               isDropdown: true,
                               items: ["كاش", "قسط"],
@@ -179,21 +211,19 @@ class _LoanRequestPageState extends State<LoanRequestPage> {
                                     12, (index) => "${index + 1} شهر"),
                                 onChanged: (value) {
                                   setState(() {
-                                    installmentMonths = int.tryParse(
-                                        value!.split(" ")[0]); // استخراج الرقم
-                                    _calculateInstallments();
+                                    installmentMonths =
+                                        int.tryParse(value!.split(" ")[0]);
+                                    monthlyPayment =
+                                    null; // إعادة تعيين الأقساط لإخفاء زر الإرسال
                                   });
                                 },
                               ),
                               SizedBox(height: 16),
-                              CustomButton(
-                                text: 'احسب الأقساط',
-                                onPressed: _calculateInstallments,
-                              ),
                               if (monthlyPayment != null) ...[
                                 SizedBox(height: 16),
                                 Text(
-                                  "سيتم خصم ${monthlyPayment!.toStringAsFixed(2)} كل شهر",
+                                  "سيتم خصم ${monthlyPayment!.toStringAsFixed(
+                                      2)} كل شهر",
                                   style: GoogleFonts.baloo2(
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold,
@@ -218,16 +248,22 @@ class _LoanRequestPageState extends State<LoanRequestPage> {
                     builder: (context, isKeyboardVisible) {
                       return Padding(
                         padding:
-                            EdgeInsets.only(bottom: isKeyboardVisible ? 10 : 0),
+                        EdgeInsets.only(bottom: isKeyboardVisible ? 10 : 0),
                         child: SizedBox(
                           width: double.infinity,
                           child: ElevatedButton(
-                            onPressed: (paymentMethod == "قسط" &&
-                                    monthlyPayment == null)
-                                ? null
-                                : _submitRequest,
+                            onPressed: () {
+                              if (paymentMethod == "قسط" &&
+                                  monthlyPayment == null) {
+                                _calculateInstallments(); // احسب الأقساط عند الحاجة
+                              } else {
+                                _submitRequest(); // إرسال الطلب
+                              }
+                            },
                             child: Text(
-                              "إرسال الطلب",
+                              (paymentMethod == "قسط" && monthlyPayment == null)
+                                  ? 'احسب الأقساط'
+                                  : 'إرسال الطلب',
                               style: GoogleFonts.balooBhaijaan2(fontSize: 18),
                             ),
                             style: ElevatedButton.styleFrom(
@@ -254,9 +290,11 @@ class _LoanRequestPageState extends State<LoanRequestPage> {
     return Container(
       padding: EdgeInsets.symmetric(vertical: 14, horizontal: 16),
       decoration: BoxDecoration(
-        //border: Border.all(color: Colors.blueGrey),
         borderRadius: BorderRadius.circular(12),
-        color: Theme.of(context).colorScheme.surfaceVariant,
+        color: Theme
+            .of(context)
+            .colorScheme
+            .surfaceVariant,
       ),
       child: Row(
         children: [

@@ -7,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../../ FieldsMachine/FieldsContext/Button.dart';
 import '../../../ FieldsMachine/setup/MainColors.dart';
 import '../../../CustomNavbar/Drawer.dart';
+import '../../../CustomNavbar/customnav.dart';
 import '../../navgate.dart';
 import 'Alltrasaction.dart';
 import 'CustomWallet/CustomAlltransaction.dart';
@@ -47,11 +48,9 @@ class _WalletState extends State<Wallet> {
     });
   }
 
-  void showCustomModalBottomSheet(
-    BuildContext context,
-    String imagePath,
-    String head,
-  ) {
+  void showCustomModalBottomSheet(BuildContext context,
+      String imagePath,
+      String head,) {
     showModalBottomSheet(
       backgroundColor: Colors.white,
       context: context,
@@ -75,17 +74,26 @@ class _WalletState extends State<Wallet> {
     return CustomAdvancedDrawer(
       controller: _advancedDrawerController,
       child: Scaffold(
-        backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
+        backgroundColor: Theme
+            .of(context)
+            .colorScheme
+            .surfaceVariant,
         body: Stack(
           children: [
             // الخلفية العلوية
             Positioned(
               top: -5,
               child: Container(
-                width: MediaQuery.of(context).size.width,
+                width: MediaQuery
+                    .of(context)
+                    .size
+                    .width,
                 height: 298,
                 decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.primary,
+                  color: Theme
+                      .of(context)
+                      .colorScheme
+                      .primary,
                   borderRadius: BorderRadius.only(
                     bottomLeft: Radius.circular(40),
                     bottomRight: Radius.circular(40),
@@ -163,7 +171,7 @@ class _WalletState extends State<Wallet> {
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: InkWell(
-                      overlayColor: WidgetStatePropertyAll(Colors.white),
+                      overlayColor: WidgetStatePropertyAll(Colors.transparent),
                       onTap: () {
                         Navigator.pop(context);
                       },
@@ -278,8 +286,8 @@ class _WalletState extends State<Wallet> {
             // قائمة المعاملات
             Positioned(
               top: 370,
-              left: 0,
-              right: 0,
+              left: 20,
+              right: 20,
               bottom: 0,
               child: SingleChildScrollView(
                 child: Column(children: [
@@ -396,19 +404,22 @@ class _WalletState extends State<Wallet> {
             ),
             // عنوان المعاملات
             Positioned(
-              right: 20,
+              right: 30,
               top: 335,
               child: Text(
                 'المعاملات',
                 style: GoogleFonts.balooBhaijaan2(
                   fontSize: 18,
                   fontWeight: FontWeight.w600,
-                  color: Theme.of(context).colorScheme.onPrimary,
+                  color: Theme
+                      .of(context)
+                      .colorScheme
+                      .onPrimary,
                 ),
               ),
             ),
             Positioned(
-              left: 23,
+              left: 30,
               top: 335,
               child: InkWell(
                 overlayColor: WidgetStatePropertyAll(Colors.white),
@@ -428,6 +439,18 @@ class _WalletState extends State<Wallet> {
                 ),
               ),
             ),
+            Positioned(
+              right: 0,
+              left: 0,
+              bottom: 0,
+              child: SizedBox(
+                height: 70,
+                child: CustomBottomNavBar(
+                  selectedIndex: 4,
+                  onItemTapped: (p0) {},
+                ),
+              ),
+            )
           ],
         ),
       ),

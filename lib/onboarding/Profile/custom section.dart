@@ -7,13 +7,13 @@ import 'DarkMode.dart';
 class CustomFrameWidget extends StatelessWidget {
   final String title;
   final List<OptionItem> options;
-  final bool showThemeSwitch; // إضافة متغير لتحديد إذا كان يجب إظهار السويتش
+  final bool showThemeSwitch;
 
   const CustomFrameWidget({
     Key? key,
     required this.title,
     required this.options,
-    this.showThemeSwitch = false, // افتراضيًا مخفي
+    this.showThemeSwitch = false,
   }) : super(key: key);
 
   @override
@@ -36,7 +36,7 @@ class CustomFrameWidget extends StatelessWidget {
                   title,
                   style: GoogleFonts.balooBhaijaan2(
                     fontWeight: FontWeight.w600,
-                    fontSize: 18,
+                    fontSize: 22,
                     letterSpacing: -0.5,
                     color: Theme.of(context).colorScheme.onPrimary,
                   ),
@@ -52,22 +52,38 @@ class CustomFrameWidget extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      ...options.map((option) {
-                        return Column(
-                          children: [
-                            _buildOption(
-                              icon: option.icon,
-                              label: option.label,
-                              color: option.color,
-                              onTap: option.onTap,
-                              isSwitch: false, // الخيارات العادية بدون سويتش
-                            ),
-                            const SizedBox(height: 12),
-                          ],
-                        );
-                      }).toList(),
+                      ...options
+                          .asMap()
+                          .map((index, option) {
+                            return MapEntry(
+                              index,
+                              Column(
+                                children: [
+                                  _buildOption(
+                                    context: context,
+                                    icon: option.icon,
+                                    label: option.label,
+                                    color: option.color,
+                                    color2: option.color2,
+                                    onTap: option.onTap,
+                                    isSwitch: false,
+                                  ),
+                                  const SizedBox(height: 15),
+                                  if (index != options.length - 1)
+                                    Divider(
+                                      thickness: 0.8,
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .surfaceVariant,
+                                    ),
+                                ],
+                              ),
+                            );
+                          })
+                          .values
+                          .toList(),
                       if (showThemeSwitch)
-                        _buildThemeSwitch(themeProvider), // إضافة السويتش
+                        _buildThemeSwitch(themeProvider, context),
                     ],
                   ),
                 ),
@@ -84,23 +100,30 @@ class CustomFrameWidget extends StatelessWidget {
     required String label,
     required VoidCallback onTap,
     required Color color,
+    required Color color2,
     bool isSwitch = false,
+    required BuildContext context,
   }) {
     return GestureDetector(
       onTap: onTap,
       child: Row(
         children: [
-          Icon(
-            icon,
-            size: 17,
-            color: color,
+          Container(
+            padding: EdgeInsets.all(8),
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(25), color: color2),
+            child: Icon(
+              icon,
+              size: 18,
+              color: color,
+            ),
           ),
           const SizedBox(width: 8),
           Expanded(
             child: Text(
               label,
               style: GoogleFonts.balooBhaijaan2(
-                fontSize: 17,
+                fontSize: 18,
                 fontWeight: FontWeight.w500,
                 color: Color(0xFF4F5464),
               ),
@@ -108,7 +131,7 @@ class CustomFrameWidget extends StatelessWidget {
           ),
           const Icon(
             Icons.arrow_forward_ios,
-            size: 16,
+            size: 18,
             color: Color(0xFFB6C2D7),
           ),
         ],
@@ -116,26 +139,47 @@ class CustomFrameWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildThemeSwitch(ThemeProvider themeProvider) {
+  Widget _buildThemeSwitch(ThemeProvider themeProvider, BuildContext context) {
     return SwitchListTile(
       contentPadding: EdgeInsets.all(0),
-      title: Text(
-        "تحديد الثييم",
-        style: GoogleFonts.balooBhaijaan2(
-          fontSize: 17,
-          fontWeight: FontWeight.w500,
-          color: Color(0xFF4F5464),
-        ),
+      title: Row(
+        children: [
+          Container(
+            padding: EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(25),
+              color: Theme.of(context).colorScheme.inverseSurface,
+            ),
+            child: Icon(
+              Icons.dark_mode_outlined,
+              size: 18,
+              color: Colors.black,
+            ),
+          ),
+          SizedBox(
+            width: 8,
+          ),
+          Text(
+            "تحديد الثييم",
+            style: GoogleFonts.balooBhaijaan2(
+              fontSize: 18,
+              fontWeight: FontWeight.w500,
+              color: Color(0xFF4F5464),
+            ),
+          ),
+        ],
       ),
       value: themeProvider.themeMode == ThemeMode.dark,
       onChanged: (value) {
         themeProvider.toggleTheme();
       },
       activeColor: Colors.blue,
-      // لون الزر عند التفعيل
+      inactiveThumbColor: Colors.grey,
 
-      inactiveThumbColor: Colors.white,
       inactiveTrackColor: Colors.grey[300],
+      //thumbColor: WidgetStatePropertyAll(Colors.white),
+      overlayColor: WidgetStatePropertyAll(Colors.white),
+      trackOutlineColor: WidgetStatePropertyAll(Colors.white30),
     );
   }
 }
@@ -144,12 +188,14 @@ class OptionItem {
   final IconData icon;
   final String label;
   final Color color;
+  final Color color2;
   final VoidCallback onTap;
 
   const OptionItem({
     required this.icon,
     required this.label,
     required this.color,
+    required this.color2,
     required this.onTap,
   });
 }

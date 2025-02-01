@@ -18,6 +18,9 @@ class ThemeClass {
       onSurface: Colorss.textSecondaryLight,
       surfaceVariant: Colorss.ContainerLight,
       inverseSurface: Colorss.borderLight,
+      secondaryContainer: Colorss.primaryColor,
+      // لون التحديد في التقويم
+      onSecondaryContainer: Colors.white,
     ),
     textTheme: TextTheme(
       bodyLarge: GoogleFonts.balooBhaijaan2(color: Colors.black),
@@ -55,6 +58,8 @@ class ThemeClass {
       onSurface: Colorss.textSecondaryDark,
       surfaceVariant: Colorss.ContainerDark,
       inverseSurface: Colorss.borderDark,
+      secondaryContainer: Colorss.primaryColorDark,
+      onSecondaryContainer: Colors.white,
     ),
     textTheme: TextTheme(
       bodySmall: GoogleFonts.balooBhaijaan2(color: Colorss.textPrimaryDark),

@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../ FieldsMachine/setup/MainColors.dart';
 import '../../../CustomNavbar/Drawer.dart';
+import '../../../CustomNavbar/customnav.dart';
 import '../../../MainHome/CustomFilter.dart';
 import '../../calender.dart';
 import '../../navgate.dart';
@@ -60,414 +61,437 @@ class _transactionAllState extends State<transactionAll> {
       controller: _advancedDrawerController,
       child: Scaffold(
         //  backgroundColor: Colors.white,
-        body: CustomScrollView(
-          slivers: [
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.only(
-                    top: 35.0, left: 20, right: 20, bottom: 10),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    InkWell(
-                      overlayColor: WidgetStatePropertyAll(Colors.transparent),
-                      onTap: () {
-                        Navigator.pop(context);
-                      },
-                      child: Container(
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(24),
-                            border: Border.all(color: Colorss.BorderColor)),
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Icon(Icons.arrow_back_ios_new),
-                        ),
-                      ),
-                    ),
-                    SizedBox(
-                      width: 10,
-                    ),
-                    Stack(
-                      clipBehavior: Clip.none,
+        body: Stack(
+          children: [
+            CustomScrollView(
+              slivers: [
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.only(
+                        top: 35.0, left: 20, right: 20, bottom: 10),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Container(
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                              color: Colors.white,
-                              width: 3,
+                        InkWell(
+                          overlayColor:
+                              WidgetStatePropertyAll(Colors.transparent),
+                          onTap: () {
+                            Navigator.pop(context);
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(24),
+                                border: Border.all(color: Colorss.BorderColor)),
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Icon(Icons.arrow_back_ios_new),
                             ),
-                            borderRadius: BorderRadius.all(Radius.circular(30)),
                           ),
-                          child: userProfilePicture.isNotEmpty
-                              ? CircleAvatar(
-                                  radius: 25,
-                                  backgroundImage:
-                                      NetworkImage(userProfilePicture),
-                                )
-                              : Icon(Icons.person, size: 35),
                         ),
-                      ],
-                    ),
-                    SizedBox(
-                      width: 15,
-                    ),
-                    Expanded(
-                      child: Row(
-                        children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                " ${userName}  ",
-                                style: GoogleFonts.balooBhaijaan2(
-                                  color:
-                                      Theme.of(context).colorScheme.onPrimary,
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.w700,
+                        SizedBox(
+                          width: 10,
+                        ),
+                        Stack(
+                          clipBehavior: Clip.none,
+                          children: [
+                            Container(
+                              decoration: BoxDecoration(
+                                border: Border.all(
+                                  color: Colors.white,
+                                  width: 3,
                                 ),
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(30)),
                               ),
-                              SizedBox(height: 1),
+                              child: userProfilePicture.isNotEmpty
+                                  ? CircleAvatar(
+                                      radius: 25,
+                                      backgroundImage:
+                                          NetworkImage(userProfilePicture),
+                                    )
+                                  : Icon(Icons.person, size: 35),
+                            ),
+                          ],
+                        ),
+                        SizedBox(
+                          width: 15,
+                        ),
+                        Expanded(
+                          child: Row(
+                            children: [
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    " ${userName}  ",
+                                    style: GoogleFonts.balooBhaijaan2(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onPrimary,
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                  SizedBox(height: 1),
+                                ],
+                              ),
+                              Spacer(),
+                              InkWell(
+                                overlayColor:
+                                    WidgetStatePropertyAll(Colors.white),
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          HomeScreen(index2: 1),
+                                    ),
+                                  );
+                                },
+                                child: Container(
+                                    decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(30),
+                                        border: Border.all(
+                                            color: Colorss.BorderColor)),
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(10.0),
+                                      child: Icon(
+                                        Icons.notification_important_outlined,
+                                        size: 18,
+                                      ),
+                                    )),
+                              )
                             ],
                           ),
-                          Spacer(),
-                          InkWell(
-                            overlayColor: WidgetStatePropertyAll(Colors.white),
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => HomeScreen(index2: 1),
-                                ),
-                              );
-                            },
-                            child: Container(
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(30),
-                                    border:
-                                        Border.all(color: Colorss.BorderColor)),
-                                child: Padding(
-                                  padding: const EdgeInsets.all(10.0),
-                                  child: Icon(
-                                    Icons.notification_important_outlined,
-                                    size: 18,
-                                  ),
-                                )),
-                          )
-                        ],
-                      ),
+                        ),
+                        SizedBox(width: 10),
+                      ],
                     ),
-                    SizedBox(width: 10),
-                  ],
-                ),
-              ),
-            ),
-            SliverToBoxAdapter(
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Padding(
-                  padding:
-                      const EdgeInsets.only(left: 15, right: 15, bottom: 15),
-                  child: Row(
-                    // mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      FilterChipWidget(
-                        label: 'الكل',
-                        isSelected: isAll,
-                        onSelected: () {
-                          //  _updateSelectedFilter(filter: "الاجازات");
-                          setState(() {
-                            isAll = true;
-                            //   isFullDaySelected = false;
-                            isEarlyLeaveSelected = false;
-                            isAbsentSelected = false;
-                            Permissions = false;
-                            Casualleave = false;
-                            Regularholidays = false;
-                            SickLeave = false;
-                          });
-                        },
-                        required: false,
-                      ),
-                      FilterChipWidget(
-                        label: ' القبض',
-                        isSelected: Permissions,
-                        onSelected: () {
-                          //  _updateSelectedFilter(filter: " الاذونات");
-                          setState(() {
-                            isAll = false;
-                            //   isFullDaySelected = false;
-                            isEarlyLeaveSelected = false;
-                            isAbsentSelected = false;
-                            Permissions = true;
-                            Casualleave = false;
-                            Regularholidays = false;
-                            SickLeave = false;
-                          });
-                        },
-                        required: false,
-                      ),
-                      FilterChipWidget(
-                        label: ' الخصومات',
-                        isSelected: isEarlyLeaveSelected,
-                        onSelected: () {
-                          //  _updateSelectedFilter(filter: " الاذونات");
-                          setState(() {
-                            isAll = false;
-                            //   isFullDaySelected = false;
-                            isEarlyLeaveSelected = true;
-                            isAbsentSelected = false;
-                            Permissions = false;
-                            Casualleave = false;
-                            Regularholidays = false;
-                            SickLeave = false;
-                          });
-                        },
-                        required: false,
-                      ),
-                      FilterChipWidget(
-                        label: ' السلف ',
-                        isSelected: isAbsentSelected,
-                        onSelected: () {
-                          //  _updateSelectedFilter(filter: " الاذونات");
-                          setState(() {
-                            isAll = false;
-                            //   isFullDaySelected = false;
-                            isEarlyLeaveSelected = false;
-                            isAbsentSelected = true;
-                            Permissions = false;
-                            Casualleave = false;
-                            Regularholidays = false;
-                            SickLeave = false;
-                          });
-                        },
-                        required: false,
-                      ),
-                      FilterChipWidget(
-                        label: ' قسط',
-                        isSelected: SickLeave,
-                        onSelected: () {
-                          //  _updateSelectedFilter(filter: " الاذونات");
-                          setState(() {
-                            isAll = false;
-                            //   isFullDaySelected = false;
-                            isEarlyLeaveSelected = false;
-                            isAbsentSelected = false;
-                            Permissions = false;
-                            Casualleave = false;
-                            Regularholidays = false;
-                            SickLeave = true;
-                          });
-                        },
-                        required: false,
-                      ),
-                      FilterChipWidget(
-                        label: ' مكافاه',
-                        isSelected: Casualleave,
-                        onSelected: () {
-                          //  _updateSelectedFilter(filter: " الاذونات");
-                          setState(() {
-                            isAll = false;
-                            //   isFullDaySelected = false;
-                            isEarlyLeaveSelected = false;
-                            isAbsentSelected = false;
-                            Permissions = false;
-                            Casualleave = true;
-                            Regularholidays = false;
-                            SickLeave = false;
-                          });
-                        },
-                        required: false,
-                      ),
-                      FilterChipWidget(
-                        label: ' overtime',
-                        isSelected: Regularholidays,
-                        onSelected: () {
-                          //  _updateSelectedFilter(filter: " الاذونات");
-                          setState(() {
-                            isAll = false;
-                            //   isFullDaySelected = false;
-                            isEarlyLeaveSelected = false;
-                            isAbsentSelected = false;
-                            Permissions = false;
-                            Casualleave = false;
-                            Regularholidays = true;
-                            SickLeave = false;
-                          });
-                        },
-                        required: false,
-                      ),
-                    ],
                   ),
                 ),
-              ),
-            ),
-            SliverToBoxAdapter(
-              child: SingleChildScrollView(
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 16.0, vertical: 15),
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(30),
-                    color: Theme.of(context).colorScheme.surfaceVariant,
-                  ),
-                  child: Column(children: [
-                    Padding(
-                      padding: const EdgeInsets.all(5.0),
+                SliverToBoxAdapter(
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Padding(
+                      padding: const EdgeInsets.only(
+                          left: 20, right: 20, bottom: 15),
                       child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        // mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text(
-                            'المعاملات',
-                            style: GoogleFonts.balooBhaijaan2(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w600,
-                              color: Theme.of(context).colorScheme.onPrimary,
-                            ),
-                          ),
-                          IconButton(
-                            onPressed: () async {
-                              final DateTimeRange? picked =
-                                  await showDateRangePicker(
-                                context: context,
-                                firstDate: DateTime(2000),
-                                lastDate: DateTime(2100),
-                                initialDateRange: DateTimeRange(
-                                  start:
-                                      DateTime(selectedYear, selectedMonth, 1),
-                                  end:
-                                      DateTime(selectedYear, selectedMonth, 28),
-                                ),
-                              );
-
-                              if (picked != null) {
-                                setState(() {
-                                  selectedMonth = picked.start.month;
-                                  selectedYear = picked.start.year;
-                                });
-                              }
+                          FilterChipWidget(
+                            label: 'الكل',
+                            isSelected: isAll,
+                            onSelected: () {
+                              //  _updateSelectedFilter(filter: "الاجازات");
+                              setState(() {
+                                isAll = true;
+                                //   isFullDaySelected = false;
+                                isEarlyLeaveSelected = false;
+                                isAbsentSelected = false;
+                                Permissions = false;
+                                Casualleave = false;
+                                Regularholidays = false;
+                                SickLeave = false;
+                              });
                             },
-                            icon: Icon(Icons.calendar_today_outlined, size: 24),
+                            required: false,
+                          ),
+                          FilterChipWidget(
+                            label: ' القبض',
+                            isSelected: Permissions,
+                            onSelected: () {
+                              //  _updateSelectedFilter(filter: " الاذونات");
+                              setState(() {
+                                isAll = false;
+                                //   isFullDaySelected = false;
+                                isEarlyLeaveSelected = false;
+                                isAbsentSelected = false;
+                                Permissions = true;
+                                Casualleave = false;
+                                Regularholidays = false;
+                                SickLeave = false;
+                              });
+                            },
+                            required: false,
+                          ),
+                          FilterChipWidget(
+                            label: ' الخصومات',
+                            isSelected: isEarlyLeaveSelected,
+                            onSelected: () {
+                              //  _updateSelectedFilter(filter: " الاذونات");
+                              setState(() {
+                                isAll = false;
+                                //   isFullDaySelected = false;
+                                isEarlyLeaveSelected = true;
+                                isAbsentSelected = false;
+                                Permissions = false;
+                                Casualleave = false;
+                                Regularholidays = false;
+                                SickLeave = false;
+                              });
+                            },
+                            required: false,
+                          ),
+                          FilterChipWidget(
+                            label: ' السلف ',
+                            isSelected: isAbsentSelected,
+                            onSelected: () {
+                              //  _updateSelectedFilter(filter: " الاذونات");
+                              setState(() {
+                                isAll = false;
+                                //   isFullDaySelected = false;
+                                isEarlyLeaveSelected = false;
+                                isAbsentSelected = true;
+                                Permissions = false;
+                                Casualleave = false;
+                                Regularholidays = false;
+                                SickLeave = false;
+                              });
+                            },
+                            required: false,
+                          ),
+                          FilterChipWidget(
+                            label: ' قسط',
+                            isSelected: SickLeave,
+                            onSelected: () {
+                              //  _updateSelectedFilter(filter: " الاذونات");
+                              setState(() {
+                                isAll = false;
+                                //   isFullDaySelected = false;
+                                isEarlyLeaveSelected = false;
+                                isAbsentSelected = false;
+                                Permissions = false;
+                                Casualleave = false;
+                                Regularholidays = false;
+                                SickLeave = true;
+                              });
+                            },
+                            required: false,
+                          ),
+                          FilterChipWidget(
+                            label: ' مكافاه',
+                            isSelected: Casualleave,
+                            onSelected: () {
+                              //  _updateSelectedFilter(filter: " الاذونات");
+                              setState(() {
+                                isAll = false;
+                                //   isFullDaySelected = false;
+                                isEarlyLeaveSelected = false;
+                                isAbsentSelected = false;
+                                Permissions = false;
+                                Casualleave = true;
+                                Regularholidays = false;
+                                SickLeave = false;
+                              });
+                            },
+                            required: false,
+                          ),
+                          FilterChipWidget(
+                            label: ' overtime',
+                            isSelected: Regularholidays,
+                            onSelected: () {
+                              //  _updateSelectedFilter(filter: " الاذونات");
+                              setState(() {
+                                isAll = false;
+                                //   isFullDaySelected = false;
+                                isEarlyLeaveSelected = false;
+                                isAbsentSelected = false;
+                                Permissions = false;
+                                Casualleave = false;
+                                Regularholidays = true;
+                                SickLeave = false;
+                              });
+                            },
+                            required: false,
                           ),
                         ],
                       ),
                     ),
-                    SizedBox(
-                      height: 10,
+                  ),
+                ),
+                SliverToBoxAdapter(
+                  child: SingleChildScrollView(
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16.0, vertical: 20),
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(30),
+                        color: Theme.of(context).colorScheme.surfaceVariant,
+                      ),
+                      child: Column(children: [
+                        Padding(
+                          padding: const EdgeInsets.all(5.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                'المعاملات',
+                                style: GoogleFonts.balooBhaijaan2(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w600,
+                                  color:
+                                      Theme.of(context).colorScheme.onPrimary,
+                                ),
+                              ),
+                              IconButton(
+                                onPressed: () async {
+                                  final DateTimeRange? picked =
+                                      await showDateRangePicker(
+                                    context: context,
+                                    firstDate: DateTime(2000),
+                                    lastDate: DateTime(2100),
+                                    initialDateRange: DateTimeRange(
+                                      start: DateTime(
+                                          selectedYear, selectedMonth, 1),
+                                      end: DateTime(
+                                          selectedYear, selectedMonth, 28),
+                                    ),
+                                  );
+
+                                  if (picked != null) {
+                                    setState(() {
+                                      selectedMonth = picked.start.month;
+                                      selectedYear = picked.start.year;
+                                    });
+                                  }
+                                },
+                                icon: Icon(Icons.calendar_today_outlined,
+                                    size: 24),
+                              ),
+                            ],
+                          ),
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        ActivityItem(
+                          imagePath: 'assets/SvgProfile/broww.png',
+                          // icon: FontAwesomeIcons.rightToBracket,
+                          title: "طلب سلفه",
+                          time: "1500",
+                          date: "17 أبريل 2023",
+                          status: "فشلت",
+                          iconColor: Colorss.BorderColor,
+                        ),
+                        ActivityItem(
+                          imagePath: 'assets/SvgProfile/wither.png',
+                          // icon: FontAwesomeIcons.rightToBracket,
+                          title: "تاريخ الرواتب",
+                          time: "1500",
+                          date: "17 أبريل 2023",
+                          status: "نجحت العمليه",
+                          iconColor: Colorss.BorderColor,
+                        ),
+                        ActivityItem(
+                          imagePath: 'assets/SvgProfile/mins.png',
+                          // icon: FontAwesomeIcons.rightToBracket,
+                          title: "الخصومات",
+                          time: "1500",
+                          date: "17 أبريل 2023",
+                          status: "نجحت العمليه",
+                          iconColor: Colorss.BorderColor,
+                        ),
+                        ActivityItem(
+                          imagePath: 'assets/SvgProfile/broww.png',
+                          // icon: FontAwesomeIcons.rightToBracket,
+                          title: "طلب سلفه",
+                          time: "1500",
+                          date: "17 أبريل 2023",
+                          status: "فشلت",
+                          iconColor: Colorss.BorderColor,
+                        ),
+                        ActivityItem(
+                          imagePath: 'assets/SvgProfile/mins.png',
+                          // icon: FontAwesomeIcons.rightToBracket,
+                          title: "الخصومات",
+                          time: "1500",
+                          date: "17 أبريل 2023",
+                          status: "نجحت العمليه",
+                          iconColor: Colorss.BorderColor,
+                        ),
+                        ActivityItem(
+                          imagePath: 'assets/SvgProfile/broww.png',
+                          // icon: FontAwesomeIcons.rightToBracket,
+                          title: "طلب سلفه",
+                          time: "1500",
+                          date: "17 أبريل 2023",
+                          status: "فشلت",
+                          iconColor: Colorss.BorderColor,
+                        ),
+                        ActivityItem(
+                          imagePath: 'assets/SvgProfile/wither.png',
+                          // icon: FontAwesomeIcons.rightToBracket,
+                          title: "تاريخ الرواتب",
+                          time: "1500",
+                          date: "17 أبريل 2023",
+                          status: "نجحت العمليه",
+                          iconColor: Colorss.BorderColor,
+                        ),
+                        ActivityItem(
+                          imagePath: 'assets/SvgProfile/mins.png',
+                          // icon: FontAwesomeIcons.rightToBracket,
+                          title: "الخصومات",
+                          time: "1500",
+                          date: "17 أبريل 2023",
+                          status: "نجحت العمليه",
+                          iconColor: Colorss.BorderColor,
+                        ),
+                        ActivityItem(
+                          imagePath: 'assets/SvgProfile/wither.png',
+                          // icon: FontAwesomeIcons.rightToBracket,
+                          title: "تاريخ الرواتب",
+                          time: "1500",
+                          date: "17 أبريل 2023",
+                          status: "نجحت العمليه",
+                          iconColor: Colorss.BorderColor,
+                        ),
+                        ActivityItem(
+                          imagePath: 'assets/SvgProfile/mins.png',
+                          // icon: FontAwesomeIcons.rightToBracket,
+                          title: "الخصومات",
+                          time: "1500",
+                          date: "17 أبريل 2023",
+                          status: "فشلت",
+                          iconColor: Colorss.BorderColor,
+                        ),
+                        ActivityItem(
+                          imagePath: 'assets/SvgProfile/wither.png',
+                          // icon: FontAwesomeIcons.rightToBracket,
+                          title: "تاريخ الرواتب",
+                          time: "1500",
+                          date: "17 أبريل 2023",
+                          status: "نجحت العمليه",
+                          iconColor: Colorss.BorderColor,
+                        ),
+                        ActivityItem(
+                          imagePath: 'assets/SvgProfile/mins.png',
+                          // icon: FontAwesomeIcons.rightToBracket,
+                          title: "الخصومات",
+                          time: "1500",
+                          date: "17 أبريل 2023",
+                          status: "نجحت العمليه",
+                          iconColor: Colorss.BorderColor,
+                        ),
+                      ]),
                     ),
-                    ActivityItem(
-                      imagePath: 'assets/SvgProfile/broww.png',
-                      // icon: FontAwesomeIcons.rightToBracket,
-                      title: "طلب سلفه",
-                      time: "1500",
-                      date: "17 أبريل 2023",
-                      status: "فشلت",
-                      iconColor: Colorss.BorderColor,
-                    ),
-                    ActivityItem(
-                      imagePath: 'assets/SvgProfile/wither.png',
-                      // icon: FontAwesomeIcons.rightToBracket,
-                      title: "تاريخ الرواتب",
-                      time: "1500",
-                      date: "17 أبريل 2023",
-                      status: "نجحت العمليه",
-                      iconColor: Colorss.BorderColor,
-                    ),
-                    ActivityItem(
-                      imagePath: 'assets/SvgProfile/mins.png',
-                      // icon: FontAwesomeIcons.rightToBracket,
-                      title: "الخصومات",
-                      time: "1500",
-                      date: "17 أبريل 2023",
-                      status: "نجحت العمليه",
-                      iconColor: Colorss.BorderColor,
-                    ),
-                    ActivityItem(
-                      imagePath: 'assets/SvgProfile/broww.png',
-                      // icon: FontAwesomeIcons.rightToBracket,
-                      title: "طلب سلفه",
-                      time: "1500",
-                      date: "17 أبريل 2023",
-                      status: "فشلت",
-                      iconColor: Colorss.BorderColor,
-                    ),
-                    ActivityItem(
-                      imagePath: 'assets/SvgProfile/mins.png',
-                      // icon: FontAwesomeIcons.rightToBracket,
-                      title: "الخصومات",
-                      time: "1500",
-                      date: "17 أبريل 2023",
-                      status: "نجحت العمليه",
-                      iconColor: Colorss.BorderColor,
-                    ),
-                    ActivityItem(
-                      imagePath: 'assets/SvgProfile/broww.png',
-                      // icon: FontAwesomeIcons.rightToBracket,
-                      title: "طلب سلفه",
-                      time: "1500",
-                      date: "17 أبريل 2023",
-                      status: "فشلت",
-                      iconColor: Colorss.BorderColor,
-                    ),
-                    ActivityItem(
-                      imagePath: 'assets/SvgProfile/wither.png',
-                      // icon: FontAwesomeIcons.rightToBracket,
-                      title: "تاريخ الرواتب",
-                      time: "1500",
-                      date: "17 أبريل 2023",
-                      status: "نجحت العمليه",
-                      iconColor: Colorss.BorderColor,
-                    ),
-                    ActivityItem(
-                      imagePath: 'assets/SvgProfile/mins.png',
-                      // icon: FontAwesomeIcons.rightToBracket,
-                      title: "الخصومات",
-                      time: "1500",
-                      date: "17 أبريل 2023",
-                      status: "نجحت العمليه",
-                      iconColor: Colorss.BorderColor,
-                    ),
-                    ActivityItem(
-                      imagePath: 'assets/SvgProfile/wither.png',
-                      // icon: FontAwesomeIcons.rightToBracket,
-                      title: "تاريخ الرواتب",
-                      time: "1500",
-                      date: "17 أبريل 2023",
-                      status: "نجحت العمليه",
-                      iconColor: Colorss.BorderColor,
-                    ),
-                    ActivityItem(
-                      imagePath: 'assets/SvgProfile/mins.png',
-                      // icon: FontAwesomeIcons.rightToBracket,
-                      title: "الخصومات",
-                      time: "1500",
-                      date: "17 أبريل 2023",
-                      status: "فشلت",
-                      iconColor: Colorss.BorderColor,
-                    ),
-                    ActivityItem(
-                      imagePath: 'assets/SvgProfile/wither.png',
-                      // icon: FontAwesomeIcons.rightToBracket,
-                      title: "تاريخ الرواتب",
-                      time: "1500",
-                      date: "17 أبريل 2023",
-                      status: "نجحت العمليه",
-                      iconColor: Colorss.BorderColor,
-                    ),
-                    ActivityItem(
-                      imagePath: 'assets/SvgProfile/mins.png',
-                      // icon: FontAwesomeIcons.rightToBracket,
-                      title: "الخصومات",
-                      time: "1500",
-                      date: "17 أبريل 2023",
-                      status: "نجحت العمليه",
-                      iconColor: Colorss.BorderColor,
-                    ),
-                  ]),
+                  ),
+                ),
+              ],
+            ),
+            Positioned(
+              right: 0,
+              left: 0,
+              bottom: 0,
+              child: SizedBox(
+                height: 70,
+                child: CustomBottomNavBar(
+                  selectedIndex: 4,
+                  onItemTapped: (p0) {},
                 ),
               ),
-            ),
+            )
           ],
         ),
       ),

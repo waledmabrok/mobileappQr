@@ -93,41 +93,54 @@ class CustomNotificationWidgetRow extends StatelessWidget {
       overlayColor: MaterialStateProperty.all(Colors.transparent),
       onTap: onTap,
       child: Container(
-        padding: EdgeInsets.all(10),
-        width: 80,
+        //  padding: EdgeInsets.all(10),
+        width: double.infinity, // لملء العرض بالكامل
         decoration: BoxDecoration(
-          //color: isSelected! ? Colorss.mainColor : Colors.white,
           border: label != null && label!.isNotEmpty
               ? Border.fromBorderSide(BorderSide.none)
               : null,
           borderRadius: BorderRadius.circular(10.0),
         ),
         child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             if (iconPath != null && iconPath!.isNotEmpty)
-              /*    SvgPicture.asset(
-                iconPath!,
-                width: 24,
-                height: 24,
-                color: isSelected! ? Colors.white : Colors.black,
-              ),*/
-              if (label != null && label!.isNotEmpty) const SizedBox(width: 10),
+              Container(
+                padding: EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(25),
+                    color: Colors.white),
+                child: SvgPicture.asset(
+                  iconPath!,
+                  width: 24,
+                  height: 24,
+                  color: isSelected!
+                      ? Colors.white
+                      : Theme.of(context).colorScheme.onPrimary,
+                ),
+              ),
+            if (label != null && label!.isNotEmpty) const SizedBox(width: 10),
+            // الخط المنقط بين الأيقونة والنص
+            if (iconPath != null && iconPath!.isNotEmpty)
+              const VerticalDivider(
+                width: 10,
+                thickness: 1,
+                color: Colors.grey,
+                indent: 5,
+                endIndent: 5,
+              ),
             if (label != null && label!.isNotEmpty)
               Text(
                 label!,
                 style: GoogleFonts.balooBhaijaan2(
                   fontSize: 18,
                   fontWeight: FontWeight.w700,
-                  color: isSelected! ? Colors.white : Colors.white,
+                  color: isSelected!
+                      ? Colors.white
+                      : Theme.of(context).colorScheme.onPrimary,
                 ),
               ),
-            Spacer(),
-            Icon(
-              Icons.arrow_forward_ios,
-              color: Colors.white,
-            )
           ],
         ),
       ),

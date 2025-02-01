@@ -1,13 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
-
+import 'package:flutter_svg/svg.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../ FieldsMachine/setup/MainColors.dart';
 import '../MainHome/CustomFilter.dart';
-import '../Request permission/Requst-Permission_Main.dart';
-import '../onboarding/Request_money/Request_money_main.dart';
-import '../onboarding/Statistics/StatisticsMain.dart';
-import '../onboarding/Summary/main_Summary.dart';
-import '../onboarding/navgate.dart';
 
 class CustomAdvancedDrawer extends StatelessWidget {
   final Widget child;
@@ -20,10 +16,8 @@ class CustomAdvancedDrawer extends StatelessWidget {
     return AdvancedDrawer(
       controller: controller,
       backdrop: Container(
-        decoration: BoxDecoration(color: Theme
-            .of(context)
-            .colorScheme
-            .primary),
+        decoration:
+            BoxDecoration(color: Theme.of(context).colorScheme.inverseSurface),
       ),
       animationCurve: Curves.easeInOut,
       animationDuration: const Duration(milliseconds: 300),
@@ -43,176 +37,158 @@ class CustomDrawerContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 70),
-        child: Align(
-          alignment: Alignment.topCenter,
-          child: Wrap(
-            spacing: 15,
-            runSpacing: 10,
-            alignment: WrapAlignment.start,
-            crossAxisAlignment: WrapCrossAlignment.start,
-            children: [
+    return Drawer(
+      child: Container(
+        decoration:
+            BoxDecoration(color: Theme.of(context).colorScheme.inverseSurface),
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.only(top: 60.0),
+            child: Column(
+              children: [
+                // Header Section
 
-              SizedBox(
-                width: double.infinity,
-                child: CustomNotificationWidgetRow(
-                  isSelected: isSelected,
+                // Drawer Items
+                _buildDrawerItem(
+                  context,
+                  iconPath: "assets/Customhome/login-svgrepo-com.svg",
+                  label: 'تسجيل حضور',
                   onTap: () {
                     Navigator.pushNamed(context, "/attendance");
                   },
-                  iconPath:
-                  "assets/Customhome/statistics-graph-stats-analytics-business-data-svgrepo-com.svg",
-                  label: 'تسجيل حضور',
                 ),
-              ),
-              SizedBox(
-                width: double.infinity,
-                child: CustomNotificationWidgetRow(
-                  isSelected: isSelected,
+                _buildDrawerItem(
+                  context,
+                  iconPath:
+                      "assets/Customhome/statistics-graph-stats-analytics-business-data-svgrepo-com.svg",
+                  label: 'الاحصائيات',
                   onTap: () {
+                    //   Navigator.pop(context); // إغلاق الدراور
                     Navigator.pushNamed(context, "/statistic");
                   },
-                  iconPath:
-                  "assets/Customhome/statistics-graph-stats-analytics-business-data-svgrepo-com.svg",
-                  label: 'الاحصائيات',
                 ),
-              ),
-              SizedBox(
-                width: double.infinity,
-                child: CustomNotificationWidgetRow(
-                  isSelected: isSelected,
+                _buildDrawerItem(
+                  context,
+                  iconPath: "assets/Customhome/calendar-svgrepo-com.svg",
+                  label: 'الاجازات',
                   onTap: () {
                     Navigator.pushNamed(context, '/summary');
                   },
-                  iconPath: "assets/Customhome/calendar-svgrepo-com.svg",
-                  label: 'الاجازات',
                 ),
-              ),
-              SizedBox(
-                width: double.infinity,
-                child: CustomNotificationWidgetRow(
-                  isSelected: isSelected,
+                Divider(color: Colors.grey.withOpacity(0.3), height: 20),
+                _buildDrawerItem(
+                  context,
+                  iconPath: "assets/Customhome/permissions-svgrepo-com.svg",
+                  label: 'الاذونات',
                   onTap: () {
                     Navigator.pushNamed(context, "/permission");
                   },
-                  iconPath: "assets/Customhome/permissions-svgrepo-com.svg",
-                  label: 'الاذونات',
                 ),
-              ),
-              SizedBox(
-                width: double.infinity,
-                child: CustomNotificationWidgetRow(
-                  isSelected: isSelected,
+                _buildDrawerItem(
+                  context,
+                  iconPath:
+                      "assets/Customhome/loan-interest-time-value-of-money-effective-svgrepo-com.svg",
+                  label: 'السٌلَف',
                   onTap: () {
                     Navigator.pushNamed(context, '/requst_money');
                   },
-                  iconPath:
-                  "assets/Customhome/loan-interest-time-value-of-money-effective-svgrepo-com.svg",
-                  label: 'السٌلَف',
                 ),
-              ),
-              SizedBox(
-                width: double.infinity,
-                child: CustomNotificationWidgetRow(
-                  isSelected: isSelected,
+                Divider(color: Colors.grey.withOpacity(0.3), height: 20),
+                _buildDrawerItem(
+                  context,
+                  iconPath: "assets/SvgProfile/wallet-receive-svgrepo-com2.svg",
+                  label: 'كل المعاملات',
                   onTap: () {
                     Navigator.pushNamed(context, '/all_transaction');
                   },
-                  iconPath:
-                  "assets/Customhome/loan-interest-time-value-of-money-effective-svgrepo-com.svg",
-                  label: 'كل المعاملات',
                 ),
-              ),
-              SizedBox(
-                width: double.infinity,
-                child: CustomNotificationWidgetRow(
-                  isSelected: isSelected,
+                _buildDrawerItem(
+                  context,
+                  iconPath: "assets/SvgProfile/wallet-svgrepo-com.svg",
+                  label: 'المحفظه',
                   onTap: () {
                     Navigator.pushNamed(context, '/My_wallet');
                   },
-                  iconPath:
-                  "assets/Customhome/loan-interest-time-value-of-money-effective-svgrepo-com.svg",
-                  label: 'المحفظه',
                 ),
-              ),
-              SizedBox(
-                width: double.infinity,
-                child: CustomNotificationWidgetRow(
-                  isSelected: isSelected,
+                _buildDrawerItem(
+                  context,
+                  iconPath: "assets/SvgProfile/wallet-minus-svgrepo-com.svg",
+                  label: 'خصومات',
                   onTap: () {
                     Navigator.pushNamed(context, '/Discounts_Page');
                   },
-                  iconPath:
-                  "assets/Customhome/loan-interest-time-value-of-money-effective-svgrepo-com.svg",
-                  label: 'خصومات',
                 ),
-              ),
-              SizedBox(
-                width: double.infinity,
-                child: CustomNotificationWidgetRow(
-                  isSelected: isSelected,
+                Divider(color: Colors.grey.withOpacity(0.3), height: 20),
+                _buildDrawerItem(
+                  context,
+                  iconPath: "assets/Customhome/date-today-svgrepo-com.svg",
+                  label: 'كل الانشطه',
                   onTap: () {
                     Navigator.pushNamed(context, '/Main_Activity');
                   },
-                  iconPath:
-                  "assets/Customhome/loan-interest-time-value-of-money-effective-svgrepo-com.svg",
-                  label: 'كل الانشطه',
                 ),
-              ),
-              SizedBox(
-                width: double.infinity,
-                child: CustomNotificationWidgetRow(
-                  isSelected: isSelected,
+                _buildDrawerItem(
+                  context,
+                  iconPath: "assets/Customhome/money-recive-svgrepo-com.svg",
+                  label: 'طلب سلفه',
                   onTap: () {
                     Navigator.pushNamed(context, '/request_money2');
                   },
-                  iconPath:
-                  "assets/Customhome/loan-interest-time-value-of-money-effective-svgrepo-com.svg",
-                  label: 'طلب سلفه',
                 ),
-              ),
-              SizedBox(
-                width: double.infinity,
-                child: CustomNotificationWidgetRow(
-                  isSelected: isSelected,
+                _buildDrawerItem(
+                  context,
+                  iconPath: "assets/Customhome/list.svg",
+                  label: 'كل الطلبات',
                   onTap: () {
                     Navigator.pushNamed(context, '/All_requests');
                   },
-                  iconPath:
-                  "assets/Customhome/loan-interest-time-value-of-money-effective-svgrepo-com.svg",
-                  label: 'كل الطلبات',
                 ),
-              ),
-              SizedBox(
-                width: double.infinity,
-                child: CustomNotificationWidgetRow(
-                  isSelected: isSelected,
+                _buildDrawerItem(
+                  context,
+                  iconPath: "assets/Customhome/calendar-svgrepo-com.svg",
+                  label: 'طلب اجازه',
                   onTap: () {
                     Navigator.pushNamed(context, '/request_summary');
                   },
-                  iconPath:
-                  "assets/Customhome/loan-interest-time-value-of-money-effective-svgrepo-com.svg",
-                  label: 'طلب اجازه',
                 ),
-              ),
-              SizedBox(
-                width: double.infinity,
-                child: CustomNotificationWidgetRow(
-                  isSelected: isSelected,
+                _buildDrawerItem(
+                  context,
+                  iconPath: "assets/Customhome/permissions-svgrepo-com.svg",
+                  label: 'طلب اذن',
                   onTap: () {
                     Navigator.pushNamed(context, '/request_Premission2');
                   },
-                  iconPath:
-                  "assets/Customhome/loan-interest-time-value-of-money-effective-svgrepo-com.svg",
-                  label: 'طلب اذن',
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildDrawerItem(
+    BuildContext context, {
+    required String iconPath,
+    required String label,
+    required VoidCallback onTap,
+  }) {
+    return ListTile(
+      leading: SvgPicture.asset(
+        iconPath,
+        width: 24,
+        height: 24,
+        color: Colors.black,
+      ),
+      title: Text(
+        label,
+        style: GoogleFonts.balooBhaijaan2(
+          color: Colors.black,
+          fontSize: 16,
+          fontWeight: FontWeight.w500,
+        ),
+      ),
+      onTap: onTap,
     );
   }
 }

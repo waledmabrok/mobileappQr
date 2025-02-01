@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -43,6 +44,7 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar>
   String useremail = '';
   String userProfilePicture = '';
   String position = "";
+  final _advancedDrawerController = AdvancedDrawerController();
 
   void _onItemTapped(int index) {
     widget.onItemTapped(
@@ -54,7 +56,9 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar>
     super.initState();
     _loadUserData();
     _screens = [
-      AttendanceScreen5(),
+      AttendanceScreen5(
+        advancedDrawerController: _advancedDrawerController,
+      ),
       TasksScreen(),
       AttendancePage(),
       ProfilePage(),
@@ -264,7 +268,12 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar>
           ),
         );
       },
-    );
+    ).whenComplete(() {
+      // عكس الأنميشن عند إغلاق الـ BottomSheet
+      if (_controller.isCompleted) {
+        _controller.reverse();
+      }
+    });
   }
 
   @override
@@ -307,227 +316,6 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar>
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      drawer: SingleChildScrollView(
-        child: SafeArea(
-          child: Stack(
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(top: 170.0),
-                child: Container(
-                  decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(15),
-                          topRight: Radius.circular(15))),
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 140.0),
-                    child: Column(
-                      children: [
-                        CustomFrameWidget(
-                          title: "الحساب",
-                          options: [
-                            OptionItem(
-                              icon: Icons.person,
-                              label: "معلومات شخصيه",
-                              color: const Color(0xFF7A5AF8),
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => ProfileScreen()),
-                                );
-                              },
-                            ),
-                            OptionItem(
-                              icon: Icons.wallet,
-                              label: "المحفظه",
-                              color: const Color(0xFF7A5AF8),
-                              onTap: () {
-                                print("Versioning clicked");
-                              },
-                            ),
-                          ],
-                        ),
-                        CustomFrameWidget(
-                          title: "الاعدادات",
-                          options: [
-                            OptionItem(
-                              icon: Icons.lock,
-                              label: "تغير الباسورد",
-                              color: const Color(0xFF7A5AF8),
-                              onTap: () {
-                                print("Change Password clicked");
-                              },
-                            ),
-                            OptionItem(
-                              icon: Icons.settings,
-                              label: "اعدادات",
-                              color: const Color(0xFF7A5AF8),
-                              onTap: () {
-                                print("Versioning clicked");
-                              },
-                            ),
-                            OptionItem(
-                              icon: Icons.help_outline,
-                              label: "المساعده",
-                              color: const Color(0xFF7A5AF8),
-                              onTap: () {
-                                print("FAQ and Help clicked");
-                              },
-                            ),
-                            OptionItem(
-                              icon: Icons.logout,
-                              label: "تسجيل خروج",
-                              color: const Color(0xFFF14E4E),
-                              onTap: () {
-                                print("Logout clicked");
-                              },
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-              Positioned(
-                top: 20, // نفس قيمة الـ CSS top: 116px;
-                left: MediaQuery.of(context).size.width / 2 -
-                    120 / 2, // نفس القيمة left: calc(50% - 120px / 2);
-                child: Column(
-                  children: [
-                    SizedBox(
-                      height: 30,
-                    ),
-                    Text(
-                      "My Profile",
-                      style: GoogleFonts.balooBhaijaan2(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 24,
-                        color: Colors.white,
-                        letterSpacing: -0.5,
-                      ),
-                    ),
-                    SizedBox(
-                      height: 25,
-                    ),
-                    Container(
-                      width: 120,
-                      height: 120,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: Colors.white, width: 2),
-                        image: DecorationImage(
-                          image: NetworkImage(userProfilePicture.isNotEmpty
-                              ? userProfilePicture
-                              : 'image.png'),
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              Positioned(
-                top: 248,
-                left: MediaQuery.of(context).size.width / 2 - 144 / 2,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Container(
-                          width: 144,
-                          height: 22,
-                          decoration: BoxDecoration(
-                            color: Colors.transparent,
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Center(
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                SvgPicture.asset(
-                                  "assets/checkdone.svg",
-                                  width: 24,
-                                  height: 24,
-                                ),
-                                SizedBox(
-                                  width: 5,
-                                ),
-                                Text(
-                                  userName,
-                                  style: GoogleFonts.balooBhaijaan2(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 22,
-                                    color: Colors.black,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    const SizedBox(height: 8),
-
-                    //  النصية للإيميل
-                    Container(
-                      width: 144,
-                      height: 22,
-                      decoration: BoxDecoration(
-                        color: Colors.transparent,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Center(
-                        child: Text(
-                          useremail,
-                          style: GoogleFonts.balooBhaijaan2(
-                            fontWeight: FontWeight.normal,
-                            fontSize: 18,
-                            color: Colors.grey,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Positioned(
-                top: 300, // نفس قيمة top: 274px;
-                left: MediaQuery.of(context).size.width / 2 -
-                    156 / 2, // نفس القيمة left: calc(50% - 156px / 2);
-                child: Container(
-                  width: 156,
-                  height: 16,
-                  decoration: BoxDecoration(
-                    color: Colors.transparent,
-                  ),
-                  child: Center(
-                    child: Text(
-                      position,
-                      style: GoogleFonts.balooBhaijaan2(
-                        fontWeight: FontWeight.w500,
-                        fontSize: 15,
-                        color: Color(0xFF7A5AF8),
-                        letterSpacing: -0.5,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              SizedBox(
-                height: 40,
-              )
-            ],
-          ),
-        ),
-      ),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           boxShadow: [

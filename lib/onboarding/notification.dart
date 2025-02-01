@@ -81,7 +81,7 @@ class _TasksScreenState extends State<TasksScreen>
 
           // Header Section
           Padding(
-            padding: const EdgeInsets.only(top: 45.0, right: 15),
+            padding: const EdgeInsets.only(top: 45.0, right: 20, left: 20),
             child: Container(
               alignment: Alignment.topRight,
               width: double.infinity,
@@ -111,23 +111,18 @@ class _TasksScreenState extends State<TasksScreen>
 
           // Your content here (Notifications, etc.)
           Padding(
-            padding: const EdgeInsets.only(top: 180.0),
+            padding: const EdgeInsets.only(top: 180.0, right: 20, left: 20),
             child: SingleChildScrollView(
               child: Column(
                 crossAxisAlignment:
                     CrossAxisAlignment.start, // Align content to the left
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.only(
-                      right: 20.0,
-                    ), // Add padding to the right and top
-                    child: Text(
-                      "الاحدث",
-                      textAlign: TextAlign.right, // Correct textAlign usage
-                      style: GoogleFonts.balooBhaijaan2(
-                        fontWeight: FontWeight.w700, // Optional: make text bold
-                        fontSize: 18, // Optional: adjust font size
-                      ),
+                  Text(
+                    "الاحدث",
+                    textAlign: TextAlign.right, // Correct textAlign usage
+                    style: GoogleFonts.balooBhaijaan2(
+                      fontWeight: FontWeight.w700, // Optional: make text bold
+                      fontSize: 18, // Optional: adjust font size
                     ),
                   ),
                   SizedBox(height: 10),
@@ -183,7 +178,7 @@ class _TasksScreenState extends State<TasksScreen>
                       requiredColor: Colorss.mainColor,
                       isLast: true),
                   Padding(
-                    padding: const EdgeInsets.only(right: 20.0, top: 20),
+                    padding: const EdgeInsets.only(top: 20),
                     child: Text(
                       "الاقدم",
                       textAlign: TextAlign.right, // Correct textAlign usage
@@ -240,7 +235,7 @@ class _TasksScreenState extends State<TasksScreen>
             ),
           ),
           Padding(
-            padding: const EdgeInsets.only(top: 115.0),
+            padding: const EdgeInsets.only(top: 115.0, right: 20),
             child: Container(
               decoration: BoxDecoration(
                 //  color: Theme.of(context).colorScheme.background,
@@ -251,7 +246,8 @@ class _TasksScreenState extends State<TasksScreen>
               child: DefaultTabController(
                   length: 6,
                   child: TabBar(
-                    labelPadding: EdgeInsets.symmetric(horizontal: 0),
+                    labelPadding:
+                        EdgeInsets.symmetric(horizontal: 0, vertical: 0),
                     overlayColor: const WidgetStatePropertyAll(Colors.white),
                     automaticIndicatorColorAdjustment: false,
                     controller: _tabController,
@@ -265,7 +261,7 @@ class _TasksScreenState extends State<TasksScreen>
                     tabAlignment: TabAlignment.start,
                     //  indicatorSize: TabBarIndicatorSize.label,
                     indicator: BoxDecoration(color: Colors.transparent),
-                    // indicatorColor: Colors.white,
+                    indicatorColor: Colors.white,
                     onTap: (index) {
                       setState(() {
                         _tabController.index = index;

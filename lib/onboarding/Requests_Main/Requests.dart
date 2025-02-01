@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../../ FieldsMachine/setup/MainColors.dart';
 import '../../CustomNavbar/Drawer.dart';
+import '../../CustomNavbar/customnav.dart';
 import '../../MainHome/CustomFilter.dart';
 
 import '../../home/CustomMainHome/Leave.dart';
@@ -242,13 +243,19 @@ class _RequestsMainState extends State<RequestsMain> {
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (BuildContext context) {
+        final FixedExtentScrollController monthController =
+            FixedExtentScrollController(initialItem: selectedMonth - 1);
+        final FixedExtentScrollController yearController =
+            FixedExtentScrollController(
+                initialItem: selectedYear - DateTime.now().year);
+
         double screenHeight = MediaQuery.of(context).size.height;
         return StatefulBuilder(
           builder: (BuildContext context, setState) {
             return Container(
               color: Theme.of(context).colorScheme.background,
               height:
-                  screenHeight > 900 ? screenHeight * 0.8 : screenHeight * 0.71,
+                  screenHeight > 700 ? screenHeight * 0.8 : screenHeight * 0.71,
               // height: MediaQuery.of(context).size.height * 0.8,
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
@@ -268,14 +275,14 @@ class _RequestsMainState extends State<RequestsMain> {
                         ),
                         Container(
                           padding: EdgeInsets.all(8),
-                          decoration: BoxDecoration(
+                          /*  decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(20),
-                              color: Color(0xff7b68ee)),
+                              color: Color(0xff7b68ee)),*/
                           child: Text(
                             ' ${months[selectedMonth - 1]} -  $selectedYear',
                             style: GoogleFonts.balooBhaijaan2(
                               fontSize: 16,
-                              color: Colors.white,
+                              color: Colorss.mainColor,
                             ),
                           ),
                         ),
@@ -297,10 +304,11 @@ class _RequestsMainState extends State<RequestsMain> {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                // 🔹 اختيار الشهر
                                 SizedBox(
                                   width: 90,
                                   child: ListWheelScrollView.useDelegate(
+                                    controller: monthController,
+                                    // ← استخدم المتحكم هنا
                                     itemExtent: 50,
                                     perspective: 0.004,
                                     magnification: 1.2,
@@ -335,10 +343,12 @@ class _RequestsMainState extends State<RequestsMain> {
                                   ),
                                 ),
 
-                                // 🔹 اختيار السنة
+// 🔹 اختيار السنة
                                 SizedBox(
                                   width: 120,
                                   child: ListWheelScrollView.useDelegate(
+                                    controller: yearController,
+                                    // ← استخدم المتحكم هنا
                                     itemExtent: 50,
                                     perspective: 0.004,
                                     magnification: 1.2,
@@ -525,256 +535,281 @@ class _RequestsMainState extends State<RequestsMain> {
           extendBodyBehindAppBar: true,
           extendBody: true,
           //    backgroundColor: Colors.white,
-          body: Container(
-            width: double.infinity,
-            child: CustomScrollView(
-              slivers: [
-                SliverAppBar(
-                  automaticallyImplyLeading: false,
-                  forceMaterialTransparency: true,
-                  shadowColor: Colors.white,
-                  forceElevated: false,
-                  toolbarHeight: 80,
-                  floating: true,
-                  // snap: true,
-                  //backgroundColor: Colors.white,
-                  elevation: 2,
-                  flexibleSpace: Container(
-                    color: Theme.of(context).colorScheme.background,
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          Row(
+          body: Stack(
+            children: [
+              Container(
+                width: double.infinity,
+                child: CustomScrollView(
+                  slivers: [
+                    SliverAppBar(
+                      automaticallyImplyLeading: false,
+                      forceMaterialTransparency: true,
+                      shadowColor: Colors.white,
+                      forceElevated: false,
+                      toolbarHeight: 80,
+                      floating: true,
+                      // snap: true,
+                      //backgroundColor: Colors.white,
+                      elevation: 2,
+                      flexibleSpace: Container(
+                        color: Theme.of(context).colorScheme.background,
+                        child: Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.end,
                             children: [
-                              IconButton(
-                                onPressed: () {
-                                  Navigator.pop(context);
-                                },
-                                icon: FaIcon(FontAwesomeIcons.arrowRight,
-                                    size: 22),
-                              ),
-                              Text(
-                                selectedTab == "الاجازات"
-                                    ? 'سجل الإجازات'
-                                    : selectedTab == "الاذونات"
-                                        ? 'سجل الإذن'
-                                        : selectedTab == "السلف"
-                                            ? 'سجل السلف'
-                                            : 'الطلبات',
-                                // Default case if no filter is selected
-                                style: GoogleFonts.balooBhaijaan2(
-                                  fontSize: 19,
-                                  fontWeight: FontWeight.bold,
-                                  color:
-                                      Theme.of(context).colorScheme.onPrimary,
-                                ),
-                              ),
-                              SizedBox(width: 10),
-                              Text(
-                                selectedDate != null
-                                    ? '${selectedDate?.month} - ${selectedDate?.year}'
-                                    : '', // Hide text if no date is selected
-                                style: GoogleFonts.balooBhaijaan2(
-                                  fontSize: 16,
-                                  color:
-                                      Theme.of(context).colorScheme.onPrimary,
-                                ),
-                              ),
-                              Spacer(),
                               Row(
                                 children: [
                                   IconButton(
                                     onPressed: () {
-                                      setState(() {
-                                        isVisible = !isVisible;
-                                      });
+                                      Navigator.pop(context);
                                     },
-                                    icon: FaIcon(
-                                      FontAwesomeIcons.chartSimple,
-                                      size: 18,
+                                    icon: FaIcon(FontAwesomeIcons.arrowRight,
+                                        size: 22),
+                                  ),
+                                  Text(
+                                    selectedTab == "الاجازات"
+                                        ? 'سجل الإجازات'
+                                        : selectedTab == "الاذونات"
+                                            ? 'سجل الإذن'
+                                            : selectedTab == "السلف"
+                                                ? 'سجل السلف'
+                                                : 'الطلبات',
+                                    // Default case if no filter is selected
+                                    style: GoogleFonts.balooBhaijaan2(
+                                      fontSize: 19,
+                                      fontWeight: FontWeight.bold,
                                       color: Theme.of(context)
                                           .colorScheme
                                           .onPrimary,
                                     ),
                                   ),
-                                  IconButton(
-                                    onPressed: () => _selectMonth(context),
-                                    icon: FaIcon(
-                                      FontAwesomeIcons.sliders,
-                                      size: 18,
+                                  SizedBox(width: 10),
+                                  Text(
+                                    selectedDate != null
+                                        ? '${selectedDate?.month} - ${selectedDate?.year}'
+                                        : '',
+                                    // Hide text if no date is selected
+                                    style: GoogleFonts.balooBhaijaan2(
+                                      fontSize: 16,
                                       color: Theme.of(context)
                                           .colorScheme
                                           .onPrimary,
                                     ),
+                                  ),
+                                  Spacer(),
+                                  Row(
+                                    children: [
+                                      IconButton(
+                                        onPressed: () {
+                                          setState(() {
+                                            isVisible = !isVisible;
+                                          });
+                                        },
+                                        icon: FaIcon(
+                                          FontAwesomeIcons.chartSimple,
+                                          size: 18,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .onPrimary,
+                                        ),
+                                      ),
+                                      IconButton(
+                                        onPressed: () => _selectMonth(context),
+                                        icon: FaIcon(
+                                          FontAwesomeIcons.sliders,
+                                          size: 18,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .onPrimary,
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ],
                               ),
                             ],
                           ),
-                        ],
+                        ),
                       ),
                     ),
-                  ),
-                ),
 
-                // أزرار الفئات
-                SliverToBoxAdapter(
-                  child: Container(
-                    color: Theme.of(context).colorScheme.background,
-                    child: SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Padding(
-                        padding: const EdgeInsets.only(
-                            left: 15, right: 10, bottom: 10, top: 10),
-                        child: Row(
+                    // أزرار الفئات
+                    SliverToBoxAdapter(
+                      child: Container(
+                        color: Theme.of(context).colorScheme.background,
+                        child: SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Padding(
+                            padding: const EdgeInsets.only(
+                                left: 20, right: 20, bottom: 10, top: 10),
+                            child: Row(
+                              children: [
+                                CustomNotificationWidget(
+                                  isSelected: selectedTab == "الكل",
+                                  onTap: () {
+                                    setState(() {
+                                      selectedTab = "الكل";
+                                      selectedFilter = "الكل";
+                                      showFilters = true;
+                                    });
+                                  },
+                                  iconPath: "assets/Customhome/list.svg",
+                                  label: 'الكل',
+                                ),
+                                SizedBox(width: 15),
+                                CustomNotificationWidget(
+                                  isSelected: selectedTab == "الاجازات",
+                                  onTap: () {
+                                    setState(() {
+                                      showFilters = false;
+                                      selectedTab = "الاجازات";
+                                      selectedFilter = "الكل";
+                                    });
+                                  },
+                                  iconPath:
+                                      "assets/Customhome/calendar-svgrepo-com.svg",
+                                  label: 'الاجازات',
+                                ),
+                                SizedBox(width: 15),
+                                CustomNotificationWidget(
+                                  isSelected: selectedTab == "الاذونات",
+                                  onTap: () {
+                                    setState(() {
+                                      showFilters = false;
+                                      selectedTab = "الاذونات";
+                                      selectedFilter = "الكل";
+                                    });
+                                  },
+                                  iconPath:
+                                      "assets/Customhome/permissions-svgrepo-com.svg",
+                                  label: 'الاذونات',
+                                ),
+                                SizedBox(width: 15),
+                                CustomNotificationWidget(
+                                  isSelected: selectedTab == "السلف",
+                                  onTap: () {
+                                    setState(() {
+                                      showFilters = false;
+                                      selectedTab = "السلف";
+                                      selectedFilter = "الكل";
+                                    });
+                                  },
+                                  iconPath:
+                                      "assets/Customhome/loan-interest-time-value-of-money-effective-svgrepo-com.svg",
+                                  label: 'السٌلَف',
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    // إحصائيات
+                    if (isVisible)
+                      SliverToBoxAdapter(
+                        child: Padding(
+                          padding: const EdgeInsets.all(20.0),
+                          child: Column(
+                            children: [
+                              StatCard2(
+                                title: 'طلبات الاجازات',
+                                value: '05/10',
+                                borderColor: Colors.blue,
+                                backgroundColor: Colors.blue[50]!,
+                              ),
+                              SizedBox(height: 10),
+                              StatCard2(
+                                title: 'الاجازات الاعتياديه',
+                                value: '15/21',
+                                borderColor: Colors.green,
+                                backgroundColor: Colors.green[50]!,
+                              ),
+                              SizedBox(height: 10),
+                              StatCard2(
+                                title: 'الاجازات المرضية',
+                                value: '15/21',
+                                borderColor: Colors.red,
+                                backgroundColor: Colors.red[50]!,
+                              ),
+                              SizedBox(height: 10),
+                              StatCard2(
+                                title: 'الاجازات العارضة',
+                                value: '10/5 ',
+                                borderColor: Colors.indigo,
+                                backgroundColor: Colors.indigo[50]!,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+
+                    SliverToBoxAdapter(
+                      child: Container(
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(25),
+                            color: Theme.of(context)
+                                .colorScheme
+                                .surfaceVariant // 🔹 خلفية موحدة رمادية
+                            ),
+                        child: Column(
                           children: [
-                            CustomNotificationWidget(
-                              isSelected: selectedTab == "الكل",
-                              onTap: () {
-                                setState(() {
-                                  selectedTab = "الكل";
-                                  selectedFilter = "الكل";
-                                  showFilters = true;
-                                });
-                              },
-                              iconPath: "assets/Customhome/list.svg",
-                              label: 'الكل',
-                            ),
-                            SizedBox(width: 15),
-                            CustomNotificationWidget(
-                              isSelected: selectedTab == "الاجازات",
-                              onTap: () {
-                                setState(() {
-                                  showFilters = false;
-                                  selectedTab = "الاجازات";
-                                  selectedFilter = "الكل";
-                                });
-                              },
-                              iconPath:
-                                  "assets/Customhome/calendar-svgrepo-com.svg",
-                              label: 'الاجازات',
-                            ),
-                            SizedBox(width: 15),
-                            CustomNotificationWidget(
-                              isSelected: selectedTab == "الاذونات",
-                              onTap: () {
-                                setState(() {
-                                  showFilters = false;
-                                  selectedTab = "الاذونات";
-                                  selectedFilter = "الكل";
-                                });
-                              },
-                              iconPath:
-                                  "assets/Customhome/permissions-svgrepo-com.svg",
-                              label: 'الاذونات',
-                            ),
-                            SizedBox(width: 15),
-                            CustomNotificationWidget(
-                              isSelected: selectedTab == "السلف",
-                              onTap: () {
-                                setState(() {
-                                  showFilters = false;
-                                  selectedTab = "السلف";
-                                  selectedFilter = "الكل";
-                                });
-                              },
-                              iconPath:
-                                  "assets/Customhome/loan-interest-time-value-of-money-effective-svgrepo-com.svg",
-                              label: 'السٌلَف',
-                            ),
+                            if (!showFilters)
+                              Padding(
+                                padding: const EdgeInsets.only(
+                                  right: 20.0,
+                                  top: 20,
+                                ),
+                                child: buildFilterChips(),
+                              ),
+
+                            // ✅ قائمة الطلبات
+                            getFilteredRequests().isNotEmpty
+                                ? ListView.builder(
+                                    padding: EdgeInsets.only(
+                                        left: 20,
+                                        right: 20,
+                                        top: 20,
+                                        bottom: 80),
+                                    shrinkWrap: true,
+                                    physics: NeverScrollableScrollPhysics(),
+                                    itemCount: getFilteredRequests().length,
+                                    itemBuilder: (context, index) {
+                                      return getFilteredRequests()[index];
+                                    },
+                                  )
+                                : Padding(
+                                    padding: EdgeInsets.symmetric(vertical: 20),
+                                    child: Center(
+                                      child: Text(
+                                        "لا توجد طلبات متاحة",
+                                        style: TextStyle(
+                                            fontSize: 16, color: Colors.grey),
+                                      ),
+                                    ),
+                                  ),
                           ],
                         ),
                       ),
                     ),
+                  ],
+                ),
+              ),
+              Positioned(
+                right: 0,
+                left: 0,
+                bottom: 0,
+                child: SizedBox(
+                  height: 70,
+                  child: CustomBottomNavBar(
+                    selectedIndex: 4,
+                    onItemTapped: (p0) {},
                   ),
                 ),
-
-                // إحصائيات
-                if (isVisible)
-                  SliverToBoxAdapter(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Column(
-                        children: [
-                          StatCard2(
-                            title: 'طلبات الاجازات',
-                            value: '05/10',
-                            borderColor: Colors.blue,
-                            backgroundColor: Colors.blue[50]!,
-                          ),
-                          SizedBox(height: 10),
-                          StatCard2(
-                            title: 'الاجازات الاعتياديه',
-                            value: '15/21',
-                            borderColor: Colors.green,
-                            backgroundColor: Colors.green[50]!,
-                          ),
-                          SizedBox(height: 10),
-                          StatCard2(
-                            title: 'الاجازات المرضية',
-                            value: '15/21',
-                            borderColor: Colors.red,
-                            backgroundColor: Colors.red[50]!,
-                          ),
-                          SizedBox(height: 10),
-                          StatCard2(
-                            title: 'الاجازات العارضة',
-                            value: '10/5 ',
-                            borderColor: Colors.indigo,
-                            backgroundColor: Colors.indigo[50]!,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-
-                SliverToBoxAdapter(
-                  child: Container(
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(25),
-                        color: Theme.of(context)
-                            .colorScheme
-                            .surfaceVariant // 🔹 خلفية موحدة رمادية
-                        ),
-                    child: Column(
-                      children: [
-                        if (!showFilters)
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: buildFilterChips(),
-                          ),
-
-                        // ✅ قائمة الطلبات
-                        getFilteredRequests().isNotEmpty
-                            ? ListView.builder(
-                                padding: EdgeInsets.only(
-                                    left: 10, right: 10, top: 10),
-                                shrinkWrap: true,
-                                physics: NeverScrollableScrollPhysics(),
-                                itemCount: getFilteredRequests().length,
-                                itemBuilder: (context, index) {
-                                  return getFilteredRequests()[index];
-                                },
-                              )
-                            : Padding(
-                                padding: EdgeInsets.symmetric(vertical: 20),
-                                child: Center(
-                                  child: Text(
-                                    "لا توجد طلبات متاحة",
-                                    style: TextStyle(
-                                        fontSize: 16, color: Colors.grey),
-                                  ),
-                                ),
-                              ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
+              )
+            ],
           )),
     );
   }

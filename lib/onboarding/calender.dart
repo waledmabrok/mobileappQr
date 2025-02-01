@@ -378,7 +378,7 @@ class _AttendancePageState extends State<AttendancePage> {
           children: [
             // Month Navigation
             Padding(
-              padding: const EdgeInsets.only(left: 16.0, right: 16),
+              padding: const EdgeInsets.only(left: 20.0, right: 20),
               child: Container(
                 child: Row(
                   children: [
@@ -430,7 +430,7 @@ class _AttendancePageState extends State<AttendancePage> {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.all(10.0),
+              padding: const EdgeInsets.only(right: 20.0, top: 20, bottom: 00),
               child: PreferredSize(
                 preferredSize: Size.fromHeight(50.0),
                 child: Container(
@@ -560,7 +560,7 @@ class _AttendancePageState extends State<AttendancePage> {
                           ],
                         ),
                       ),
-                      SizedBox(height: 15),
+                      SizedBox(height: 10),
                     ],
                   ),
                 ),
@@ -572,7 +572,8 @@ class _AttendancePageState extends State<AttendancePage> {
               stream: _attendanceStream,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return SingleChildScrollView(child: SkeletonCard());
+                  return SingleChildScrollView(
+                      scrollDirection: Axis.vertical, child: SkeletonCard());
                 } else if (snapshot.hasError) {
                   return Container(
                     alignment: Alignment.center,
@@ -613,21 +614,26 @@ class _AttendancePageState extends State<AttendancePage> {
                   }
 
                   return Expanded(
-                    child: ListView.builder(
-                      padding: EdgeInsets.only(bottom: 90),
-                      itemCount: filteredData.length,
-                      itemBuilder: (context, index) {
-                        final data = filteredData[index];
-                        return AttendanceCard(
-                          day: data.date.day,
-                          weekday: data.date.dayName,
-                          // You might want to improve this to display day names
-                          clockIn: data.checkInTime,
-                          clockOut: data.checkOutTime,
-                          totalHours: data.totalTime,
-                          status: data.status,
-                        );
-                      },
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(30),
+                        color: Theme.of(context).colorScheme.surfaceVariant,
+                      ),
+                      child: ListView.builder(
+                        padding: EdgeInsets.only(bottom: 70, top: 20),
+                        itemCount: filteredData.length,
+                        itemBuilder: (context, index) {
+                          final data = filteredData[index];
+                          return AttendanceCard(
+                            day: data.date.day,
+                            weekday: data.date.dayName,
+                            clockIn: data.checkInTime,
+                            clockOut: data.checkOutTime,
+                            totalHours: data.totalTime,
+                            status: data.status,
+                          );
+                        },
+                      ),
                     ),
                   );
                 }

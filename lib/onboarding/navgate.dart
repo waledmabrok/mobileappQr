@@ -53,7 +53,9 @@ class _HomeScreenState extends State<HomeScreen>
     );
 
     _screens = [
-      AttendanceScreen5(),
+      AttendanceScreen5(
+        advancedDrawerController: _advancedDrawerController,
+      ),
       TasksScreen(),
       AttendancePage(
         filter: widget.filter,
@@ -102,7 +104,7 @@ class _HomeScreenState extends State<HomeScreen>
                     elevation: 5,
                     child: Container(
                       width: screenWidth * 0.8,
-                      height: screenHeight > 900
+                      height: screenHeight < 850
                           ? screenHeight * 0.42
                           : screenHeight * 0.38,
                       decoration: BoxDecoration(
@@ -257,7 +259,12 @@ class _HomeScreenState extends State<HomeScreen>
           ),
         );
       },
-    );
+    ).whenComplete(() {
+      // عكس الأنميشن عند إغلاق الـ BottomSheet
+      if (_controller.isCompleted) {
+        _controller.reverse();
+      }
+    });
   }
 
   Future<bool> _onWillPop() async {

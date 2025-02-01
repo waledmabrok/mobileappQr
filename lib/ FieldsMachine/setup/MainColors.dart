@@ -41,8 +41,8 @@ class Colorss {
   static const Color primaryColorDark = Color(0xFF101317);
 
   // Secondary Colors
-  static const Color secondaryColor = Color(0xFFFF8B6A);
-  static const Color secondaryColorLight = Color(0xFFFFD2BB);
+  static const Color secondaryColor = Color(0xFF8F8F8E);
+  static const Color secondaryColorLight = Color(0xFFB9B9B9);
   static const Color secondaryColorDark = Color(0xFF480032);
 
   // Text Colors

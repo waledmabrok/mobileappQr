@@ -65,6 +65,7 @@ dependencies:
   navigation_view: ^1.0.6
   fl_chart: ^0.70.1
   flutter_keyboard_visibility: ^6.0.0
+  flutter_dash: ^1.0.0
 
 
 

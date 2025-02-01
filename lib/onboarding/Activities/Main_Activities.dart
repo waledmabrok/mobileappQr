@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../../ FieldsMachine/setup/MainColors.dart';
 import '../../CustomNavbar/Drawer.dart';
+import '../../CustomNavbar/customnav.dart';
 
 class Main_Activities extends StatefulWidget {
   const Main_Activities({super.key});
@@ -39,131 +40,169 @@ class _Main_ActivitiesState extends State<Main_Activities> {
           titleTextStyle:
               GoogleFonts.balooBhaijaan2(fontWeight: FontWeight.bold),
         ),
-        body: SingleChildScrollView(
-          child: Container(
-            width: double.infinity,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(30),
-              color: Theme.of(context).colorScheme.surfaceVariant,
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          "اجازات - ${_getMonthName(selectedMonth)} $selectedYear",
-                          style: GoogleFonts.balooBhaijaan2(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w800,
-                            color: Theme.of(context).colorScheme.onPrimary,
+        body: Stack(
+          children: [
+            SingleChildScrollView(
+              child: Container(
+                height: 900,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(30),
+                  color: Theme.of(context).colorScheme.surfaceVariant,
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 20, right: 20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        child: Padding(
+                          padding: const EdgeInsets.only(top: 10.0, bottom: 10),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                "اجازات - ${_getMonthName(selectedMonth)} $selectedYear",
+                                style: GoogleFonts.balooBhaijaan2(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w800,
+                                  color:
+                                      Theme.of(context).colorScheme.onPrimary,
+                                ),
+                              ),
+                              IconButton(
+                                onPressed: () async {
+                                  final DateTimeRange? picked =
+                                      await showDateRangePicker(
+                                    context: context,
+                                    firstDate: DateTime(2000),
+                                    lastDate: DateTime(2100),
+                                    initialDateRange: DateTimeRange(
+                                      start: DateTime(
+                                          selectedYear, selectedMonth, 1),
+                                      end: DateTime(
+                                          selectedYear, selectedMonth, 28),
+                                    ),
+                                  );
+
+                                  if (picked != null) {
+                                    setState(() {
+                                      selectedMonth = picked.start.month;
+                                      selectedYear = picked.start.year;
+                                    });
+                                  }
+                                },
+                                icon: Icon(Icons.calendar_today_outlined,
+                                    size: 24),
+                              ),
+                            ],
                           ),
                         ),
-                        IconButton(
-                          onPressed: () async {
-                            final DateTimeRange? picked =
-                                await showDateRangePicker(
-                              context: context,
-                              firstDate: DateTime(2000),
-                              lastDate: DateTime(2100),
-                              initialDateRange: DateTimeRange(
-                                start: DateTime(selectedYear, selectedMonth, 1),
-                                end: DateTime(selectedYear, selectedMonth, 28),
-                              ),
-                            );
-
-                            if (picked != null) {
-                              setState(() {
-                                selectedMonth = picked.start.month;
-                                selectedYear = picked.start.year;
-                              });
-                            }
-                          },
-                          icon: Icon(Icons.calendar_today_outlined, size: 24),
-                        ),
-                      ],
-                    ),
+                      ),
+                      _buildActivityItem(
+                        icon: FontAwesomeIcons.rightToBracket,
+                        title: "تسجيل الدخول",
+                        time: "10:00 صباحًا",
+                        date: "17 أبريل 2023",
+                        status: "في الموعد",
+                        iconColor: Colorss.mainColor,
+                        svgIconPath: 'assets/Customhome/login-svgrepo-com.svg',
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      _buildActivityItem(
+                        icon: FontAwesomeIcons.clock,
+                        title: "بدء الراحة",
+                        time: "12:30 مساءً",
+                        date: "17 أبريل 2023",
+                        status: "في الموعد",
+                        iconColor: Colorss.mainColor,
+                        svgIconPath:
+                            'assets/Customhome/break-coffee-pause-svgrepo-com.svg',
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      _buildActivityItem(
+                        icon: FontAwesomeIcons.clock,
+                        title: "انهاء فترة الراحه ",
+                        time: "1:00 مساء",
+                        date: "17 أبريل 2023",
+                        status: "في الموعد",
+                        iconColor: Colorss.mainColor,
+                        svgIconPath:
+                            'assets/Customhome/break-coffee-pause-svgrepo-com.svg',
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      _buildActivityItem(
+                        icon: FontAwesomeIcons.rightFromBracket,
+                        title: "تسجيل الانصراف",
+                        time: "1:00 صباحًا",
+                        date: "17 أبريل 2023",
+                        status: "في الموعد",
+                        iconColor: Colorss.mainColor,
+                        svgIconPath: 'assets/Customhome/logout-svgrepo-com.svg',
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      _buildActivityItem(
+                        icon: FontAwesomeIcons.personArrowDownToLine,
+                        title: "التواجد خارج مواعيد العمل",
+                        time: "2 ساعه",
+                        date: "17 أبريل 2023",
+                        status: "في الموعد",
+                        iconColor: Colorss.mainColor,
+                        svgIconPath:
+                            'assets/Customhome/calendar-svgrepo-com.svg',
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      _buildActivityItem(
+                        icon: FontAwesomeIcons.moneyBill,
+                        title: "طلب سلفه",
+                        time: "1500",
+                        date: "17 أبريل 2023",
+                        status: "فشلت",
+                        iconColor: Colorss.mainColor,
+                        svgIconPath:
+                            'assets/Customhome/money-recive-svgrepo-com.svg',
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      _buildActivityItem(
+                        icon: FontAwesomeIcons.outdent,
+                        title: "طلب اذن",
+                        time: "10:00",
+                        date: "17 أبريل 2023",
+                        status: "فشلت",
+                        iconColor: Colorss.mainColor,
+                        svgIconPath:
+                            'assets/Customhome/permissions-svgrepo-com.svg',
+                      ),
+                    ],
                   ),
                 ),
-                const SizedBox(height: 10),
-                _buildActivityItem(
-                  icon: FontAwesomeIcons.rightToBracket,
-                  title: "تسجيل الدخول",
-                  time: "10:00 صباحًا",
-                  date: "17 أبريل 2023",
-                  status: "في الموعد",
-                  iconColor: Colorss.mainColor,
-                  svgIconPath: 'assets/Customhome/login-svgrepo-com.svg',
-                ),
-                const SizedBox(height: 10),
-                _buildActivityItem(
-                  icon: FontAwesomeIcons.clock,
-                  title: "بدء الراحة",
-                  time: "12:30 مساءً",
-                  date: "17 أبريل 2023",
-                  status: "في الموعد",
-                  iconColor: Colorss.mainColor,
-                  svgIconPath:
-                      'assets/Customhome/break-coffee-pause-svgrepo-com.svg',
-                ),
-                const SizedBox(height: 10),
-                _buildActivityItem(
-                  icon: FontAwesomeIcons.clock,
-                  title: "انهاء فترة الراحه ",
-                  time: "1:00 مساء",
-                  date: "17 أبريل 2023",
-                  status: "في الموعد",
-                  iconColor: Colorss.mainColor,
-                  svgIconPath:
-                      'assets/Customhome/break-coffee-pause-svgrepo-com.svg',
-                ),
-                const SizedBox(height: 10),
-                _buildActivityItem(
-                  icon: FontAwesomeIcons.rightFromBracket,
-                  title: "تسجيل الانصراف",
-                  time: "1:00 صباحًا",
-                  date: "17 أبريل 2023",
-                  status: "في الموعد",
-                  iconColor: Colorss.mainColor,
-                  svgIconPath: 'assets/Customhome/logout-svgrepo-com.svg',
-                ),
-                const SizedBox(height: 10),
-                _buildActivityItem(
-                  icon: FontAwesomeIcons.personArrowDownToLine,
-                  title: "التواجد خارج مواعيد العمل",
-                  time: "2 ساعه",
-                  date: "17 أبريل 2023",
-                  status: "في الموعد",
-                  iconColor: Colorss.mainColor,
-                  svgIconPath: 'assets/Customhome/calendar-svgrepo-com.svg',
-                ),
-                const SizedBox(height: 10),
-                _buildActivityItem(
-                  icon: FontAwesomeIcons.moneyBill,
-                  title: "طلب سلفه",
-                  time: "1500",
-                  date: "17 أبريل 2023",
-                  status: "فشلت",
-                  iconColor: Colorss.mainColor,
-                  svgIconPath: 'assets/Customhome/money-recive-svgrepo-com.svg',
-                ),
-                const SizedBox(height: 10),
-                _buildActivityItem(
-                  icon: FontAwesomeIcons.outdent,
-                  title: "طلب اذن",
-                  time: "10:00",
-                  date: "17 أبريل 2023",
-                  status: "فشلت",
-                  iconColor: Colorss.mainColor,
-                  svgIconPath: 'assets/Customhome/date-svgrepo-com.svg',
-                ),
-              ],
+              ),
             ),
-          ),
+            Positioned(
+              right: 0,
+              left: 0,
+              bottom: 0,
+              child: SizedBox(
+                height: 80,
+                child: CustomBottomNavBar(
+                  selectedIndex: 4,
+                  onItemTapped: (p0) {},
+                ),
+              ),
+            )
+          ],
         ),
       ),
     );

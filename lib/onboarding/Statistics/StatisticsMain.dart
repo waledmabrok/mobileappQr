@@ -11,6 +11,7 @@ import '../../ FieldsMachine/setup/MainColors.dart';
 import '../../CustomNavbar/Drawer.dart';
 import '../../CustomNavbar/customnav.dart';
 import '../../home/homeTest.dart';
+import '../../themes.dart';
 import '../navgate.dart';
 import 'ColorCharts.dart';
 import 'indictor.dart';
@@ -95,26 +96,7 @@ class PieChart2State extends State {
                                 ),
                                 builder: (context, child) {
                                   return Theme(
-                                    data: ThemeData.light().copyWith(
-                                      primaryColor:
-                                          Colorss.mainColor, // اللون الأساسي
-                                      hintColor: Colors.grey, // لون التلميحات
-                                      colorScheme: ColorScheme.light(
-                                        primary: Colorss.mainColor,
-                                        // لون العنوان والأزرار
-                                        onPrimary: Colors.white,
-                                        // لون النص في الأزرار
-                                        secondary: Colors.grey,
-                                        // لون التحديد عند اختيار الأيام
-                                        onSecondary: Colors.white,
-                                        // لون النص عند التحديد
-                                        surface: Colors.white,
-                                        // لون الخلفية
-                                        onSurface: Colors.black, // لون النصوص
-                                      ),
-                                      dialogBackgroundColor:
-                                          Colors.white, // لون خلفية الحوار
-                                    ),
+                                    data: Theme.of(context),
                                     child: child!,
                                   );
                                 },
@@ -134,6 +116,7 @@ class PieChart2State extends State {
                     ),
                   ),
                   Container(
+                    // height: MediaQuery.of(context).size.height,
                     width: double.infinity,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(30),
@@ -490,15 +473,15 @@ class PieChart2State extends State {
                                 padding: const EdgeInsets.all(4.0),
                                 child: ActivityScreenContent(),
                               ),
+                              SizedBox(
+                                height: 90,
+                              )
                             ],
                           ),
                         ],
                       ),
                     ),
                   ),
-                  SizedBox(
-                    height: 90,
-                  )
                 ],
               ),
             ),

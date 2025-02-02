@@ -1205,7 +1205,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
               Positioned(
                 left: 0,
                 right: 0,
-                top: 140,
+                top: 130,
                 child: Container(
                   margin: EdgeInsets.symmetric(horizontal: 20),
                   padding: EdgeInsets.all(15),
@@ -1367,7 +1367,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                           ),
                         ],
                       ),
-                      SizedBox(height: 60),
+                      SizedBox(height: 40),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -1400,7 +1400,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                         ],
                       ),
                       SizedBox(
-                        height: 110,
+                        height: 120,
                       ),
                     ],
                   ),

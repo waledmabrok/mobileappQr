@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
+import '../../ FieldsMachine/setup/MainColors.dart';
 import 'DarkMode.dart';
 
 class CustomFrameWidget extends StatelessWidget {
@@ -21,15 +22,18 @@ class CustomFrameWidget extends StatelessWidget {
     var themeProvider = Provider.of<ThemeProvider>(context);
 
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
         IntrinsicHeight(
           child: Container(
             width: double.infinity,
-            padding: const EdgeInsets.only(top: 16, right: 16, left: 16),
+            padding:
+                const EdgeInsets.only(top: 16, right: 16, left: 16, bottom: 16),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(12),
             ),
             child: Column(
+              mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
@@ -47,9 +51,13 @@ class CustomFrameWidget extends StatelessWidget {
                     color: Theme.of(context).colorScheme.background,
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
+                  padding: EdgeInsets.only(
+                      top: showThemeSwitch ? 27 : 16,
+                      bottom: 16,
+                      left: 16,
+                      right: 16),
                   child: Column(
+                    mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       ...options
@@ -58,6 +66,7 @@ class CustomFrameWidget extends StatelessWidget {
                             return MapEntry(
                               index,
                               Column(
+                                mainAxisSize: MainAxisSize.min,
                                 children: [
                                   _buildOption(
                                     context: context,
@@ -68,10 +77,10 @@ class CustomFrameWidget extends StatelessWidget {
                                     onTap: option.onTap,
                                     isSwitch: false,
                                   ),
-                                  const SizedBox(height: 15),
+                                  // const SizedBox(height: 15),
                                   if (index != options.length - 1)
                                     Divider(
-                                      thickness: 0.8,
+                                      thickness: 0.5,
                                       color: Theme.of(context)
                                           .colorScheme
                                           .surfaceVariant,
@@ -109,7 +118,7 @@ class CustomFrameWidget extends StatelessWidget {
       child: Row(
         children: [
           Container(
-            padding: EdgeInsets.all(8),
+            padding: EdgeInsets.all(6),
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(25), color: color2),
             child: Icon(
@@ -140,46 +149,62 @@ class CustomFrameWidget extends StatelessWidget {
   }
 
   Widget _buildThemeSwitch(ThemeProvider themeProvider, BuildContext context) {
-    return SwitchListTile(
-      contentPadding: EdgeInsets.all(0),
-      title: Row(
-        children: [
-          Container(
-            padding: EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(25),
-              color: Theme.of(context).colorScheme.inverseSurface,
-            ),
-            child: Icon(
-              Icons.dark_mode_outlined,
-              size: 18,
-              color: Colors.black,
-            ),
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Divider(
+          color: Theme.of(context).colorScheme.surfaceVariant,
+          thickness: 0.5,
+        ),
+        SwitchListTile(
+          // visualDensity: VisualDensity.compact,
+          //dense: true,
+          contentPadding: EdgeInsets.zero,
+          title: Row(
+            //  mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                padding: EdgeInsets.all(6),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(25),
+                  color: Theme.of(context).colorScheme.inverseSurface,
+                ),
+                child: Icon(
+                  Icons.dark_mode_outlined,
+                  size: 18,
+                  color: Colors.black,
+                ),
+              ),
+              SizedBox(
+                width: 8,
+              ),
+              Text(
+                "تحديد الثييم",
+                style: GoogleFonts.balooBhaijaan2(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w500,
+                  color: Color(0xFF4F5464),
+                ),
+              ),
+            ],
           ),
-          SizedBox(
-            width: 8,
-          ),
-          Text(
-            "تحديد الثييم",
-            style: GoogleFonts.balooBhaijaan2(
-              fontSize: 18,
-              fontWeight: FontWeight.w500,
-              color: Color(0xFF4F5464),
-            ),
-          ),
-        ],
-      ),
-      value: themeProvider.themeMode == ThemeMode.dark,
-      onChanged: (value) {
-        themeProvider.toggleTheme();
-      },
-      activeColor: Colors.blue,
-      inactiveThumbColor: Colors.grey,
+          value: themeProvider.themeMode == ThemeMode.dark,
+          onChanged: (value) {
+            themeProvider.toggleTheme();
+          },
 
-      inactiveTrackColor: Colors.grey[300],
-      //thumbColor: WidgetStatePropertyAll(Colors.white),
-      overlayColor: WidgetStatePropertyAll(Colors.white),
-      trackOutlineColor: WidgetStatePropertyAll(Colors.white30),
+          activeColor: Colorss.mainColor,
+          controlAffinity: ListTileControlAffinity.trailing,
+          //  activeTrackColor: Colors.black,
+          inactiveThumbColor: Colors.grey.shade400,
+
+          inactiveTrackColor: Theme.of(context).colorScheme.inverseSurface,
+          //thumbColor: WidgetStatePropertyAll(Colors.white),
+          overlayColor: WidgetStatePropertyAll(Colors.white),
+          trackOutlineColor: WidgetStatePropertyAll(
+              Theme.of(context).colorScheme.surfaceVariant),
+        ),
+      ],
     );
   }
 }

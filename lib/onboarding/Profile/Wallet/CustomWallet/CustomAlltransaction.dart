@@ -8,6 +8,7 @@ class ActivityItem extends StatelessWidget {
   final String status;
   final Color iconColor;
   final String imagePath;
+  final bool bottom;
 
   const ActivityItem({
     Key? key,
@@ -17,6 +18,7 @@ class ActivityItem extends StatelessWidget {
     required this.status,
     required this.iconColor,
     required this.imagePath,
+    this.bottom = true,
   }) : super(key: key);
 
   @override
@@ -24,12 +26,14 @@ class ActivityItem extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
-        border: Border(
-          bottom: BorderSide(
-            color: Colors.grey.shade300, // لون الحد
-            width: 0.5, // سمك الحد
-          ),
-        ),
+        border: bottom
+            ? Border(
+                bottom: BorderSide(
+                  color: Colors.grey.shade300, // Border color
+                  width: 0.5, // Border width
+                ),
+              )
+            : null,
       ),
       child: Padding(
         padding: const EdgeInsets.all(8.0),

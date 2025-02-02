@@ -210,202 +210,197 @@ class _ProfileScreenState extends State<ProfileScreen> {
           : Stack(
               children: [
                 SafeArea(
-                  child: SingleChildScrollView(
-                    child: Column(
-                      children: [
-                        Container(
-                          height: 40,
-                          width: double.infinity,
-                          child: Padding(
-                            padding: const EdgeInsets.only(
-                                top: 10.0, left: 20, right: 20),
-                            child: Row(
-                              children: [
-                                // Ellipse with Icon (Arrow Left)
-                                InkWell(
-                                  onTap: () {
-                                    Navigator.pop(
-                                        context); // هذا يرجع إلى الشاشة السابقة
-                                  },
-                                  child: Container(
-                                    width: 32,
-                                    height: 32,
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      color: Color(
-                                          0xFFE1E0F3), // Ellipse background color
-                                    ),
-                                    child: Padding(
-                                      padding:
-                                          const EdgeInsets.only(right: 5.0),
-                                      child: Center(
-                                        child: Icon(
-                                          Icons.arrow_back_ios,
-                                          // You can replace this with another icon or image
-                                          size: 16,
-                                          color: Color(0xff7A5AF8),
-                                        ),
+                  child: Column(
+                    children: [
+                      Container(
+                        height: 40,
+                        width: double.infinity,
+                        child: Padding(
+                          padding: const EdgeInsets.only(
+                              top: 10.0, left: 20, right: 20),
+                          child: Row(
+                            children: [
+                              // Ellipse with Icon (Arrow Left)
+                              InkWell(
+                                onTap: () {
+                                  Navigator.pop(
+                                      context); // هذا يرجع إلى الشاشة السابقة
+                                },
+                                child: Container(
+                                  width: 32,
+                                  height: 32,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: Color(
+                                        0xFFE1E0F3), // Ellipse background color
+                                  ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(right: 5.0),
+                                    child: Center(
+                                      child: Icon(
+                                        Icons.arrow_back_ios,
+                                        // You can replace this with another icon or image
+                                        size: 16,
+                                        color: Color(0xff7A5AF8),
                                       ),
                                     ),
                                   ),
                                 ),
-                                // Title Text
-                                SizedBox(
-                                  width: 60,
-                                ),
-                                Container(
-                                  alignment: Alignment.center,
-                                  child: Text(
-                                    'الحساب الشخصي', // Your title in Arabic
-                                    style: GoogleFonts.balooBhaijaan2(
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 18,
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .onPrimary,
-                                    ),
+                              ),
+                              // Title Text
+                              SizedBox(
+                                width: 60,
+                              ),
+                              Container(
+                                alignment: Alignment.center,
+                                child: Text(
+                                  'الحساب الشخصي', // Your title in Arabic
+                                  style: GoogleFonts.balooBhaijaan2(
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 18,
+                                    color:
+                                        Theme.of(context).colorScheme.onPrimary,
                                   ),
                                 ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Column(
-                            children: [
-                              // Frame
-                              Container(
-                                padding: EdgeInsets.all(24),
-                                decoration: BoxDecoration(
-                                  //   color: Color(0xFFFEFEFE),
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: Column(
-                                  children: [
-                                    // Photo Upload Section
-                                    Stack(
-                                      clipBehavior: Clip.none,
-                                      children: [
-                                        // Circle Image
-                                        Container(
-                                          width: 110,
-                                          height: 110,
-                                          decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(100),
-                                            border: Border.all(
-                                                color: Colors.white, width: 1),
-                                            image: DecorationImage(
-                                              image: profileImage != null
-                                                  ? FileImage(profileImage!)
-                                                  : _profileImageUrl != null &&
-                                                          _profileImageUrl!
-                                                              .isNotEmpty
-                                                      ? CachedNetworkImageProvider(
-                                                          _profileImageUrl!)
-                                                      : AssetImage(
-                                                              'assets/images/emptyimage.jpg')
-                                                          as ImageProvider,
-                                              fit: BoxFit.cover,
-                                            ),
-                                          ),
-                                        ),
-                                        // Ellipse 22 (absolute positioning)
-                                        Positioned(
-                                          bottom: -5,
-                                          right: -5,
-                                          child: InkWell(
-                                            onTap: _pickImage,
-                                            child: Container(
-                                              decoration: BoxDecoration(
-                                                borderRadius: BorderRadius.all(
-                                                    Radius.circular(25)),
-                                                color: Colors.white,
-                                              ),
-                                              child: Container(
-                                                width: 40,
-                                                height: 40,
-                                                decoration: BoxDecoration(
-                                                  borderRadius:
-                                                      BorderRadius.all(
-                                                          Radius.circular(25)),
-                                                  color: Color(0xFF7585ec),
-                                                  border: Border.all(
-                                                      color: Colors.white,
-                                                      width: 3),
-                                                ),
-                                                child: Icon(
-                                                  Icons.camera_alt_outlined,
-                                                  color: Colors.white,
-                                                  size: 20,
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    SizedBox(height: 20),
-
-                                    // Input Fields Section
-                                    CustomText(
-                                      isRequired: true,
-                                      controller: nameController,
-                                    ),
-                                    SizedBox(
-                                      height: 20,
-                                    ),
-                                    CustomText(
-                                      isRequired: true,
-                                      controller: positionController,
-                                      hintText: 'الوظيفه',
-                                      prefixIcon: Icons.computer,
-                                    ),
-
-                                    SizedBox(
-                                      height: 20,
-                                    ),
-                                    CustomText(
-                                      isRequired: true,
-                                      hintText: 'البريد الإلكتروني',
-                                      controller: emailController,
-                                      prefixIcon: Icons.email,
-                                    ),
-                                    SizedBox(
-                                      height: 20,
-                                    ),
-                                    CustomText(
-                                      isRequired: true,
-                                      hintText: 'رقم الهاتف',
-                                      controller: phoneController,
-                                      prefixIcon: Icons.phone,
-                                    ),
-                                    SizedBox(height: 20),
-                                    CustomText(
-                                      isRequired: true,
-                                      hintText: 'العنوان',
-                                      controller: addressController,
-                                      prefixIcon: Icons.location_on,
-                                    ),
-
-                                    ///=============================
-                                    ///
-                                  ],
-                                ),
                               ),
-
-                              SizedBox(height: 16),
                             ],
                           ),
                         ),
-                        Padding(
-                          padding: const EdgeInsets.all(55.0),
-                          child: CustomButton(
-                              text: 'تحديث بيانات', onPressed: _saveChanges),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
+                          children: [
+                            // Frame
+                            Container(
+                              padding: EdgeInsets.all(24),
+                              decoration: BoxDecoration(
+                                //   color: Color(0xFFFEFEFE),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Column(
+                                children: [
+                                  // Photo Upload Section
+                                  Stack(
+                                    clipBehavior: Clip.none,
+                                    children: [
+                                      // Circle Image
+                                      Container(
+                                        width: 110,
+                                        height: 110,
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(100),
+                                          border: Border.all(
+                                              color: Colors.white, width: 1),
+                                          image: DecorationImage(
+                                            image: profileImage != null
+                                                ? FileImage(profileImage!)
+                                                : _profileImageUrl != null &&
+                                                        _profileImageUrl!
+                                                            .isNotEmpty
+                                                    ? CachedNetworkImageProvider(
+                                                        _profileImageUrl!)
+                                                    : AssetImage(
+                                                            'assets/images/emptyimage.jpg')
+                                                        as ImageProvider,
+                                            fit: BoxFit.cover,
+                                          ),
+                                        ),
+                                      ),
+                                      // Ellipse 22 (absolute positioning)
+                                      Positioned(
+                                        bottom: -5,
+                                        right: -5,
+                                        child: InkWell(
+                                          onTap: _pickImage,
+                                          child: Container(
+                                            decoration: BoxDecoration(
+                                              borderRadius: BorderRadius.all(
+                                                  Radius.circular(25)),
+                                              color: Colors.white,
+                                            ),
+                                            child: Container(
+                                              width: 40,
+                                              height: 40,
+                                              decoration: BoxDecoration(
+                                                borderRadius: BorderRadius.all(
+                                                    Radius.circular(25)),
+                                                color: Color(0xFF7585ec),
+                                                border: Border.all(
+                                                    color: Colors.white,
+                                                    width: 3),
+                                              ),
+                                              child: Icon(
+                                                Icons.camera_alt_outlined,
+                                                color: Colors.white,
+                                                size: 20,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(height: 20),
+
+                                  // Input Fields Section
+                                  CustomText(
+                                    isRequired: true,
+                                    controller: nameController,
+                                  ),
+                                  SizedBox(
+                                    height: 20,
+                                  ),
+                                  CustomText(
+                                    isRequired: true,
+                                    controller: positionController,
+                                    hintText: 'الوظيفه',
+                                    prefixIcon: Icons.computer,
+                                  ),
+
+                                  SizedBox(
+                                    height: 20,
+                                  ),
+                                  CustomText(
+                                    isRequired: true,
+                                    hintText: 'البريد الإلكتروني',
+                                    controller: emailController,
+                                    prefixIcon: Icons.email,
+                                  ),
+                                  SizedBox(
+                                    height: 20,
+                                  ),
+                                  CustomText(
+                                    isRequired: true,
+                                    hintText: 'رقم الهاتف',
+                                    controller: phoneController,
+                                    prefixIcon: Icons.phone,
+                                  ),
+                                  SizedBox(height: 20),
+                                  CustomText(
+                                    isRequired: true,
+                                    hintText: 'العنوان',
+                                    controller: addressController,
+                                    prefixIcon: Icons.location_on,
+                                  ),
+
+                                  ///=============================
+                                  ///
+                                ],
+                              ),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
+                      ),
+                      Spacer(),
+                      Padding(
+                        padding: const EdgeInsets.only(
+                            left: 20.0, right: 20, bottom: 10),
+                        child: CustomButton(
+                            text: 'تحديث بيانات', onPressed: _saveChanges),
+                      ),
+                    ],
                   ),
                 ),
               ],

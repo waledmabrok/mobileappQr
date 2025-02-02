@@ -143,7 +143,7 @@ class _ProfilePageState extends State<ProfilePage> {
               padding: const EdgeInsets.only(top: 170.0),
               child: Container(
                 //hight to hide background
-                height: 800,
+                // height: 750,
                 decoration: BoxDecoration(
                     color: Theme
                         .of(context)
@@ -153,8 +153,8 @@ class _ProfilePageState extends State<ProfilePage> {
                         topLeft: Radius.circular(15),
                         topRight: Radius.circular(15))),
                 child: Padding(
-                  padding: const EdgeInsets.only(
-                      top: 140.0, left: 10, right: 10),
+                  padding:
+                  const EdgeInsets.only(top: 140.0, left: 10, right: 10),
                   child: Column(
                     children: [
                       CustomFrameWidget(
@@ -226,7 +226,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         ],
                       ),
                       SizedBox(
-                        height: 110,
+                        height: 100,
                       ),
                     ],
                   ),

@@ -39,6 +39,7 @@ class Colorss {
   static const Color primaryColor = Color(0xFF7B68EE);
   static const Color primaryColorLight = Color(0xFFEEF0FC);
   static const Color primaryColorDark = Color(0xFF101317);
+  static const Color primaryColorDark2 = Color(0xFF918F9A);
 
   // Secondary Colors
   static const Color secondaryColor = Color(0xFF8F8F8E);
@@ -74,6 +75,6 @@ class Colorss {
   // Additional Colors
   static const Color iconColor = Color(0xFF898D99);
   static const Color shadowColor = Color(0xFFE3EAF8);
-  static const Color highlightColor = Color(0xFF7B68EE);
+  static const Color highlightColor = Color(0xFFC5BDFA);
   static const Color splashColor = Color(0xFF7B68EE);
 }

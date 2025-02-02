@@ -378,7 +378,7 @@ class _AttendancePageState extends State<AttendancePage> {
           children: [
             // Month Navigation
             Padding(
-              padding: const EdgeInsets.only(left: 20.0, right: 20),
+              padding: const EdgeInsets.only(left: 20.0, right: 0),
               child: Container(
                 child: Row(
                   children: [
@@ -388,10 +388,12 @@ class _AttendancePageState extends State<AttendancePage> {
                           children: [
                             if (Navigator.canPop(context))
                               IconButton(
+                                padding: EdgeInsets.zero,
                                 icon:
                                     Icon(Icons.arrow_back, color: Colors.black),
                                 onPressed: () => Navigator.pop(context),
                               ),
+                            if (!Navigator.canPop(context)) SizedBox(width: 15),
                             Text(
                               'سجل',
                               style: GoogleFonts.balooBhaijaan2(
@@ -430,7 +432,7 @@ class _AttendancePageState extends State<AttendancePage> {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.only(right: 20.0, top: 20, bottom: 00),
+              padding: const EdgeInsets.only(right: 15.0, top: 20, bottom: 00),
               child: PreferredSize(
                 preferredSize: Size.fromHeight(50.0),
                 child: Container(
@@ -593,7 +595,11 @@ class _AttendancePageState extends State<AttendancePage> {
                     ),
                   );
                 } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return Center(child: Text('No attendance records found'));
+                  return Center(
+                      child: Text(
+                    'No attendance records found',
+                    style: GoogleFonts.balooBhaijaan2(),
+                  ));
                 } else {
                   List<Attendance> filteredData = snapshot.data!;
 

@@ -42,7 +42,7 @@ class _RequestsMainState extends State<RequestsMain> {
       requestTitle: "إجازة - 15 Apr 2023",
       status: "مقبول",
       details: {
-        'detail1Label': "عدد أيام الإجازة",
+        'detail1Label': "عدد أيام ",
         'detail1Value': "3 أيام",
         'detail2Label': "نوع الإجازة",
         'detail2Value': "اعتيادي",
@@ -56,7 +56,7 @@ class _RequestsMainState extends State<RequestsMain> {
       details: {
         'detail1Label': "طريقة الدفع",
         'detail1Value': "قسط",
-        'detail2Label': "الرصيد بعد السلفة",
+        'detail2Label': "الرصيد المتبقي",
         'detail2Value': "2000 جنيه",
         'approvedBy': "السيسي",
       },
@@ -66,7 +66,7 @@ class _RequestsMainState extends State<RequestsMain> {
       requestTitle: "إذن خروج - 5 May 2023",
       status: "المراجعة",
       details: {
-        'detail1Label': "مدة العمل المتبقية",
+        'detail1Label': "المده المتبقية",
         'detail1Value': "4 ساعات",
         'detail2Label': "الرصيد المتبقي",
         'detail2Value': "3 ساعات",
@@ -78,7 +78,7 @@ class _RequestsMainState extends State<RequestsMain> {
       requestTitle: "إجازة - 15 Apr 2023",
       status: "مرفوض",
       details: {
-        'detail1Label': "عدد أيام الإجازة",
+        'detail1Label': "عدد أيام ",
         'detail1Value': "3 أيام",
         'detail2Label': "نوع الإجازة",
         'detail2Value': "اعتيادي",
@@ -92,7 +92,7 @@ class _RequestsMainState extends State<RequestsMain> {
       details: {
         'detail1Label': "طريقة الدفع",
         'detail1Value': "قسط",
-        'detail2Label': "الرصيد بعد السلفة",
+        'detail2Label': "الرصيد المتبقي",
         'detail2Value': "2000 جنيه",
         'approvedBy': "السيسي",
       },
@@ -102,7 +102,7 @@ class _RequestsMainState extends State<RequestsMain> {
       requestTitle: "إذن خروج - 5 May 2023",
       status: "المراجعة",
       details: {
-        'detail1Label': "مدة العمل المتبقية",
+        'detail1Label': "المدة المتبقية",
         'detail1Value': "4 ساعات",
         'detail2Label': "الرصيد المتبقي",
         'detail2Value': "3 ساعات",
@@ -114,7 +114,7 @@ class _RequestsMainState extends State<RequestsMain> {
       requestTitle: "إجازة - 15 Apr 2023",
       status: "مقبول",
       details: {
-        'detail1Label': "عدد أيام الإجازة",
+        'detail1Label': "عدد أيام ",
         'detail1Value': "3 أيام",
         'detail2Label': "نوع الإجازة",
         'detail2Value': "اعتيادي",
@@ -128,7 +128,7 @@ class _RequestsMainState extends State<RequestsMain> {
       details: {
         'detail1Label': "طريقة الدفع",
         'detail1Value': "كاش",
-        'detail2Label': "الرصيد بعد السلفة",
+        'detail2Label': "الرصيد المتبقي",
         'detail2Value': "2000 جنيه",
         'approvedBy': "",
       },
@@ -138,7 +138,7 @@ class _RequestsMainState extends State<RequestsMain> {
       requestTitle: "إذن خروج - 5 May 2023",
       status: "مقبول",
       details: {
-        'detail1Label': "مدة العمل المتبقية",
+        'detail1Label': "المدة المتبقية",
         'detail1Value': "4 ساعات",
         'detail2Label': "الرصيد المتبقي",
         'detail2Value': "3 ساعات",
@@ -150,7 +150,7 @@ class _RequestsMainState extends State<RequestsMain> {
       requestTitle: "اذن تاخير - 5 May 2023",
       status: "مقبول",
       details: {
-        'detail1Label': "مدة العمل المتبقية",
+        'detail1Label': "المدة المتبقية",
         'detail1Value': "4 ساعات",
         'detail2Label': "الرصيد المتبقي",
         'detail2Value': "3 ساعات",
@@ -162,7 +162,7 @@ class _RequestsMainState extends State<RequestsMain> {
       requestTitle: "اذن نص يوم - 5 May 2023",
       status: "مقبول",
       details: {
-        'detail1Label': "مدة العمل المتبقية",
+        'detail1Label': "المدة المتبقية",
         'detail1Value': "4 ساعات",
         'detail2Label': "الرصيد المتبقي",
         'detail2Value': "3 ساعات",
@@ -254,15 +254,14 @@ class _RequestsMainState extends State<RequestsMain> {
           builder: (BuildContext context, setState) {
             return Container(
               color: Theme.of(context).colorScheme.background,
-              height:
-                  screenHeight > 700 ? screenHeight * 0.8 : screenHeight * 0.71,
-              // height: MediaQuery.of(context).size.height * 0.8,
+              height: screenHeight < 850
+                  ? screenHeight * 0.76
+                  : screenHeight * 0.71,
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    // ✅ اختيار الشهر والسنة
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -289,14 +288,11 @@ class _RequestsMainState extends State<RequestsMain> {
                       ],
                     ),
                     SizedBox(height: 16),
-
-                    // 🔹 اختيار الشهر والسنة بين الخطين مع التمرير
                     SizedBox(
                       height: 170,
                       child: Stack(
                         alignment: Alignment.center,
                         children: [
-                          // ✅ عجلة اختيار الشهر والسنة
                           Container(
                             decoration: BoxDecoration(
                                 color: Colors.grey.withOpacity(0.1),
@@ -342,13 +338,10 @@ class _RequestsMainState extends State<RequestsMain> {
                                     ),
                                   ),
                                 ),
-
-// 🔹 اختيار السنة
                                 SizedBox(
                                   width: 120,
                                   child: ListWheelScrollView.useDelegate(
                                     controller: yearController,
-                                    // ← استخدم المتحكم هنا
                                     itemExtent: 50,
                                     perspective: 0.004,
                                     magnification: 1.2,
@@ -389,19 +382,15 @@ class _RequestsMainState extends State<RequestsMain> {
                         ],
                       ),
                     ),
-
                     SizedBox(height: 16),
-
                     Align(
                         alignment: Alignment.topRight,
                         child: Text(
-                          "اختيار الحاله",
+                          "الفلتر",
                           style: GoogleFonts.balooBhaijaan2(
                               fontSize: 22, fontWeight: FontWeight.bold),
                         )),
                     SizedBox(height: 10),
-
-                    // 🔹 اختيار حالة الطلب (مقبول، مرفوض، قيد المراجعة)
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -410,6 +399,8 @@ class _RequestsMainState extends State<RequestsMain> {
                               Text("الكل", style: GoogleFonts.balooBhaijaan2()),
                           value: "الكل",
                           groupValue: selectedStatus,
+                          contentPadding: EdgeInsets.zero,
+                          selectedTileColor: Colorss.mainColor,
                           activeColor: Colorss.mainColor,
                           onChanged: (value) {
                             setState(() {
@@ -423,6 +414,7 @@ class _RequestsMainState extends State<RequestsMain> {
                           value: "مقبول",
                           groupValue: selectedStatus,
                           activeColor: Colorss.mainColor,
+                          contentPadding: EdgeInsets.zero,
                           onChanged: (value) {
                             setState(() {
                               selectedStatus = value!;
@@ -435,6 +427,7 @@ class _RequestsMainState extends State<RequestsMain> {
                           value: "مرفوض",
                           groupValue: selectedStatus,
                           activeColor: Colorss.mainColor,
+                          contentPadding: EdgeInsets.zero,
                           onChanged: (value) {
                             setState(() {
                               selectedStatus = value!;
@@ -447,6 +440,7 @@ class _RequestsMainState extends State<RequestsMain> {
                           value: "قيد المراجعة",
                           groupValue: selectedStatus,
                           activeColor: Colorss.mainColor,
+                          contentPadding: EdgeInsets.zero,
                           onChanged: (value) {
                             setState(() {
                               selectedStatus = value!;
@@ -455,9 +449,7 @@ class _RequestsMainState extends State<RequestsMain> {
                         ),
                       ],
                     ),
-
-                    SizedBox(height: 30),
-                    // 🔹 أزرار "إلغاء" و "تأكيد"
+                    Spacer(),
                     Row(
                       children: [
                         Expanded(
@@ -750,10 +742,8 @@ class _RequestsMainState extends State<RequestsMain> {
                         width: double.infinity,
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(25),
-                            color: Theme.of(context)
-                                .colorScheme
-                                .surfaceVariant // 🔹 خلفية موحدة رمادية
-                            ),
+                            color:
+                                Theme.of(context).colorScheme.surfaceVariant),
                         child: Column(
                           children: [
                             if (!showFilters)
@@ -785,7 +775,7 @@ class _RequestsMainState extends State<RequestsMain> {
                                     child: Center(
                                       child: Text(
                                         "لا توجد طلبات متاحة",
-                                        style: TextStyle(
+                                        style: GoogleFonts.balooBhaijaan2(
                                             fontSize: 16, color: Colors.grey),
                                       ),
                                     ),

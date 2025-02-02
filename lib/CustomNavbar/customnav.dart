@@ -81,19 +81,27 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar>
 
   void _showAnimatedBottomSheetFromButton(BuildContext context, GlobalKey key) {
     final RenderBox renderBox =
-        key.currentContext!.findRenderObject() as RenderBox;
+    key.currentContext!.findRenderObject() as RenderBox;
     final Offset offset = renderBox.localToGlobal(Offset.zero);
     final Size buttonSize = renderBox.size;
 
     showGeneralDialog(
       context: context,
       barrierDismissible: true,
-      barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
+      barrierLabel: MaterialLocalizations
+          .of(context)
+          .modalBarrierDismissLabel,
       barrierColor: Colors.black54,
       transitionDuration: const Duration(milliseconds: 100),
       pageBuilder: (context, animation, secondaryAnimation) {
-        double screenWidth = MediaQuery.of(context).size.width;
-        double screenHeight = MediaQuery.of(context).size.height;
+        double screenWidth = MediaQuery
+            .of(context)
+            .size
+            .width;
+        double screenHeight = MediaQuery
+            .of(context)
+            .size
+            .height;
         double textFontSize = screenWidth * 0.037;
         double lineHeight = textFontSize * 1.2;
         double verticalMargin = screenHeight * 0.01;
@@ -113,11 +121,14 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar>
                     elevation: 5,
                     child: Container(
                       width: screenWidth * 0.8,
-                      height: screenHeight > 900
+                      height: screenHeight < 850
                           ? screenHeight * 0.42
                           : screenHeight * 0.38,
                       decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.background,
+                        color: Theme
+                            .of(context)
+                            .colorScheme
+                            .background,
                         borderRadius: BorderRadius.circular(20),
                         boxShadow: [
                           BoxShadow(
@@ -145,7 +156,10 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar>
                           Container(
                             padding: const EdgeInsets.all(16.0),
                             decoration: BoxDecoration(
-                              color: Theme.of(context).colorScheme.background,
+                              color: Theme
+                                  .of(context)
+                                  .colorScheme
+                                  .background,
                               borderRadius: BorderRadius.circular(20),
                             ),
                             child: Column(
@@ -240,8 +254,14 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar>
             ));
       },
       transitionBuilder: (context, animation, secondaryAnimation, child) {
-        double screenWidth = MediaQuery.of(context).size.width;
-        double screenHeight = MediaQuery.of(context).size.height;
+        double screenWidth = MediaQuery
+            .of(context)
+            .size
+            .width;
+        double screenHeight = MediaQuery
+            .of(context)
+            .size
+            .height;
         return SlideTransition(
           position: Tween<Offset>(
             begin: Offset(
@@ -330,7 +350,10 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar>
         child: BottomAppBar(
           shape: const CircularNotchedRectangle(),
           notchMargin: 12.0,
-          color: Theme.of(context).colorScheme.background,
+          color: Theme
+              .of(context)
+              .colorScheme
+              .background,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             mainAxisSize: MainAxisSize.min,
@@ -359,9 +382,10 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar>
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => HomeScreen(
-                index2: 0,
-              ),
+              builder: (context) =>
+                  HomeScreen(
+                    index2: 0,
+                  ),
             ),
           );
         }
@@ -369,9 +393,10 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar>
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => HomeScreen(
-                index2: 2,
-              ),
+              builder: (context) =>
+                  HomeScreen(
+                    index2: 2,
+                  ),
             ),
           );
         }
@@ -379,9 +404,10 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar>
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => HomeScreen(
-                index2: 1,
-              ),
+              builder: (context) =>
+                  HomeScreen(
+                    index2: 1,
+                  ),
             ),
           );
         }
@@ -389,9 +415,10 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar>
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => HomeScreen(
-                index2: 3,
-              ),
+              builder: (context) =>
+                  HomeScreen(
+                    index2: 3,
+                  ),
             ),
           );
         }
@@ -460,8 +487,7 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar>
   }
 }
 
-Widget _buildOptionItem(
-  BuildContext context, {
+Widget _buildOptionItem(BuildContext context, {
   required String title,
   required IconData icon,
   required VoidCallback onTap,
@@ -484,6 +510,7 @@ Widget _buildOptionItem(
       ),
       if (!isLast)
         const Divider(
+          color: Colors.grey,
           thickness: 0.5,
         ),
     ],

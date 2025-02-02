@@ -72,7 +72,13 @@ class _Request_money_MainState extends State<Request_money_Main> {
                               onPressed: () async {
                                 final DateTimeRange? picked =
                                     await showDateRangePicker(
+                                  helpText: '',
+                                  keyboardType: TextInputType.text,
+                                  //  useRootNavigator: false,
+                                  //barrierDismissible: false,
                                   context: context,
+                                  locale: const Locale('ar', 'AE'),
+
                                   firstDate: DateTime(2000),
                                   lastDate: DateTime(2100),
                                   initialDateRange: DateTimeRange(
@@ -83,29 +89,12 @@ class _Request_money_MainState extends State<Request_money_Main> {
                                   ),
                                   builder: (context, child) {
                                     return Theme(
-                                      data: ThemeData.light().copyWith(
-                                        primaryColor:
-                                            Colorss.mainColor, // اللون الأساسي
-                                        hintColor: Colors.grey, // لون التلميحات
-                                        colorScheme: ColorScheme.light(
-                                          primary: Colorss.mainColor,
-                                          // لون العنوان والأزرار
-                                          onPrimary: Colors.white,
-                                          // لون النص في الأزرار
-                                          secondary: Colors.grey,
-                                          // لون التحديد عند اختيار الأيام
-                                          onSecondary: Colors.white,
-                                          // لون النص عند التحديد
-                                          surface: Colors.white,
-                                          // لون الخلفية
-                                          onSurface: Colors.black, // لون النصوص
-                                        ),
-                                        dialogBackgroundColor:
-                                            Colors.white, // لون خلفية الحوار
-                                      ),
+                                      data: Theme.of(context),
                                       child: child!,
                                     );
                                   },
+                                  initialEntryMode:
+                                      DatePickerEntryMode.calendar,
                                 );
 
                                 if (picked != null) {

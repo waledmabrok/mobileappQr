@@ -310,7 +310,7 @@ class _LeaveRequestPageState extends State<LeaveRequestPage> {
               ),
               SizedBox(height: 30),
               SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
+                //  padding: const EdgeInsets.symmetric(horizontal: 0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: faqs.asMap().entries.map((entry) {
@@ -390,7 +390,7 @@ class _LeaveRequestPageState extends State<LeaveRequestPage> {
               ),
               Padding(
                 padding: const EdgeInsets.only(
-                    left: 40.0, right: 40, top: 20, bottom: 10),
+                    left: 0.0, right: 0, top: 20, bottom: 10),
                 child: CustomButton(
                     text: 'تقديم الطلب', onPressed: _submitLeaveRequest),
               ),

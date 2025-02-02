@@ -466,6 +466,7 @@ class _transactionAllState extends State<transactionAll> {
                           iconColor: Colorss.BorderColor,
                         ),
                         ActivityItem(
+                          bottom: false,
                           imagePath: 'assets/SvgProfile/mins.png',
                           // icon: FontAwesomeIcons.rightToBracket,
                           title: "الخصومات",
@@ -474,6 +475,9 @@ class _transactionAllState extends State<transactionAll> {
                           status: "نجحت العمليه",
                           iconColor: Colorss.BorderColor,
                         ),
+                        SizedBox(
+                          height: 70,
+                        )
                       ]),
                     ),
                   ),

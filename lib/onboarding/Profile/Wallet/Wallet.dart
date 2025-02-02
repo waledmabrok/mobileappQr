@@ -48,9 +48,11 @@ class _WalletState extends State<Wallet> {
     });
   }
 
-  void showCustomModalBottomSheet(BuildContext context,
-      String imagePath,
-      String head,) {
+  void showCustomModalBottomSheet(
+    BuildContext context,
+    String imagePath,
+    String head,
+  ) {
     showModalBottomSheet(
       backgroundColor: Colors.white,
       context: context,
@@ -74,26 +76,17 @@ class _WalletState extends State<Wallet> {
     return CustomAdvancedDrawer(
       controller: _advancedDrawerController,
       child: Scaffold(
-        backgroundColor: Theme
-            .of(context)
-            .colorScheme
-            .surfaceVariant,
+        backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
         body: Stack(
           children: [
             // الخلفية العلوية
             Positioned(
               top: -5,
               child: Container(
-                width: MediaQuery
-                    .of(context)
-                    .size
-                    .width,
-                height: 298,
+                width: MediaQuery.of(context).size.width,
+                height: 258,
                 decoration: BoxDecoration(
-                  color: Theme
-                      .of(context)
-                      .colorScheme
-                      .primary,
+                  color: Theme.of(context).colorScheme.primary,
                   borderRadius: BorderRadius.only(
                     bottomLeft: Radius.circular(40),
                     bottomRight: Radius.circular(40),
@@ -285,7 +278,7 @@ class _WalletState extends State<Wallet> {
             ),*/
             // قائمة المعاملات
             Positioned(
-              top: 370,
+              top: 320,
               left: 20,
               right: 20,
               bottom: 0,
@@ -391,6 +384,7 @@ class _WalletState extends State<Wallet> {
                     iconColor: Colorss.BorderColor,
                   ),
                   ActivityItem(
+                    bottom: false,
                     imagePath: 'assets/SvgProfile/mins.png',
                     // icon: FontAwesomeIcons.rightToBracket,
                     title: "الخصومات",
@@ -399,28 +393,28 @@ class _WalletState extends State<Wallet> {
                     status: "نجحت العمليه",
                     iconColor: Colorss.BorderColor,
                   ),
+                  SizedBox(
+                    height: 90,
+                  )
                 ]),
               ),
             ),
             // عنوان المعاملات
             Positioned(
-              right: 30,
-              top: 335,
+              right: 20,
+              top: 275,
               child: Text(
                 'المعاملات',
                 style: GoogleFonts.balooBhaijaan2(
                   fontSize: 18,
                   fontWeight: FontWeight.w600,
-                  color: Theme
-                      .of(context)
-                      .colorScheme
-                      .onPrimary,
+                  color: Theme.of(context).colorScheme.onPrimary,
                 ),
               ),
             ),
             Positioned(
-              left: 30,
-              top: 335,
+              left: 20,
+              top: 275,
               child: InkWell(
                 overlayColor: WidgetStatePropertyAll(Colors.white),
                 onTap: () {

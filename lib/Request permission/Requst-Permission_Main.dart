@@ -85,26 +85,7 @@ class _PermissionRequestMainState extends State<PermissionRequestMain> {
                                   ),
                                   builder: (context, child) {
                                     return Theme(
-                                      data: ThemeData.light().copyWith(
-                                        primaryColor:
-                                            Colorss.mainColor, // اللون الأساسي
-                                        hintColor: Colors.grey, // لون التلميحات
-                                        colorScheme: ColorScheme.light(
-                                          primary: Colorss.mainColor,
-                                          // لون العنوان والأزرار
-                                          onPrimary: Colors.white,
-                                          // لون النص في الأزرار
-                                          secondary: Colors.grey,
-                                          // لون التحديد عند اختيار الأيام
-                                          onSecondary: Colors.white,
-                                          // لون النص عند التحديد
-                                          surface: Colors.white,
-                                          // لون الخلفية
-                                          onSurface: Colors.black, // لون النصوص
-                                        ),
-                                        dialogBackgroundColor:
-                                            Colors.white, // لون خلفية الحوار
-                                      ),
+                                      data: Theme.of(context),
                                       child: child!,
                                     );
                                   },

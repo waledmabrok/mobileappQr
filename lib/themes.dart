@@ -18,8 +18,8 @@ class ThemeClass {
       onSurface: Colorss.textSecondaryLight,
       surfaceVariant: Colorss.ContainerLight,
       inverseSurface: Colorss.borderLight,
-      secondaryContainer: Colorss.primaryColor,
-      // لون التحديد في التقويم
+      secondaryContainer: Colorss.highlightColor,
+      // خلفية التحديد
       onSecondaryContainer: Colors.white,
     ),
     textTheme: TextTheme(
@@ -48,7 +48,7 @@ class ThemeClass {
     primaryColor: Colorss.primaryColorDark,
     scaffoldBackgroundColor: Colorss.backgroundDark,
     colorScheme: ColorScheme.dark(
-      primary: Colorss.primaryColorDark,
+      primary: Colorss.primaryColorDark2,
       secondary: Colorss.secondaryColorDark,
       background: Colorss.backgroundDark,
       surface: Colorss.accentDark,
@@ -58,7 +58,7 @@ class ThemeClass {
       onSurface: Colorss.textSecondaryDark,
       surfaceVariant: Colorss.ContainerDark,
       inverseSurface: Colorss.borderDark,
-      secondaryContainer: Colorss.primaryColorDark,
+      secondaryContainer: Colorss.primaryColorDark2,
       onSecondaryContainer: Colors.white,
     ),
     textTheme: TextTheme(
